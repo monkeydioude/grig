@@ -2,7 +2,22 @@ package model
 
 import "os"
 
+type Proxy struct {
+	Port    int    `json:"port"`
+	TLSHost string `json:"tls_host"`
+}
+
+type ServiceDefinition struct {
+	ID       string `json:"id"`
+	Method   string `json:"method"`
+	Pattern  string `json:"pattern"`
+	Port     int    `json:"port"`
+	Protocol string `json:"protocol,omitempty"` // omitempty to handle the absence of this field
+}
+
 type Capybara struct {
+	Proxy    Proxy               `json:"proxy"`
+	Services []ServiceDefinition `json:"services"`
 }
 
 func (c Capybara) Save() error {

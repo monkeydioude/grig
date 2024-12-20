@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"monkeydioude/grig/internal/model"
-	"monkeydioude/grig/internal/service/app_service"
 	"monkeydioude/grig/internal/service/fs"
+	"monkeydioude/grig/internal/service/parser"
 	"monkeydioude/grig/internal/tiger/assert"
 	"os"
 	"path/filepath"
@@ -15,8 +15,8 @@ import (
 // ServerConfig holds the app config and is also
 // a factory for generating some model's entities
 type ServerConfig struct {
-	ServerconfigPath   string `json:"-"`
-	AppsServicesDir    string `json:"app_services_dir"`
+	ServerConfigPath   string `json:"-"`
+	AppsServicesDir    string `json:"parsers_dir"`
 	JosukeConfigPath   string `json:"josuke_config_path"`
 	CapybaraConfigPath string `json:"capybara_config_path"`
 }
@@ -32,12 +32,12 @@ func readConfigFile(appConfigPath string) []byte {
 	configRaw, err := os.ReadFile(appConfigPath)
 	// create the config file if does not exist
 	if errors.Is(err, os.ErrNotExist) {
-		// file, err := os.Create(appConfigPath)
-		// assert.NoError(err)
-		// assert.NotNil(file)
-		// _, err = file.WriteString("{}")
-		// assert.NoError(err)
-		// assert.NoError(file.Close())
+		file, err := os.Create(appConfigPath)
+		assert.NoError(err)
+		assert.NotNil(file)
+		_, err = file.WriteString("{}")
+		assert.NoError(err)
+		assert.NoError(file.Close())
 		configRaw = []byte("{}")
 	} else {
 		assert.NoError(err)
@@ -47,15 +47,15 @@ func readConfigFile(appConfigPath string) []byte {
 
 // NewServerConfigFromPath tries to parse a file located at `appConfigPath`,
 // holding the server config.
-func NewServerConfigFromPath(appConfigPath string) ServerConfig {
+func NewServerConfigFromPath(mainConfigPath string) ServerConfig {
 	// sanitize file path (in case of change dir etc...)
-	appConfigPath, err := filepath.Abs(appConfigPath)
+	mainConfigPath, err := filepath.Abs(mainConfigPath)
 	assert.NoError(err)
 	// read the file and return a bag of raw bytes
-	configRaw := readConfigFile(appConfigPath)
+	configRaw := readConfigFile(mainConfigPath)
 	// try to unmarshal config raw bytes
 	config := unmarshalConfig(configRaw)
-	config.ServerconfigPath = appConfigPath
+	config.ServerConfigPath = mainConfigPath
 	return config
 }
 
@@ -63,23 +63,34 @@ func (sc ServerConfig) ProcessAppsServicesDir() (*fs.Dir[model.Service], error) 
 	if sc.AppsServicesDir == "" {
 		return nil, nil
 	}
-	res, err := fs.NewDirFromPath(sc.AppsServicesDir, app_service.NewServiceFromPath)
+	sc.AppsServicesDir = fs.AppendToThisFileDirectory(sc.AppsServicesDir, sc.ServerConfigPath)
+	res, err := fs.NewDirFromPathAndFileParser(sc.AppsServicesDir, parser.ServiceFileParser)
 	if err != nil {
 		return nil, fmt.Errorf("server.ServerConfig.ProcessAppsServicesDir: %w", err)
 	}
 	return &res, nil
 }
 
-func (sc ServerConfig) ProcessJosuke() *model.Josuke {
+func (sc ServerConfig) ProcessJosuke() (*model.Josuke, error) {
 	if sc.JosukeConfigPath == "" {
-		return nil
+		return nil, nil
 	}
-	return nil
+	sc.JosukeConfigPath = fs.AppendToThisFileDirectory(sc.JosukeConfigPath, sc.ServerConfigPath)
+	jojo, err := fs.UnmarshalFromPath[model.Josuke](sc.JosukeConfigPath)
+	if err != nil {
+		return nil, fmt.Errorf("server.ServerConfig.ProcessJosuke: %w", err)
+	}
+	return &jojo, nil
 }
 
-func (sc ServerConfig) ProcessCapybara() *fs.Dir[model.Service] {
+func (sc ServerConfig) ProcessCapybara() (*model.Capybara, error) {
 	if sc.CapybaraConfigPath == "" {
-		return nil
+		return nil, nil
 	}
-	return nil
+	sc.CapybaraConfigPath = fs.AppendToThisFileDirectory(sc.CapybaraConfigPath, sc.ServerConfigPath)
+	capy, err := fs.UnmarshalFromPath[model.Capybara](sc.CapybaraConfigPath)
+	if err != nil {
+		return nil, fmt.Errorf("server.ServerConfig.ProcessJosuke: %w", err)
+	}
+	return &capy, nil
 }

@@ -13,7 +13,7 @@ type Dir[F File] struct {
 	Files map[string]F
 }
 
-func NewDirFromPath[F File](path string, parser func(path string) (F, error)) (Dir[F], error) {
+func NewDirFromPathAndFileParser[F File](path string, parser func(path string) (F, error)) (Dir[F], error) {
 	dir := Dir[F]{
 		Path: path,
 	}

@@ -1,9 +1,11 @@
 package server
 
 import (
+	"fmt"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/fs"
 	"monkeydioude/grig/internal/service/os"
+	"net/http"
 )
 
 type Layout struct {
@@ -12,4 +14,52 @@ type Layout struct {
 	JosukeConfig   *model.Josuke
 	CapybaraConfig *model.Capybara
 	ServerConfig   ServerConfig
+}
+
+// Handler our basic generic route handler
+type Handler func(*Layout, http.ResponseWriter, *http.Request)
+
+// Methods vector of available HTTP MEthods
+var Methods = [5]string{"GET", "POST", "PUT", "PATCH", "DELETE"}
+
+// WithMethod is a geeneric wrapper around a generic handler, forcing the a HTTP verb
+func (l *Layout) WithMethod(method string, handler Handler) func(http.ResponseWriter, *http.Request) {
+	// #StephenCurrying
+	return func(w http.ResponseWriter, req *http.Request) {
+		for _, m := range Methods {
+			// a method matches
+			if m == method {
+				handler(l, w, req)
+				return
+			}
+		}
+		// no method matched the one provided over the array of available methods
+		w.WriteHeader(405)
+		w.Write([]byte(fmt.Sprintf("Method %s not allowd", req.Method)))
+	}
+}
+
+// Get is a wrapper around a generic handler, forcing the GET HTTP verb
+func (l *Layout) Get(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return l.WithMethod("GET", handler)
+}
+
+// Post is a wrapper around a generic handler, forcing the POST HTTP verb
+func (l *Layout) Post(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return l.WithMethod("POST", handler)
+}
+
+// Put is a wrapper around a generic handler, forcing the PUT HTTP verb
+func (l *Layout) Put(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return l.WithMethod("PUT", handler)
+}
+
+// Patch is a wrapper around a generic handler, forcing the PATCH HTTP verb
+func (l *Layout) Patch(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return l.WithMethod("PATCH", handler)
+}
+
+// Delete is a wrapper around a generic handler, forcing the DELETE HTTP verb
+func (l *Layout) Delete(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return l.WithMethod("DELETE", handler)
 }

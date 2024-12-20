@@ -1,4 +1,4 @@
-package app_service
+package parser
 
 import (
 	"fmt"
@@ -41,7 +41,7 @@ func fetchSectionAndKeys(cfg *ini.File, section, key string) []string {
 	return sectionKey.ValueWithShadows()
 }
 
-func NewServiceFromIniPath(path string) (model.Service, error) {
+func IniServiceParser(path string) (model.Service, error) {
 	cfg, err := ini.LoadSources(ini.LoadOptions{
 		AllowShadows: true,
 	}, path)
