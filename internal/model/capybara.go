@@ -1,6 +1,9 @@
 package model
 
-import "os"
+import (
+	"os"
+	"strconv"
+)
 
 type Proxy struct {
 	Port    int    `json:"port"`
@@ -26,4 +29,11 @@ func (c Capybara) Save() error {
 
 func (c Capybara) Source() *os.File {
 	return nil
+}
+
+func (c Capybara) PortString() string {
+	if c.Proxy.Port == 0 {
+		return ""
+	}
+	return strconv.Itoa(c.Proxy.Port)
 }

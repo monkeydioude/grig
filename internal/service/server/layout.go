@@ -2,10 +2,13 @@ package server
 
 import (
 	"fmt"
+	"monkeydioude/grig/internal/errors"
+	"monkeydioude/grig/internal/html/element"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/fs"
 	"monkeydioude/grig/internal/service/os"
 	"net/http"
+	"sync"
 )
 
 type Layout struct {
@@ -14,10 +17,12 @@ type Layout struct {
 	JosukeConfig   *model.Josuke
 	CapybaraConfig *model.Capybara
 	ServerConfig   ServerConfig
+	Navigation     element.Nav
+	mutex          sync.Mutex
 }
 
 // Handler our basic generic route handler
-type Handler func(*Layout, http.ResponseWriter, *http.Request)
+type Handler func(http.ResponseWriter, *http.Request) error
 
 // Methods vector of available HTTP MEthods
 var Methods = [5]string{"GET", "POST", "PUT", "PATCH", "DELETE"}
@@ -29,7 +34,9 @@ func (l *Layout) WithMethod(method string, handler Handler) func(http.ResponseWr
 		for _, m := range Methods {
 			// a method matches
 			if m == method {
-				handler(l, w, req)
+				if err := handler(w, req); err != nil {
+					errors.WriteError(err, w)
+				}
 				return
 			}
 		}
@@ -62,4 +69,16 @@ func (l *Layout) Patch(handler Handler) func(http.ResponseWriter, *http.Request)
 // Delete is a wrapper around a generic handler, forcing the DELETE HTTP verb
 func (l *Layout) Delete(handler Handler) func(http.ResponseWriter, *http.Request) {
 	return l.WithMethod("DELETE", handler)
+}
+
+func (l *Layout) SetParams(
+	AppsServices *fs.Dir[model.Service],
+	JosukeConfig *model.Josuke,
+	CapybaraConfig *model.Capybara,
+) {
+	l.mutex.Lock()
+	defer l.mutex.Unlock()
+	l.AppsServices = AppsServices
+	l.JosukeConfig = JosukeConfig
+	l.CapybaraConfig = CapybaraConfig
 }

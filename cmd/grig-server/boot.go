@@ -15,11 +15,12 @@ func parseFlags() string {
 	return *mainConfigPath
 }
 
-func boot() server.Layout {
+func boot() *server.Layout {
 	mainConfigPath := parseFlags()
 	config := server.NewServerConfigFromPath(mainConfigPath)
 	layout := server.Layout{
-		OS: os.FindoutOS(),
+		OS:         os.FindoutOS(),
+		Navigation: MainNavigation(),
 	}
 	{
 		appServices, err := config.ProcessAppsServicesDir()
@@ -37,5 +38,5 @@ func boot() server.Layout {
 		layout.CapybaraConfig = capyConfig
 	}
 	fmt.Printf("appServices: %+v\njosuke: %+v\ncapybara: %+v\n", layout.AppsServices, layout.JosukeConfig, layout.CapybaraConfig)
-	return layout
+	return &layout
 }

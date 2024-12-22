@@ -29,6 +29,10 @@ func NotEmpty(value any, wrap ...error) {
 		if v == "" {
 			log.Fatalf("string value: %s: %s", ErrShouldNotBeEmpty, errors.Join(wrap...))
 		}
+	case int, int8, int16, int32, int64:
+		if v == 0 {
+			log.Fatalf("integer (int, int8, int16, int32, int64) value: %s: %s", ErrShouldNotBeEmpty, errors.Join(wrap...))
+		}
 	}
 }
 

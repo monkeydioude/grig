@@ -1,0 +1,23 @@
+package pages
+
+import "monkeydioude/grig/internal/html/page_data"
+import "monkeydioude/grig/internal/model"
+
+templ capybaraConfigBlock(capyConfig *model.Capybara) {
+    <div class="">
+        <a href="/capybara">
+        if capyConfig == nil {
+            No capybara config. Want to create one?
+        } else {
+            Check your capybara configuration.
+        }
+        </a>
+    </div>
+}
+
+templ Index(page page_data.IndexPage) {
+    @IndexCSS()
+    <div id="index">
+        @capybaraConfigBlock(page.CapybaraConfig)
+    </div>
+}

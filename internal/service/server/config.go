@@ -35,10 +35,11 @@ func readConfigFile(appConfigPath string) []byte {
 		file, err := os.Create(appConfigPath)
 		assert.NoError(err)
 		assert.NotNil(file)
-		_, err = file.WriteString("{}")
+		configRaw = []byte("{}")
+		n, err := file.Write(configRaw)
+		assert.NotEmpty(n)
 		assert.NoError(err)
 		assert.NoError(file.Close())
-		configRaw = []byte("{}")
 	} else {
 		assert.NoError(err)
 	}

@@ -2,34 +2,43 @@ package main
 
 import (
 	"fmt"
+	"monkeydioude/grig/internal/api"
+	htmlApi "monkeydioude/grig/internal/api/htmlapi/v1"
+
+	// jsonApi "monkeydioude/grig/internal/api/jsonapi/v1"
 	"monkeydioude/grig/internal/consts"
 	"monkeydioude/grig/internal/service/server"
 	"monkeydioude/grig/internal/service/server/middleware"
+	"monkeydioude/grig/internal/tiger/assert"
 	"net/http"
 	"os"
 	"time"
 )
 
-func healthcheck(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("{\"health\": \"OK\"}"))
-}
-
 func apiRouting(layout *server.Layout) http.Handler {
+	assert.NotNil(layout)
 	mux := http.NewServeMux()
+	// jsonHandler := jsonapi.New(layout)
+	htmlHandler := htmlApi.New(layout)
+
 	// routes definition
-	mux.HandleFunc("/grig/healthcheck", healthcheck)
+
+	mux.HandleFunc("/healthcheck", layout.Get(api.Healthcheck))
+
+	// mux.HandleFunc("/capybara/create", layout.Get(htmlHandler.CapybaraCreate))
+	mux.HandleFunc("/capybara", layout.Get(htmlHandler.CapybaraList))
+	mux.HandleFunc("/", layout.Get(htmlHandler.Index))
 
 	app := middleware.Mux(mux)
 	app.Use(
+		middleware.PanicRecover,
 		middleware.JsonApiLogRequest,
 		middleware.JsonApiXRequestID,
 	)
 	return app
 }
 
-func setupJsonApiServer(layout *server.Layout) *http.Server {
+func setupApiServer(layout *server.Layout) *http.Server {
 	// setup multiplexer
 	mux := apiRouting(layout)
 	port := consts.DEFAULT_GRIG_SERVER_PORT

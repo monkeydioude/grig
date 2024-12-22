@@ -10,7 +10,7 @@ import (
 
 func main() {
 	serverLayout := boot()
-	jsonApiServer := setupJsonApiServer(&serverLayout)
+	jsonApiServer := setupApiServer(serverLayout)
 	// Create the run group, and add each actor.
 	var runGroup run.Group
 	// JSON API goroutine
