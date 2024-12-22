@@ -5,7 +5,7 @@ import (
 	"monkeydioude/grig/internal/api"
 	htmlApi "monkeydioude/grig/internal/api/htmlapi/v1"
 
-	// jsonApi "monkeydioude/grig/internal/api/jsonapi/v1"
+	jsonApi "monkeydioude/grig/internal/api/jsonapi/v1"
 	"monkeydioude/grig/internal/consts"
 	"monkeydioude/grig/internal/service/server"
 	"monkeydioude/grig/internal/service/server/middleware"
@@ -18,16 +18,18 @@ import (
 func apiRouting(layout *server.Layout) http.Handler {
 	assert.NotNil(layout)
 	mux := http.NewServeMux()
-	// jsonHandler := jsonapi.New(layout)
-	htmlHandler := htmlApi.New(layout)
+	json := jsonApi.New(layout)
+	html := htmlApi.New(layout)
 
-	// routes definition
-
+	// generale routes definition
 	mux.HandleFunc("/healthcheck", layout.Get(api.Healthcheck))
 
-	// mux.HandleFunc("/capybara/create", layout.Get(htmlHandler.CapybaraCreate))
-	mux.HandleFunc("/capybara", layout.Get(htmlHandler.CapybaraList))
-	mux.HandleFunc("/", layout.Get(htmlHandler.Index))
+	// json api routes definition
+	mux.HandleFunc("/api/v1/capybara/create", layout.Get(json.CapybaraCreate))
+
+	// html routes definition
+	mux.HandleFunc("/capybara", layout.Get(html.CapybaraList))
+	mux.HandleFunc("/", layout.Get(html.Index))
 
 	app := middleware.Mux(mux)
 	app.Use(

@@ -1,6 +1,5 @@
 package pages
 
-import "monkeydioude/grig/internal/html/page_data"
 import "monkeydioude/grig/internal/model"
 
 templ capybaraConfigBlock(capyConfig *model.Capybara) {
@@ -15,7 +14,7 @@ templ capybaraConfigBlock(capyConfig *model.Capybara) {
     </div>
 }
 
-templ Index(page page_data.IndexPage) {
+templ (page IndexPage) Content() {
     @IndexCSS()
     <div id="index">
         @capybaraConfigBlock(page.CapybaraConfig)

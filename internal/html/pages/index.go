@@ -1,4 +1,4 @@
-package page_data
+package pages
 
 import (
 	"monkeydioude/grig/internal/model"

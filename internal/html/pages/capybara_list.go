@@ -1,4 +1,4 @@
-package page_data
+package pages
 
 import (
 	"fmt"
@@ -14,23 +14,12 @@ type CapybaraData struct {
 	FilePath string
 }
 
-func CapybaraCreate(
-	config *server.ServerConfig,
-) CapybaraData {
-	p := CapybaraData{
-		Titl: "Create a Capybara config",
-	}
-	if config == nil {
-		return p
-	}
-	p.Data = &model.Capybara{}
-	return p
-}
-
 func CapybaraList(config *server.ServerConfig) CapybaraData {
 	p := CapybaraData{
 		Titl: "Create a Capybara config",
-		Data: &model.Capybara{},
+		Data: &model.Capybara{
+			Services: make([]model.ServiceDefinition, 1),
+		},
 	}
 	if config == nil || config.CapybaraConfigPath == "" {
 		return p
@@ -52,4 +41,8 @@ func (c CapybaraData) Title() string {
 
 func (c CapybaraData) GetServiceInputName(it int, key string) string {
 	return fmt.Sprintf("services[%d][%s]", it, key)
+}
+
+func (c CapybaraData) GetId(it int, key string) string {
+	return fmt.Sprintf("services-%d-%s", it, key)
 }

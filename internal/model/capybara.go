@@ -18,6 +18,13 @@ type ServiceDefinition struct {
 	Protocol string `json:"protocol,omitempty"` // omitempty to handle the absence of this field
 }
 
+func (sd ServiceDefinition) PortString() string {
+	if sd.Port == 0 {
+		return ""
+	}
+	return strconv.Itoa(sd.Port)
+}
+
 type Capybara struct {
 	Proxy    Proxy               `json:"proxy"`
 	Services []ServiceDefinition `json:"services"`

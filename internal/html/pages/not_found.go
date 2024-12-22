@@ -1,8 +1,4 @@
-package page_data
-
-type Page interface {
-	Title() string
-}
+package pages
 
 type Error string
 

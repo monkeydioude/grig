@@ -1,0 +1,55 @@
+package layouts
+
+import "monkeydioude/grig/internal/html/element"
+import "monkeydioude/grig/internal/html/pages"
+
+templ headJavascript() {
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Emtyloc/json-enc-custom@main/json-enc-custom.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // THE FEELS! Old jQuery like selector shortcuts!! We went full circle
+        const $ = document.querySelector.bind(document);
+        const $$ = document.querySelectorAll.bind(document);
+
+        if (!Node.prototype.removeClass) {
+            Node.prototype.removeClass = function (className) {
+                if (this.classList) {
+                    this.classList.remove(className);
+                } else if (this.className) {
+                    // Fallback for older browsers
+                    this.className = this.className
+                        .split(' ')
+                        .filter(c => c !== className)
+                        .join(' ');
+                }
+            };
+        }
+    </script>
+}
+
+templ navigation(nav element.Nav) {
+    <ul>
+    for _, item := range nav.Links{
+        <li>
+            <a href={item.Href} target={item.Target.String()}>{item.Text.String()}</a>
+        </li>
+    }
+    </ul>
+}
+
+templ Main(nav element.Nav, page pages.Page) {
+    @domInitializer(
+        headJavascript(),
+        MainCSS(),
+        page.Title(),
+    ) {
+        <div class="sidebar">
+            <h1>Menu</h1>
+            @navigation(nav)
+        </div>
+        <div class="main-content">
+        @page.Content()
+        </div>
+    }
+}
