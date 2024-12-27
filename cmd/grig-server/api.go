@@ -25,7 +25,7 @@ func apiRouting(layout *server.Layout) http.Handler {
 	mux.HandleFunc("/healthcheck", layout.Get(api.Healthcheck))
 
 	// json api routes definition
-	mux.HandleFunc("/api/v1/capybara/create", layout.Get(json.CapybaraCreate))
+	mux.HandleFunc("/api/v1/capybara/create", layout.Post(json.CapybaraCreate))
 
 	// html routes definition
 	mux.HandleFunc("/capybara", layout.Get(html.CapybaraList))

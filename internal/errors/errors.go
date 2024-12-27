@@ -18,3 +18,4 @@ var ErrHttpUnknownInternalServerError = errors.New("unknown internal server erro
 var ErrUnmarshaling = errors.New("unable to unmarshal data")
 var ErrMarshaling = errors.New("unable to marshal data")
 var ErrReadingFile = errors.New("unable to read file")
+var ErrWritingFile = errors.New("unable to write to file")
