@@ -9,3 +9,8 @@ templ-watch:
 .PHONY: gow-watch
 gow-watch:
 	gow run cmd/grig-server/*.go
+
+.PHONY: install
+install:
+	go install github.com/a-h/templ/cmd/templ@latest
+	go install github.com/mitranim/gow@latest

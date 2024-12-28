@@ -1,7 +1,6 @@
 package fs
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	customErrors "monkeydioude/grig/internal/errors"
@@ -19,19 +18,22 @@ type Dir[F File] struct {
 func (d Dir[F]) Save() error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	data, err := json.Marshal(d.Files)
-	if err != nil {
-		return fmt.Errorf("fs.Dir.Save(): %w: %w", customErrors.ErrMarshaling, err)
+	for _, file := range d.Files {
+		if err := file.Save(); err != nil {
+			return fmt.Errorf("fs.Dir.Save(): %w", err)
+		}
 	}
-	if err := os.WriteFile(d.Path, data, os.ModePerm); err != nil {
-		return fmt.Errorf("fs.Dir.Save(): %w: %w", customErrors.ErrWritingFile, err)
-	}
+
 	return nil
 }
 
-func NewDirFromPathAndFileParser[F File](path string, parser func(path string) (F, error)) (Dir[F], error) {
+func NewDirFromPathAndFileParser[F File](
+	path string,
+	parser func(path string) (F, error),
+) (Dir[F], error) {
 	dir := Dir[F]{
-		Path: path,
+		Path:  path,
+		mutex: &sync.Mutex{},
 	}
 	entries, err := os.ReadDir(path)
 	if err != nil {

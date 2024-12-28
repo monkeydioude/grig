@@ -93,5 +93,7 @@ func (sc ServerConfig) ProcessCapybara() (*model.Capybara, error) {
 	if err != nil {
 		return nil, fmt.Errorf("server.ServerConfig.ProcessJosuke: %w", err)
 	}
+	capy.Path = sc.CapybaraConfigPath
+	capy.FileWriter = os.WriteFile
 	return &capy, nil
 }

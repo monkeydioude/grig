@@ -1,6 +1,9 @@
 package model
 
 import (
+	"encoding/json"
+	"fmt"
+	"monkeydioude/grig/internal/errors"
 	"os"
 	"strconv"
 )
@@ -26,11 +29,20 @@ func (sd ServiceDefinition) PortString() string {
 }
 
 type Capybara struct {
-	Proxy    Proxy               `json:"proxy"`
-	Services []ServiceDefinition `json:"services"`
+	Proxy      Proxy                                   `json:"proxy"`
+	Services   []ServiceDefinition                     `json:"services"`
+	Path       string                                  `json:"-"`
+	FileWriter func(string, []byte, os.FileMode) error `json:"-"`
 }
 
 func (c Capybara) Save() error {
+	data, err := json.Marshal(c)
+	if err != nil {
+		return fmt.Errorf("Capybara.Save(): %w: %w", errors.ErrMarshaling, err)
+	}
+	if err := c.FileWriter(c.Path, data, os.ModePerm); err != nil {
+		return fmt.Errorf("Capybara.Save(): %w: %w", errors.ErrWritingFile, err)
+	}
 	return nil
 }
 

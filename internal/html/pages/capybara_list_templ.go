@@ -29,7 +29,7 @@ func JSBlock() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script type=\"text/javascript\">\n        let serviceCount = document.querySelectorAll(\"#servicesContainer .service-block\").length; // Track the number of service blocks\n\n        // Add a new service block\n        document.getElementById('addServiceButton').addEventListener('click', function () {\n            const container = $('#servicesContainer');\n            const newServiceBlock = document.createElement('div');\n            newServiceBlock.className = 'service-block';\n            newServiceBlock.innerHTML = `\n                <div class=\"form-group\">\n                    <label for=\"services[${ serviceCount }][id]\">Name</label>\n                    <input id=\"services[${ serviceCount }][id]\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"services[${ serviceCount }][id]\" value=\"\"\n                        placeholder=\"Service name\" required>\n                </div>\n                <div class=\"form-group\">\n                    <label for=\"services[${ serviceCount }][method]\">Method</label>\n                    <input id=\"services[${ serviceCount }][method]\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"services[${ serviceCount }][method]\" value=\"\"\n                        placeholder=\"string, regex etc...\" required>\n                </div>\n                <div class=\"form-group\">\n                    <label for=\"services[${ serviceCount }][pattern]\">Pattern</label>\n                    <input id=\"services[${ serviceCount }][pattern]\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"services[${ serviceCount }][pattern]\" value=\"\"\n                        placeholder=\"/api/vault_hunter\" required>\n                </div>\n                <div class=\"form-group\">\n                    <label for=\"services[${ serviceCount }][port]\">Port</label>\n                    <input id=\"services[${ serviceCount }][port]\" class=\"text-black placeholder:text-slate-400\" type=\"number\" name=\"services[${ serviceCount }][port]\" value=\"\"\n                        placeholder=\"Port of the service\" required>\n                </div>\n                <button type=\"button\" class=\"remove-button\" onclick=\"removeService(this)\">Remove</button>\n                `;\n            container.appendChild(newServiceBlock);\n            serviceCount++;\n        });\n\n        // Remove a service block\n        function removeService(button) {\n            button.parentElement.remove();\n        }\n\n        function makeServiceLabel(it, name) {\n            return `services[${it}][${name}]`;\n        }\n\n    </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -58,7 +58,7 @@ func CSSBlock() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<style>\n    body {\n        font-family: Arial, sans-serif;\n        margin: 0;\n        padding: 0;\n        background-color: #f4f4f9;\n        color: #333;\n    }\n\n    .container {\n        max-width: 800px;\n        margin: 50px auto;\n        padding: 20px;\n        background: #fff;\n        border-radius: 8px;\n        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n    }\n\n    h1 {\n        margin-bottom: 20px;\n    }\n\n    .form-group {\n        margin-bottom: 15px;\n    }\n\n    .form-group label {\n        display: block;\n        margin-bottom: 5px;\n    }\n\n    .services-container .form-group label {\n        color: #1e1e1e;\n    }\n\n    .form-group input {\n        width: 100%;\n        padding: 8px;\n        border: 1px solid #ccc;\n        border-radius: 4px;\n    }\n\n    .services-container {\n        margin-top: 20px;\n    }\n\n    .service-block {\n        border: 1px solid #ccc;\n        padding: 15px;\n        margin-bottom: 10px;\n        border-radius: 4px;\n        background-color: #f9f9f9;\n    }\n\n    .remove-button {\n        background: #e74c3c;\n        color: white;\n        border: none;\n        padding: 5px 10px;\n        border-radius: 4px;\n        cursor: pointer;\n    }\n\n    .remove-button:hover {\n        background: #c0392b;\n    }\n\n    .add-service-btn {\n        display: inline-block;\n        margin-top: 10px;\n        padding: 10px 15px;\n        background: #3498db;\n        color: white;\n        text-align: center;\n        border: none;\n        border-radius: 4px;\n        cursor: pointer;\n    }\n\n    .add-service-btn:hover {\n        background: #2980b9;\n    }\n\n    button[type=\"submit\"] {\n        display: block;\n        margin: 20px auto 0;\n        padding: 10px 20px;\n        background: #2ecc71;\n        color: white;\n        border: none;\n        border-radius: 4px;\n        cursor: pointer;\n        font-size: 1rem;\n    }\n\n    button[type=\"submit\"]:hover {\n        background: #27ae60;\n    }\n</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,7 +95,7 @@ func (page CapybaraData) Content() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"capybara-create\"><div id=\"infoBox\" class=\"hidden transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300\">salut les kids</div><script>\n            function performAnimation() {\n                $(\"#infoBox\").reemoveClass(\"hidden\");\n            }\n        </script><form hx-post=\"/api/v1/capybara/create\" hx-swap=\"none\" hx-ext=\"json-enc-custom\" hx-on::after-request=\"performAnimation()\"><!-- Proxy Configuration --><div class=\"form-group\"><label for=\"proxyPort\">Reverse-Proxy Port</label> <input class=\"text-black placeholder:text-slate-400\" type=\"number\" id=\"proxyPort\" name=\"proxy[port]\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -108,7 +108,7 @@ func (page CapybaraData) Content() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"80 or 443 for example\" required></div><div class=\"form-group\"><label for=\"proxyTlsHost\">TLS Host</label> <input class=\"text-black placeholder:text-slate-400\" type=\"text\" id=\"proxyTlsHost\" name=\"proxy[tls_host]\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -121,12 +121,12 @@ func (page CapybaraData) Content() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"domain.com\" required></div><!-- Services Configuration --><div class=\"services-container\" id=\"servicesContainer\"><h2>Services</h2>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for it, service := range page.Data.Services {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"service-block\"><div class=\"form-group\"><label for=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -139,7 +139,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Name</label> <input id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -152,7 +152,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -165,7 +165,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -178,7 +178,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"Service name\" required></div><div class=\"form-group\"><label for=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -191,7 +191,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 11)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Method</label> <input id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -204,7 +204,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 12)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -217,7 +217,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 13)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -230,7 +230,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 14)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"string, regex etc...\" required></div><div class=\"form-group\"><label for=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -243,7 +243,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 15)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Pattern</label> <input id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -256,7 +256,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 16)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -269,7 +269,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 17)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -282,7 +282,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 18)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"/api/vault_hunter\" required></div><div class=\"form-group\"><label for=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -295,7 +295,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 19)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Port</label> <input id=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -308,7 +308,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 20)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"text-black placeholder:text-slate-400\" type=\"number\" name=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -321,7 +321,7 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 21)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -334,12 +334,12 @@ func (page CapybaraData) Content() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 22)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"Port of the service\" required></div><button type=\"button\" class=\"remove-button\" onclick=\"removeService(this)\">Remove</button></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 23)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><!-- Add Service Button --><button type=\"button\" class=\"add-service-btn\" id=\"addServiceButton\">+ Add a New Service</button><!-- Submit Button --><button type=\"submit\">Submit</button></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
