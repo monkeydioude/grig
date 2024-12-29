@@ -4,21 +4,19 @@ import (
 	"fmt"
 	"monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/html/element"
-	"monkeydioude/grig/internal/model"
-	"monkeydioude/grig/internal/service/fs"
 	"monkeydioude/grig/internal/service/os"
 	"net/http"
 	"sync"
 )
 
 type Layout struct {
-	OS             os.OS
-	AppsServices   *fs.Dir[model.Service]
-	JosukeConfig   *model.Josuke
-	CapybaraConfig *model.Capybara
-	ServerConfig   ServerConfig
-	Navigation     element.Nav
-	mutex          sync.Mutex
+	OS os.OS
+	// AppsServices *fs.Dir[model.Service]
+	// JosukeConfig   *model.Josuke
+	// CapybaraConfig *model.Capybara
+	ServerConfig ServerConfig
+	Navigation   element.Nav
+	mutex        sync.Mutex
 }
 
 // Handler our basic generic route handler
@@ -71,14 +69,21 @@ func (l *Layout) Delete(handler Handler) func(http.ResponseWriter, *http.Request
 	return l.WithMethod("DELETE", handler)
 }
 
-func (l *Layout) SetParams(
-	AppsServices *fs.Dir[model.Service],
-	JosukeConfig *model.Josuke,
-	CapybaraConfig *model.Capybara,
-) {
+// func (l *Layout) SetParams(
+// 	AppsServices *fs.Dir[model.Service],
+// 	JosukeConfig *model.Josuke,
+// 	CapybaraConfig *model.Capybara,
+// ) {
+// 	l.mutex.Lock()
+// 	defer l.mutex.Unlock()
+// 	// l.AppsServices = AppsServices
+// 	// l.JosukeConfig = JosukeConfig
+// 	// l.CapybaraConfig = CapybaraConfig
+// }
+
+type UnlockMutexFn = func()
+
+func (l *Layout) LockMutex() UnlockMutexFn {
 	l.mutex.Lock()
-	defer l.mutex.Unlock()
-	l.AppsServices = AppsServices
-	l.JosukeConfig = JosukeConfig
-	l.CapybaraConfig = CapybaraConfig
+	return l.mutex.Unlock
 }

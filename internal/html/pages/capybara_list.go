@@ -21,17 +21,16 @@ func CapybaraList(config *server.ServerConfig) CapybaraData {
 			Services: make([]model.ServiceDefinition, 1),
 		},
 	}
+
 	if config == nil || config.CapybaraConfigPath == "" {
 		return p
 	}
-
-	data, err := fs.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
+	cp, err := fs.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
 	if err != nil {
 		log.Printf("[ERR ] pages.Capybaralist: %s", err)
 		return p
 	}
-
-	p.Data = &data
+	p.Data = &cp
 	return p
 }
 

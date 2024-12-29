@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"monkeydioude/grig/internal/consts"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/fs"
 	"monkeydioude/grig/internal/service/parser"
@@ -46,6 +47,17 @@ func readConfigFile(appConfigPath string) []byte {
 	return configRaw
 }
 
+func (sc ServerConfig) Save() error {
+	data, err := json.Marshal(&sc)
+	if err != nil {
+		return fmt.Errorf("ServerConfig.Save(): %w", err)
+	}
+	if err := fs.CreateAndWriteFile(sc.ServerConfigPath, data, os.ModePerm); err != nil {
+		return fmt.Errorf("ServerConfig.Save(): %w", err)
+	}
+	return nil
+}
+
 // NewServerConfigFromPath tries to parse a file located at `appConfigPath`,
 // holding the server config.
 func NewServerConfigFromPath(mainConfigPath string) ServerConfig {
@@ -86,7 +98,7 @@ func (sc ServerConfig) ProcessJosuke() (*model.Josuke, error) {
 
 func (sc ServerConfig) ProcessCapybara() (*model.Capybara, error) {
 	if sc.CapybaraConfigPath == "" {
-		return nil, nil
+		sc.CapybaraConfigPath = consts.DEFAULT_CAPYBARA_FILENAME
 	}
 	sc.CapybaraConfigPath = fs.AppendToThisFileDirectory(sc.CapybaraConfigPath, sc.ServerConfigPath)
 	capy, err := fs.UnmarshalFromPath[model.Capybara](sc.CapybaraConfigPath)
@@ -94,6 +106,6 @@ func (sc ServerConfig) ProcessCapybara() (*model.Capybara, error) {
 		return nil, fmt.Errorf("server.ServerConfig.ProcessJosuke: %w", err)
 	}
 	capy.Path = sc.CapybaraConfigPath
-	capy.FileWriter = os.WriteFile
+	capy.FileWriter = fs.CreateAndWriteFile
 	return &capy, nil
 }

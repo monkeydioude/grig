@@ -29,7 +29,7 @@ func JSBlock() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script type=\"text/javascript\">\n        let serviceCount = document.querySelectorAll(\"#servicesContainer .service-block\").length; // Track the number of service blocks\n\n        // Add a new service block\n        document.getElementById('addServiceButton').addEventListener('click', function () {\n            const container = $('#servicesContainer');\n            const newServiceBlock = document.createElement('div');\n            newServiceBlock.className = 'service-block';\n            newServiceBlock.innerHTML = `\n                <div class=\"form-group\">\n                    <label for=\"services[${ serviceCount }][id]\">Name</label>\n                    <input id=\"services[${ serviceCount }][id]\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"services[${ serviceCount }][id]\" value=\"\"\n                        placeholder=\"Service name\" required>\n                </div>\n                <div class=\"form-group\">\n                    <label for=\"services[${ serviceCount }][method]\">Method</label>\n                    <input id=\"services[${ serviceCount }][method]\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"services[${ serviceCount }][method]\" value=\"\"\n                        placeholder=\"string, regex etc...\" required>\n                </div>\n                <div class=\"form-group\">\n                    <label for=\"services[${ serviceCount }][pattern]\">Pattern</label>\n                    <input id=\"services[${ serviceCount }][pattern]\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"services[${ serviceCount }][pattern]\" value=\"\"\n                        placeholder=\"/api/vault_hunter\" required>\n                </div>\n                <div class=\"form-group\">\n                    <label for=\"services[${ serviceCount }][port]\">Port</label>\n                    <input id=\"services[${ serviceCount }][port]\" class=\"text-black placeholder:text-slate-400\" type=\"number\" name=\"services[${ serviceCount }][port]\" value=\"\"\n                        placeholder=\"Port of the service\" required>\n                </div>\n                <button type=\"button\" class=\"remove-button\" onclick=\"removeService(this)\">Remove</button>\n                `;\n            container.appendChild(newServiceBlock);\n            serviceCount++;\n        });\n\n        // Remove a service block\n        function removeService(button) {\n            button.parentElement.remove();\n        }\n\n        function makeServiceLabel(it, name) {\n            return `services[${it}][${name}]`;\n        }\n\n    </script>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -58,7 +58,7 @@ func CSSBlock() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<style>\n    body {\n        font-family: Arial, sans-serif;\n        margin: 0;\n        padding: 0;\n        background-color: #f4f4f9;\n        color: #333;\n    }\n\n    .container {\n        max-width: 800px;\n        margin: 50px auto;\n        padding: 20px;\n        background: #fff;\n        border-radius: 8px;\n        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n    }\n\n    h1 {\n        margin-bottom: 20px;\n    }\n\n    .form-group {\n        margin-bottom: 15px;\n    }\n\n    .form-group label {\n        display: block;\n        margin-bottom: 5px;\n    }\n\n    .services-container .form-group label {\n        color: #1e1e1e;\n    }\n\n    .form-group input {\n        width: 100%;\n        padding: 8px;\n        border: 1px solid #ccc;\n        border-radius: 4px;\n    }\n\n    .services-container {\n        margin-top: 20px;\n    }\n\n    .service-block {\n        border: 1px solid #ccc;\n        padding: 15px;\n        margin-bottom: 10px;\n        border-radius: 4px;\n        background-color: #f9f9f9;\n    }\n\n    .remove-button {\n        background: #e74c3c;\n        color: white;\n        border: none;\n        padding: 5px 10px;\n        border-radius: 4px;\n        cursor: pointer;\n    }\n\n    .remove-button:hover {\n        background: #c0392b;\n    }\n\n    .add-service-btn {\n        display: inline-block;\n        margin-top: 10px;\n        padding: 10px 15px;\n        background: #3498db;\n        color: white;\n        text-align: center;\n        border: none;\n        border-radius: 4px;\n        cursor: pointer;\n    }\n\n    .add-service-btn:hover {\n        background: #2980b9;\n    }\n\n    button[type=\"submit\"] {\n        display: block;\n        margin: 20px auto 0;\n        padding: 10px 20px;\n        background: #2ecc71;\n        color: white;\n        border: none;\n        border-radius: 4px;\n        cursor: pointer;\n        font-size: 1rem;\n    }\n\n    button[type=\"submit\"]:hover {\n        background: #27ae60;\n    }\n</style>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,251 +95,251 @@ func (page CapybaraData) Content() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"capybara-create\"><div id=\"infoBox\" class=\"hidden transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300\">salut les kids</div><script>\n            function performAnimation() {\n                $(\"#infoBox\").reemoveClass(\"hidden\");\n            }\n        </script><form hx-post=\"/api/v1/capybara/create\" hx-swap=\"none\" hx-ext=\"json-enc-custom\" hx-on::after-request=\"performAnimation()\"><!-- Proxy Configuration --><div class=\"form-group\"><label for=\"proxyPort\">Reverse-Proxy Port</label> <input class=\"text-black placeholder:text-slate-400\" type=\"number\" id=\"proxyPort\" name=\"proxy[port]\" value=\"")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(page.Data.PortString())
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 173, Col: 146}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 181, Col: 146}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"80 or 443 for example\" required></div><div class=\"form-group\"><label for=\"proxyTlsHost\">TLS Host</label> <input class=\"text-black placeholder:text-slate-400\" type=\"text\" id=\"proxyTlsHost\" name=\"proxy[tls_host]\" value=\"")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(page.Data.Proxy.TLSHost)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 178, Col: 152}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 186, Col: 152}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"domain.com\" required></div><!-- Services Configuration --><div class=\"services-container\" id=\"servicesContainer\"><h2>Services</h2>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for it, service := range page.Data.Services {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"service-block\"><div class=\"form-group\"><label for=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "id"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 188, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 196, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Name</label> <input id=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "id"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 189, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 197, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "id"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 189, Col: 170}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 197, Col: 170}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" value=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(service.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 189, Col: 189}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 197, Col: 189}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"Service name\" required></div><div class=\"form-group\"><label for=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "method"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 193, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 201, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Method</label> <input id=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 11)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "method"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 194, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 202, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 12)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "method"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 194, Col: 178}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 202, Col: 178}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" value=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 13)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(service.Method)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 194, Col: 201}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 202, Col: 201}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"string, regex etc...\" required></div><div class=\"form-group\"><label for=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 14)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "pattern"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 198, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 206, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Pattern</label> <input id=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 15)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "pattern"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 199, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 207, Col: 74}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"text-black placeholder:text-slate-400\" type=\"text\" name=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 16)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "pattern"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 199, Col: 180}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 207, Col: 180}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" value=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 17)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(service.Pattern)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 199, Col: 204}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 207, Col: 204}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"/api/vault_hunter\" required></div><div class=\"form-group\"><label for=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 18)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "port"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 203, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 211, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Port</label> <input id=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 19)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "port"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 204, Col: 71}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 212, Col: 71}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" class=\"text-black placeholder:text-slate-400\" type=\"number\" name=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 20)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(page.GetServiceInputName(it, "port"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 204, Col: 176}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 212, Col: 176}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" value=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 21)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(service.PortString())
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 204, Col: 205}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/html/pages/capybara_list.templ`, Line: 212, Col: 205}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" placeholder=\"Port of the service\" required></div><button type=\"button\" class=\"remove-button\" onclick=\"removeService(this)\">Remove</button></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 22)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><!-- Add Service Button --><button type=\"button\" class=\"add-service-btn\" id=\"addServiceButton\">+ Add a New Service</button><!-- Submit Button --><button type=\"submit\">Submit</button></form></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 23)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -37,3 +37,20 @@ func UnmarshalFromPath[F File](josukeConfigPath string) (F, error) {
 	}
 	return res, nil
 }
+
+func CreateAndWriteFile(path string, data []byte, mode os.FileMode) error {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		file, err := os.Create(path)
+		if err != nil {
+			return fmt.Errorf("fs.CreateAndWriteFile(): %q: %w:, %w", path, errors.ErrCreatingFile, err)
+		}
+		file.Close()
+	} else if err != nil {
+		return fmt.Errorf("fs.CreateAndWriteFile(): %q: %w: %w", path, errors.ErrCheckingFile, err)
+	}
+	if err := os.WriteFile(path, data, mode); err != nil {
+		return fmt.Errorf("fs.CreateAndWriteFile(): %q: %w: %w", path, errors.ErrWritingFile, err)
+	}
+	return nil
+}

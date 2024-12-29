@@ -155,17 +155,25 @@ templ (page CapybaraData) Content() {
     @CSSBlock()
     <div id="capybara-create">
 
-    <div id="infoBox" class="hidden transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300">salut les kids</div>
+    <div id="infoBox" class="hidden transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300"></div>
         <script>
-            function performAnimation() {
-                $("#infoBox").reemoveClass("hidden");
+            function performAnimation(node, event) {
+                try {
+                    if (event.detail.xhr.status === 200) {
+                        ToastSuccess("SUCCESS: Saved Capybara config");
+                    } else {
+                        ToastError("FAILURE: Could not save Capybara config");
+                    }
+                } catch (err) {
+                    ToastError("ERROR: "+ err);
+                }
             }
         </script>
         <form
-            hx-post="/api/v1/capybara/create"
+            hx-post="/api/v1/capybara"
             hx-swap="none"
             hx-ext="json-enc-custom"
-            hx-on::after-request="performAnimation()"
+            hx-on::after-request="performAnimation(this, event)"
         >
             <!-- Proxy Configuration -->
             <div class="form-group">
