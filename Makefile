@@ -1,3 +1,7 @@
+.PHONY: dev-linux
+dev-linux:
+	docker compose up -d grig-server
+
 .PHONY: dev
 dev:
 	make -j 2 templ-watch gow-watch

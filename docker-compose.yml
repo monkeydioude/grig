@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  grig-server:
+    image: debian:latest
+    container_name: grig-server
+    
+    # Mount your code into /app inside the container
+    volumes:
+      - ./cmd:/app/cmd
+      - ./internal:/app/internal
+      - ./static:/app/static
+      - ./test:/app/test
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+      - ./Makefile:/app/Makefile
+    
+    # Start in /app
+    working_dir: /app
+    
+    # Install necessary tools (like make), then run "make dev"
+    command: >
+      bash -c "
+        apt-get update &&
+        apt-get install -y --no-install-recommends make git ca-certificates &&
+        make dev
+      "
