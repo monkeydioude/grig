@@ -4,25 +4,35 @@ import (
     "monkeydioude/grig/internal/model"
 )
 
-templ capybaraConfigBlock(capy *model.Capybara) {
+templ configContentBlock(title, value string) {
+    <div class="flex flex-row">
+        <div class="highlighted p-1">{title}</div>
+        <div class="content p-1">{value}</div>
+    </div>
+}
+
+templ capybaraConfigBlock(capy *model.Capybara, servicesLen int) {
     if capy == nil {
         <div>Error loading capybara config</div>
         return
     }
-    <div>
+    <div class="config-content">
         <h1>Capybara</h1>
         <div>
             <h2>Proxy</h2>
-            <div>Port: {capy.Proxy.Port.String()}</div>
-            <div>Host: {capy.Proxy.TLSHost}</div>
+            @configContentBlock("Port", capy.Proxy.Port.String())
+            @configContentBlock("Host", capy.Proxy.TLSHost)
             <h2>Services</h2>
-            for _, service := range capy.Services {
+            for it, service := range capy.Services {
                 <div>
-                    <div>Name: {service.ID}</div>
-                    <div>Method: {service.Method}</div>
-                    <div>Pattern: {service.Pattern}</div>
-                    <div>Port: {service.Port.String()}</div>
+                    @configContentBlock("Name", service.ID)
+                    @configContentBlock("Method", service.Method)
+                    @configContentBlock("Pattern", service.Pattern)
+                    @configContentBlock("Port", service.Port.String())
                 </div>
+                if it < servicesLen -1 {
+                    <hr class="rounded w-5/6 border-gray-700 m-0 mx-auto"/>
+                }
             }
         </div>
         <a href="/capybara" class="p-2 my-1 button w-auto">Edit Capybara Config</a>
@@ -35,6 +45,6 @@ templ (page IndexPage) Content() {
         if page.Err != nil {
             <div class="error-block">{page.Err.Error()}</div>
         }
-        @capybaraConfigBlock(page.Capybara)
+        @capybaraConfigBlock(page.Capybara, page.ServicesLen)
     </div>
 }

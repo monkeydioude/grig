@@ -11,8 +11,9 @@ import (
 )
 
 type IndexPage struct {
-	Capybara *model.Capybara
-	Err      error
+	Capybara    *model.Capybara
+	ServicesLen int
+	Err         error
 }
 
 func Index(
@@ -30,6 +31,7 @@ func Index(
 	} else {
 		p.Capybara = &cp
 	}
+	p.ServicesLen = len(cp.Services)
 	return p
 }
 
