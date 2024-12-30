@@ -1,0 +1,59 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    background-color: #121212;
+    /* Dark background */
+    color: #e0e0e0;
+    /* Light text color */
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #1e1e1e;
+    /* Slightly lighter than main background */
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar h1 {
+    font-size: 1.5rem;
+    color: #90caf9;
+    /* Soft blue */
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li, .button {
+    background-color: #2a2a2a;
+    /* Dark gray for menu items */
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar li:hover {
+    background-color: #90caf9;
+    color: #121212;
+}
+.sidebar li:hover > a {
+    color: #121212;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+a, a:visited {
+    color: #e0e0e0;
+}

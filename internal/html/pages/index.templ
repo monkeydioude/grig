@@ -1,22 +1,40 @@
 package pages
 
-import "monkeydioude/grig/internal/model"
+import (
+    "monkeydioude/grig/internal/model"
+)
 
-templ capybaraConfigBlock(capyConfig *model.Capybara) {
-    <div class="">
-        <a href="/capybara">
-        if capyConfig == nil {
-            No capybara config. Want to create one?
-        } else {
-            Check your capybara configuration.
-        }
-        </a>
+templ capybaraConfigBlock(capy *model.Capybara) {
+    if capy == nil {
+        <div>Error loading capybara config</div>
+        return
+    }
+    <div>
+        <h1>Capybara</h1>
+        <div>
+            <h2>Proxy</h2>
+            <div>Port: {capy.Proxy.Port.String()}</div>
+            <div>Host: {capy.Proxy.TLSHost}</div>
+            <h2>Services</h2>
+            for _, service := range capy.Services {
+                <div>
+                    <div>Name: {service.ID}</div>
+                    <div>Method: {service.Method}</div>
+                    <div>Pattern: {service.Pattern}</div>
+                    <div>Port: {service.Port.String()}</div>
+                </div>
+            }
+        </div>
+        <a href="/capybara" class="p-2 my-1 button w-auto">Edit Capybara Config</a>
     </div>
 }
 
 templ (page IndexPage) Content() {
     @IndexCSS()
     <div id="index">
-        @capybaraConfigBlock(page.CapybaraConfig)
+        if page.Err != nil {
+            <div class="error-block">{page.Err.Error()}</div>
+        }
+        @capybaraConfigBlock(page.Capybara)
     </div>
 }

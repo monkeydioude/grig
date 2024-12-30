@@ -45,6 +45,17 @@ templ JSBlock() {
             return `services[${it}][${name}]`;
         }
 
+        function performAnimation(node, event) {
+            try {
+                if (event.detail.xhr.status === 200) {
+                    ToastSuccess("SUCCESS: Saved Capybara config");
+                } else {
+                    ToastError("FAILURE: Could not save Capybara config");
+                }
+            } catch (err) {
+                ToastError("ERROR: "+ err);
+            }
+        }
     </script>
 }
 
@@ -153,22 +164,7 @@ templ CSSBlock() {
 templ (page CapybaraData) Content() {
     @IndexCSS()
     @CSSBlock()
-    <div id="capybara-create">
-
-    <div id="infoBox" class="hidden transition ease-in-out delay-150 bg-blue-500 hover:-translate-y-1 hover:scale-110 hover:bg-indigo-500 duration-300"></div>
-        <script>
-            function performAnimation(node, event) {
-                try {
-                    if (event.detail.xhr.status === 200) {
-                        ToastSuccess("SUCCESS: Saved Capybara config");
-                    } else {
-                        ToastError("FAILURE: Could not save Capybara config");
-                    }
-                } catch (err) {
-                    ToastError("ERROR: "+ err);
-                }
-            }
-        </script>
+    <div id="capybara">
         <form
             hx-post="/api/v1/capybara"
             hx-swap="none"
@@ -178,7 +174,7 @@ templ (page CapybaraData) Content() {
             <!-- Proxy Configuration -->
             <div class="form-group">
                 <label for="proxyPort">Reverse-Proxy Port</label>
-                <input class="text-black placeholder:text-slate-400" type="number" id="proxyPort" name="proxy[port]" value={page.Data.PortString()}
+                <input class="text-black placeholder:text-slate-400" type="number" id="proxyPort" name="proxy[port]" value={page.Data.Proxy.Port.String()}
                     placeholder="80 or 443 for example" required>
             </div>
             <div class="form-group">

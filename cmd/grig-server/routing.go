@@ -27,6 +27,7 @@ func routing(layout *server.Layout) http.Handler {
 	mux.HandleFunc("/capybara", layout.Get(html.CapybaraList))
 	mux.HandleFunc("/", layout.Get(html.Index))
 
+	// Apply the middleware to your server
 	app := middleware.Mux(mux)
 	app.Use(
 		middleware.PanicRecover,

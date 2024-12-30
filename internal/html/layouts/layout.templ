@@ -3,20 +3,11 @@ package layouts
 import "monkeydioude/grig/internal/html/element"
 import "monkeydioude/grig/internal/html/pages"
 
-templ headJavascript() {
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-    <script src="https://cdn.jsdelivr.net/gh/Emtyloc/json-enc-custom@main/json-enc-custom.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/static/js/main.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-}
-
 templ navigation(nav element.Nav) {
     <ul>
     for _, item := range nav.Links{
         <li>
-            <a href={item.Href} target={item.Target.String()}>{item.Text.String()}</a>
+            <a class="p-2 my-1 block" href={item.Href} target={item.Target.String()}>{item.Text.String()}</a>
         </li>
     }
     </ul>
@@ -24,7 +15,7 @@ templ navigation(nav element.Nav) {
 
 templ Main(nav element.Nav, page pages.Page) {
     @domInitializer(
-        headJavascript(),
+        MainJS(),
         MainCSS(),
         page.Title(),
     ) {

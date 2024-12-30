@@ -23,3 +23,7 @@ func (p *StringInt) UnmarshalJSON(data []byte) error {
 	*p = StringInt(port)
 	return nil
 }
+
+func (p StringInt) String() string {
+	return strconv.Itoa(int(p))
+}

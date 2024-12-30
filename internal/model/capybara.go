@@ -81,13 +81,6 @@ func (c Capybara) Source() *os.File {
 	return nil
 }
 
-func (c Capybara) PortString() string {
-	if c.Proxy.Port == 0 {
-		return ""
-	}
-	return strconv.Itoa(int(c.Proxy.Port))
-}
-
 func (c Capybara) Verify() error {
 	var errs error
 	if err := c.Proxy.Verify(); err != nil {

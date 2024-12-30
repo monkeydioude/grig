@@ -32,30 +32,27 @@ if (!Node.prototype.addClass) {
     };
 }
 
-function ToastSuccess(text) {
+function Toast(text, style, className) {
     Toastify({
         text: text,
         duration: 3000,
         gravity: "top", // `top` or `bottom`
         position: "center", // `left`, `center` or `right`
         stopOnFocus: true, // Prevents dismissing of toast on hover
-        style: {
-            background: "linear-gradient(to right, #00b09b, #96c93d)",
-        },
+        className: `rounded ${className || ""}`,
+        style,
         onClick: function () { } // Callback after click
     }).showToast();
 }
 
+function ToastSuccess(text) {
+    Toast(text, {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+    });
+}
+
 function ToastError(text) {
-    Toastify({
-        text: text,
-        duration: 3000,
-        gravity: "top", // `top` or `bottom`
-        position: "center", // `left`, `center` or `right`
-        stopOnFocus: true, // Prevents dismissing of toast on hover
-        style: {
-            background: "linear-gradient(to right, #ff6347, #cc0000)",
-        },
-        onClick: function () { } // Callback after click
-    }).showToast();
+    Toast(text, {
+        background: "linear-gradient(to right, #ff6347, #cc0000)",
+    });
 }
