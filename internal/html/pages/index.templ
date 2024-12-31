@@ -41,7 +41,6 @@ templ capybaraConfigBlock(capy *model.Capybara, servicesLen int) {
 }
 
 templ (page IndexPage) Content() {
-    @IndexCSS()
     <div id="index">
         if page.Err != nil {
             <div class="error-block">{page.Err.Error()}</div>

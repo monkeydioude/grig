@@ -2,13 +2,14 @@ package layouts
 
 import "monkeydioude/grig/internal/html/element"
 import "monkeydioude/grig/internal/html/pages"
+import "monkeydioude/grig/internal/service/utils"
 
 templ navigation(nav element.Nav) {
     <div class="container">
         <ul class="flex">
         for _, item := range nav.Links{
             <li>
-                <a class="p-2 my-1 block text-lg hover:text-sky-300" href={item.Href} target={item.Target.String()}>{item.Text.String()}</a>
+                <a class={"p-2 my-1 block text-lg hover:text-sky-300", utils.Ternary(item.Href == templ.SafeURL(nav.Current), "border-b border-sky-300", "")} href={item.Href} target={item.Target.String()}>{item.Text.String()}</a>
             </li>
         }
         </ul>

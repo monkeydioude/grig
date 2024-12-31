@@ -4,8 +4,21 @@ import (
     "monkeydioude/grig/internal/html/element"
 )
 
-templ JSBlock() {
+templ jsBlock() {
     <script type="text/javascript">
+        const displayFormGroup = (serviceCount, id, label, type, placeholder) => {
+            return `<div class="form-group mb-3 flex flex-col">
+                    <label class="text-lg text-sky-500 block" for="services[${ serviceCount }][${id}]">${label}</label>
+                    <input
+                        id="services[${ serviceCount }][${id}]"
+                        class="text-gray-200 placeholder:text-gray-400 bg-slate-900 w-fill rounded border border-sky-500 p-2"
+                        type="${type}"
+                        name="services[${ serviceCount }][${id}]"
+                        value=""
+                        placeholder="${placeholder}"
+                        required>
+                </div>`
+        }
         let serviceCount = document.querySelectorAll("#servicesContainer .service-block").length; // Track the number of service blocks
 
         // Add a new service block
@@ -14,28 +27,12 @@ templ JSBlock() {
             const newServiceBlock = document.createElement('div');
             newServiceBlock.className = 'service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5';
             newServiceBlock.innerHTML = `
-                <div class="form-group">
-                    <label class="text-lg text-sky-500" for="services[${ serviceCount }][id]">Name</label>
-                    <input id="services[${ serviceCount }][id]" class="text-black placeholder:text-slate-400 bg-slate-100" type="text" name="services[${ serviceCount }][id]" value=""
-                        placeholder="Service name" required>
-                </div>
-                <div class="form-group">
-                    <label class="text-lg text-sky-500" for="services[${ serviceCount }][method]">Method</label>
-                    <input id="services[${ serviceCount }][method]" class="text-black placeholder:text-slate-400 bg-slate-100" type="text" name="services[${ serviceCount }][method]" value=""
-                        placeholder="string, regex etc..." required>
-                </div>
-                <div class="form-group">
-                    <label class="text-lg text-sky-500" for="services[${ serviceCount }][pattern]">Pattern</label>
-                    <input id="services[${ serviceCount }][pattern]" class="text-black placeholder:text-slate-400 bg-slate-100" type="text" name="services[${ serviceCount }][pattern]" value=""
-                        placeholder="/api/vault_hunter" required>
-                </div>
-                <div class="form-group">
-                    <label class="text-lg text-sky-500" for="services[${ serviceCount }][port]">Port</label>
-                    <input id="services[${ serviceCount }][port]" class="text-black placeholder:text-slate-400 bg-slate-100" type="number" name="services[${ serviceCount }][port]" value=""
-                        placeholder="Port of the service" required>
-                </div>
+                ${displayFormGroup(serviceCount, "id", "Name", "text", "Service name")}
+                ${displayFormGroup(serviceCount, "method", "Method", "text", "string, regex etc...")}
+                ${displayFormGroup(serviceCount, "pattern", "Pattern", "text", "/api/vault_hunter")}
+                ${displayFormGroup(serviceCount, "port", "Port", "number", "Port of the service")}
                 <button type="button" class="remove-button" onclick="removeService(this)">Remove</button>
-                `;
+            `;
             container.appendChild(newServiceBlock);
             serviceCount++;
         });
@@ -48,109 +45,31 @@ templ JSBlock() {
         function makeServiceLabel(it, name) {
             return `services[${it}][${name}]`;
         }
-
-        function performAnimation(node, event) {
-            try {
-                if (event.detail.xhr.status === 200) {
-                    ToastSuccess("SUCCESS: Saved Capybara config");
-                } else {
-                    ToastError("FAILURE: Could not save Capybara config");
-                }
-            } catch (err) {
-                ToastError("ERROR: "+ err);
-            }
-        }
     </script>
 }
 
-templ CSSBlock() {
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f9;
-        color: #333;
-    }
-
-    h1 {
-        margin-bottom: 20px;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    .form-group input {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-
-    .services-container {
-        margin-top: 20px;
-    }
-
-    .remove-button {
-        background: #e74c3c;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .remove-button:hover {
-        background: #c0392b;
-    }
-
-    button[type="submit"] {
-        display: block;
-        margin: 20px auto 0;
-        padding: 10px 20px;
-        background: #2ecc71;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 1rem;
-    }
-
-    button[type="submit"]:hover {
-        background: #27ae60;
-    }
-</style>
-}
-
 templ displayFormGroup(fgroup FormGroup) {
-    <div class="form-group">
-        <label class="text-lg text-sky-500" for={fgroup.ID()}>{fgroup.Label()}</label>
-        <input id={fgroup.ID()} class="text-black placeholder:text-slate-400 bg-slate-100" type={fgroup.Type().String()} name={fgroup.ID()} value={fgroup.Value()} placeholder={fgroup.Placeholder()} required>
+    <div class="form-group mb-3 flex flex-col">
+        <label class="text-lg text-sky-500 block mb-1.5" for={fgroup.ID()}>{fgroup.Label()}</label>
+        <input
+            id={fgroup.ID()}
+            class="text-gray-200 placeholder:text-gray-400 bg-slate-900 rounded border border-sky-500 p-2"
+            type={fgroup.Type().String()}
+            name={fgroup.ID()}
+            value={fgroup.Value()}
+            placeholder={fgroup.Placeholder()}
+            required>
     </div>
 }
 
-templ (page CapybaraData) Content() {
-    @IndexCSS()
-    @CSSBlock()
-    <div id="capybara">
-    @element.H1("Capybara")
-        <form
-            hx-post="/api/v1/capybara"
-            hx-swap="none"
-            hx-ext="json-enc-custom"
-            hx-on::after-request="performAnimation(this, event)"
-        >
+templ (page Capybara) Content() {
+    <div id="capybara" class="pb-3">
+        @element.H1("Capybara")
+        @element.JsonPostForm("/api/v1/capybara") {
             <!-- Proxy Configuration -->
             @element.H2("Proxy")
-            @displayFormGroup(NewNumberFormGroup("proxyPort", "Reverse-Proxy Port", "80 or 443 for example", page.Data.Proxy.Port))
-            @displayFormGroup(NewStringFormGroup("proxyTlsHost", "TLS Host", "TLS Host", page.Data.Proxy.TLSHost))
-
+            @displayFormGroup(NewNumberFormGroup("proxy[port]", "Reverse-Proxy Port", "80 or 443 for example", page.Data.Proxy.Port))
+            @displayFormGroup(NewStringFormGroup("proxy[tls_host]", "TLS Host", "TLS Host", page.Data.Proxy.TLSHost))
             <!-- Services Configuration -->
             <div class="services-container" id="servicesContainer">
                 @element.H2("Services")
@@ -160,17 +79,14 @@ templ (page CapybaraData) Content() {
                     @displayFormGroup(NewStringFormGroup(page.GetServiceInputName(it, "method"), "Method", "string, regex etc...", service.Method))
                     @displayFormGroup(NewStringFormGroup(page.GetServiceInputName(it, "pattern"), "Pattern", "/api/vault_hunter", service.Pattern))
                     @displayFormGroup(NewNumberFormGroup(page.GetServiceInputName(it, "port"), "Port", "Port of the service", service.Port))
-                    <button type="button" class="remove-button" onclick="removeService(this)">Remove</button>
+                    <button type="button" class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2 px-4" onclick="removeService(this)">Remove</button>
                 </div>
                 }
             </div>
 
             <!-- Add Service Button -->
-            <button type="button" class="add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-white pointer rounded border-none mt-2.5 py-2.5 px-4" id="addServiceButton">+ Add a New Service</button>
-
-            <!-- Submit Button -->
-            <button type="submit">Submit</button>
-        </form>
+            <button type="button" class="add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none mt-2.5 py-2.5 px-4" id="addServiceButton">+ Add a New Service</button>
+        }
     </div>
-    @JSBlock()
+    @jsBlock()
 }

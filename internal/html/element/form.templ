@@ -1,0 +1,30 @@
+package element
+
+templ jsBlock() {
+    <script type="text/javascript">
+        function performAnimation(node, event) {
+            try {
+                if (event.detail.xhr.status === 200) {
+                    ToastSuccess("SUCCESS: Saved Capybara config");
+                } else {
+                    ToastError(`FAILURE (${event.detail.xhr.status}): Could not save Capybara config`);
+                }
+            } catch (err) {
+                ToastError("ERROR: "+ err);
+            }
+        }
+    </script>
+}
+
+templ JsonPostForm(path string) {
+    <form
+        hx-post={path}
+        hx-swap="none"
+        hx-ext="json-enc-custom"
+        hx-on::after-request="performAnimation(this, event)"
+    >
+    { children...}
+        <button type="submit" class="text-gray-100 bg-emerald-500 hover:bg-emerald-600 block rounded pointer py-2 px-4 mx-auto mt-4 mb-0">Submit</button>
+    </form>
+    @jsBlock()
+}

@@ -22,7 +22,7 @@ type Layout struct {
 // Handler our basic generic route handler
 type Handler func(http.ResponseWriter, *http.Request) error
 
-// Methods vector of available HTTP MEthods
+// Methods vector of available HTTP Methods
 var Methods = [5]string{"GET", "POST", "PUT", "PATCH", "DELETE"}
 
 // WithMethod is a geeneric wrapper around a generic handler, forcing the a HTTP verb

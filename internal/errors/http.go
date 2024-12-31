@@ -29,9 +29,16 @@ func WriteError(err error, w http.ResponseWriter) {
 	t.WriteError(w)
 }
 
+func BadRequest(err error) HttpError {
+	return HttpError{
+		Status: http.StatusBadRequest,
+		Err:    err,
+	}
+}
+
 func InternalServerError(err error) HttpError {
 	return HttpError{
-		Status: 500,
+		Status: http.StatusInternalServerError,
 		Err:    err,
 	}
 }
@@ -42,7 +49,7 @@ func UnknownInternalServerError() HttpError {
 
 func NotFound() HttpError {
 	return HttpError{
-		Status: 404,
+		Status: http.StatusNotFound,
 		Err:    errors.New("NOT FOUND"),
 	}
 }

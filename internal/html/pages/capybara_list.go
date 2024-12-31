@@ -8,14 +8,14 @@ import (
 	"monkeydioude/grig/internal/service/server"
 )
 
-type CapybaraData struct {
+type Capybara struct {
 	Titl     string
 	Data     *model.Capybara
 	FilePath string
 }
 
-func CapybaraList(config *server.ServerConfig) CapybaraData {
-	p := CapybaraData{
+func CapybaraList(config *server.ServerConfig) Capybara {
+	p := Capybara{
 		Titl: "Create a Capybara config",
 		Data: &model.Capybara{
 			Services: make([]model.ServiceDefinition, 1),
@@ -34,14 +34,14 @@ func CapybaraList(config *server.ServerConfig) CapybaraData {
 	return p
 }
 
-func (c CapybaraData) Title() string {
+func (c Capybara) Title() string {
 	return c.Titl
 }
 
-func (c CapybaraData) GetServiceInputName(it int, key string) string {
+func (c Capybara) GetServiceInputName(it int, key string) string {
 	return fmt.Sprintf("services[%d][%s]", it, key)
 }
 
-func (c CapybaraData) GetId(it int, key string) string {
+func (c Capybara) GetId(it int, key string) string {
 	return fmt.Sprintf("services-%d-%s", it, key)
 }

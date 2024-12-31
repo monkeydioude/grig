@@ -41,6 +41,17 @@ const config = {
           },
         },
         fontFamily: {},
+        container: {
+          center: true,
+          DEFAULT: "95%",
+          screens: {
+            sm: '95%',  // Change for small screens
+            md: '90%', // Custom width for medium screens
+            lg: '680px', // Custom width for large screens
+            xl: '920px', // Custom width for extra-large screens
+            '2xl': '920px', // Custom width for 2xl screens
+          },
+        }
       },
     },
   };
