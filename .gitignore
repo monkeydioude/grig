@@ -1,3 +1,4 @@
 grig_server.config.json
 **/*_templ.txt
 **/*_templ.go
+static/css/output.css
