@@ -5,21 +5,17 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: Arial, sans-serif;
-    display: flex;
-    height: 100vh;
-    background-color: #121212;
-    /* Dark background */
-    color: #e0e0e0;
-    /* Light text color */
 }
 
 .sidebar {
-    width: 250px;
-    background-color: #1e1e1e;
+    min-width: 250px;
     /* Slightly lighter than main background */
-    padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
 }
 
@@ -35,23 +31,9 @@ body {
 }
 
 .sidebar li, .button {
-    background-color: #2a2a2a;
     /* Dark gray for menu items */
     border-radius: 4px;
     transition: background-color 0.3s, color 0.3s;
-}
-
-.sidebar li:hover {
-    background-color: #90caf9;
-    color: #121212;
-}
-.sidebar li:hover > a {
-    color: #121212;
-}
-
-.main-content {
-    flex: 1;
-    padding: 20px;
 }
 
 a, a:visited {
@@ -59,38 +41,29 @@ a, a:visited {
 }
 
 h1, .side-title {
-    font-size: 2.5rem;
-    color: #90caf9; /* Soft blue */
     text-align: center;
-    margin-bottom: 20px;
     text-transform: uppercase;
-    letter-spacing: 2px;
   }
   
   /* Section headers (h2) */
   h2 {
     font-size: 1.8rem;
-    color: #2ecc71; /* Soft green */
-    margin: 20px 0 10px;
-    border-bottom: 2px solid #27ae60; /* Underline effect */
-    padding-bottom: 5px;
   }
   
   /* Parameter containers (divs) */
   div.config-content {
-    padding: 15px;
-    margin-bottom: 15px;
-    background-color: #1e1e1e; /* Dark gray background */
-    color: #e2e8f0; /* Light text color */
-    border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
   /* Highlighted parameter divs */
   div.config-content .highlighted {
-    color: #3498db;
+    min-width: 100px
   }
   
   hr {
     border-color: #2a2a2a;
+  }
+
+  .container {
+    margin: 0 auto;
   }

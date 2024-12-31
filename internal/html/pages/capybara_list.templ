@@ -1,5 +1,9 @@
 package pages
 
+import (
+    "monkeydioude/grig/internal/html/element"
+)
+
 templ JSBlock() {
     <script type="text/javascript">
         let serviceCount = document.querySelectorAll("#servicesContainer .service-block").length; // Track the number of service blocks
@@ -8,26 +12,26 @@ templ JSBlock() {
         document.getElementById('addServiceButton').addEventListener('click', function () {
             const container = $('#servicesContainer');
             const newServiceBlock = document.createElement('div');
-            newServiceBlock.className = 'service-block';
+            newServiceBlock.className = 'service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5';
             newServiceBlock.innerHTML = `
                 <div class="form-group">
-                    <label for="services[${ serviceCount }][id]">Name</label>
-                    <input id="services[${ serviceCount }][id]" class="text-black placeholder:text-slate-400" type="text" name="services[${ serviceCount }][id]" value=""
+                    <label class="text-lg text-sky-500" for="services[${ serviceCount }][id]">Name</label>
+                    <input id="services[${ serviceCount }][id]" class="text-black placeholder:text-slate-400 bg-slate-100" type="text" name="services[${ serviceCount }][id]" value=""
                         placeholder="Service name" required>
                 </div>
                 <div class="form-group">
-                    <label for="services[${ serviceCount }][method]">Method</label>
-                    <input id="services[${ serviceCount }][method]" class="text-black placeholder:text-slate-400" type="text" name="services[${ serviceCount }][method]" value=""
+                    <label class="text-lg text-sky-500" for="services[${ serviceCount }][method]">Method</label>
+                    <input id="services[${ serviceCount }][method]" class="text-black placeholder:text-slate-400 bg-slate-100" type="text" name="services[${ serviceCount }][method]" value=""
                         placeholder="string, regex etc..." required>
                 </div>
                 <div class="form-group">
-                    <label for="services[${ serviceCount }][pattern]">Pattern</label>
-                    <input id="services[${ serviceCount }][pattern]" class="text-black placeholder:text-slate-400" type="text" name="services[${ serviceCount }][pattern]" value=""
+                    <label class="text-lg text-sky-500" for="services[${ serviceCount }][pattern]">Pattern</label>
+                    <input id="services[${ serviceCount }][pattern]" class="text-black placeholder:text-slate-400 bg-slate-100" type="text" name="services[${ serviceCount }][pattern]" value=""
                         placeholder="/api/vault_hunter" required>
                 </div>
                 <div class="form-group">
-                    <label for="services[${ serviceCount }][port]">Port</label>
-                    <input id="services[${ serviceCount }][port]" class="text-black placeholder:text-slate-400" type="number" name="services[${ serviceCount }][port]" value=""
+                    <label class="text-lg text-sky-500" for="services[${ serviceCount }][port]">Port</label>
+                    <input id="services[${ serviceCount }][port]" class="text-black placeholder:text-slate-400 bg-slate-100" type="number" name="services[${ serviceCount }][port]" value=""
                         placeholder="Port of the service" required>
                 </div>
                 <button type="button" class="remove-button" onclick="removeService(this)">Remove</button>
@@ -69,15 +73,6 @@ templ CSSBlock() {
         color: #333;
     }
 
-    .container {
-        max-width: 800px;
-        margin: 50px auto;
-        padding: 20px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
     h1 {
         margin-bottom: 20px;
     }
@@ -91,10 +86,6 @@ templ CSSBlock() {
         margin-bottom: 5px;
     }
 
-    .services-container .form-group label {
-        color: #1e1e1e;
-    }
-
     .form-group input {
         width: 100%;
         padding: 8px;
@@ -104,14 +95,6 @@ templ CSSBlock() {
 
     .services-container {
         margin-top: 20px;
-    }
-
-    .service-block {
-        border: 1px solid #ccc;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-radius: 4px;
-        background-color: #f9f9f9;
     }
 
     .remove-button {
@@ -125,22 +108,6 @@ templ CSSBlock() {
 
     .remove-button:hover {
         background: #c0392b;
-    }
-
-    .add-service-btn {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 10px 15px;
-        background: #3498db;
-        color: white;
-        text-align: center;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .add-service-btn:hover {
-        background: #2980b9;
     }
 
     button[type="submit"] {
@@ -161,10 +128,18 @@ templ CSSBlock() {
 </style>
 }
 
+templ displayFormGroup(fgroup FormGroup) {
+    <div class="form-group">
+        <label class="text-lg text-sky-500" for={fgroup.ID()}>{fgroup.Label()}</label>
+        <input id={fgroup.ID()} class="text-black placeholder:text-slate-400 bg-slate-100" type={fgroup.Type().String()} name={fgroup.ID()} value={fgroup.Value()} placeholder={fgroup.Placeholder()} required>
+    </div>
+}
+
 templ (page CapybaraData) Content() {
     @IndexCSS()
     @CSSBlock()
     <div id="capybara">
+    @element.H1("Capybara")
         <form
             hx-post="/api/v1/capybara"
             hx-swap="none"
@@ -172,49 +147,26 @@ templ (page CapybaraData) Content() {
             hx-on::after-request="performAnimation(this, event)"
         >
             <!-- Proxy Configuration -->
-            <div class="form-group">
-                <label for="proxyPort">Reverse-Proxy Port</label>
-                <input class="text-black placeholder:text-slate-400" type="number" id="proxyPort" name="proxy[port]" value={page.Data.Proxy.Port.String()}
-                    placeholder="80 or 443 for example" required>
-            </div>
-            <div class="form-group">
-                <label for="proxyTlsHost">TLS Host</label>
-                <input class="text-black placeholder:text-slate-400" type="text" id="proxyTlsHost" name="proxy[tls_host]" value={page.Data.Proxy.TLSHost}
-                    placeholder="domain.com" required>
-            </div>
+            @element.H2("Proxy")
+            @displayFormGroup(NewNumberFormGroup("proxyPort", "Reverse-Proxy Port", "80 or 443 for example", page.Data.Proxy.Port))
+            @displayFormGroup(NewStringFormGroup("proxyTlsHost", "TLS Host", "TLS Host", page.Data.Proxy.TLSHost))
 
             <!-- Services Configuration -->
             <div class="services-container" id="servicesContainer">
-                <h2>Services</h2>
+                @element.H2("Services")
                 for it, service := range page.Data.Services {
-                <div class="service-block">
-                    <div class="form-group">
-                        <label for={page.GetServiceInputName(it, "id")}>Name</label>
-                        <input id={page.GetServiceInputName(it, "id")} class="text-black placeholder:text-slate-400" type="text" name={page.GetServiceInputName(it, "id" )} value={service.ID}
-                            placeholder="Service name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for={page.GetServiceInputName(it, "method")}>Method</label>
-                        <input id={page.GetServiceInputName(it, "method")} class="text-black placeholder:text-slate-400" type="text" name={page.GetServiceInputName(it, "method" )} value={service.Method}
-                            placeholder="string, regex etc..." required>
-                    </div>
-                    <div class="form-group">
-                        <label for={page.GetServiceInputName(it, "pattern")}>Pattern</label>
-                        <input id={page.GetServiceInputName(it, "pattern")} class="text-black placeholder:text-slate-400" type="text" name={page.GetServiceInputName(it, "pattern" )} value={service.Pattern}
-                            placeholder="/api/vault_hunter" required>
-                    </div>
-                    <div class="form-group">
-                        <label for={page.GetServiceInputName(it, "port")}>Port</label>
-                        <input id={page.GetServiceInputName(it, "port")} class="text-black placeholder:text-slate-400" type="number" name={page.GetServiceInputName(it, "port" )} value={service.PortString()}
-                            placeholder="Port of the service" required>
-                    </div>
+                <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+                    @displayFormGroup(NewStringFormGroup(page.GetServiceInputName(it, "id"), "Name", "Service name", service.ID))
+                    @displayFormGroup(NewStringFormGroup(page.GetServiceInputName(it, "method"), "Method", "string, regex etc...", service.Method))
+                    @displayFormGroup(NewStringFormGroup(page.GetServiceInputName(it, "pattern"), "Pattern", "/api/vault_hunter", service.Pattern))
+                    @displayFormGroup(NewNumberFormGroup(page.GetServiceInputName(it, "port"), "Port", "Port of the service", service.Port))
                     <button type="button" class="remove-button" onclick="removeService(this)">Remove</button>
                 </div>
                 }
             </div>
 
             <!-- Add Service Button -->
-            <button type="button" class="add-service-btn" id="addServiceButton">+ Add a New Service</button>
+            <button type="button" class="add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-white pointer rounded border-none mt-2.5 py-2.5 px-4" id="addServiceButton">+ Add a New Service</button>
 
             <!-- Submit Button -->
             <button type="submit">Submit</button>

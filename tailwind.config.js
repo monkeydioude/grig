@@ -4,13 +4,6 @@ const config = {
     content: ["./**/*.html", "./**/*.templ", "./**/*.go"],
     safelist: ["dark"],
     theme: {
-      container: {
-        center: true,
-        padding: "2rem",
-        screens: {
-          "2xl": "1400px",
-        },
-      },
       extend: {
         colors: {
           border: "hsl(var(--border) / <alpha-value>)",
@@ -46,11 +39,6 @@ const config = {
             DEFAULT: "hsl(var(--card) / <alpha-value>)",
             foreground: "hsl(var(--card-foreground) / <alpha-value>)",
           },
-        },
-        borderRadius: {
-          lg: "var(--radius)",
-          md: "calc(var(--radius) - 2px)",
-          sm: "calc(var(--radius) - 4px)",
         },
         fontFamily: {},
       },
