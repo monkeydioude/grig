@@ -12,7 +12,7 @@ type HttpError struct {
 }
 
 func (he HttpError) Error() string {
-	return fmt.Sprintf(`"status": %d, "error": "%s"}`, he.Status, he.Err)
+	return fmt.Sprintf(`{"status": %d, "error": "%s"}`, he.Status, he.Err)
 }
 
 func (he HttpError) WriteError(w http.ResponseWriter) {

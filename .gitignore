@@ -1,4 +1,6 @@
 grig_server.config.json
+capybara.config.json
+josuke.config.json
 **/*_templ.txt
 **/*_templ.go
 static/css/output.css

@@ -14,7 +14,11 @@ var ErrReadIniFile = errors.New("unable to read ini file")
 // http
 var ErrHttpUnknownInternalServerError = errors.New("unknown internal server error")
 
-// modeel
+// html
+var ErrEmptyLinkText = errors.New("WithNav: element.Link.Text can absolutely not be empty. WithNav can derive a page's name from element.Link.Href, unless it's empty or a single '/'")
+var ErrEmptyLinkHref = errors.New("WithNav: element.Link.Href cannot be empty")
+
+// model
 var ErrModelVerifyInvalidValue = errors.New("invalid value during verification")
 
 // misc

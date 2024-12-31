@@ -8,7 +8,7 @@ templ jsBlock() {
     <script type="text/javascript">
         const displayFormGroup = (serviceCount, id, label, type, placeholder) => {
             return `<div class="form-group mb-3 flex flex-col">
-                    <label class="text-lg text-sky-500 block" for="services[${ serviceCount }][${id}]">${label}</label>
+                    <label class="text-lg text-sky-500 block mb-1.5" for="services[${ serviceCount }][${id}]">${label}</label>
                     <input
                         id="services[${ serviceCount }][${id}]"
                         class="text-gray-200 placeholder:text-gray-400 bg-slate-900 w-fill rounded border border-sky-500 p-2"
@@ -31,7 +31,7 @@ templ jsBlock() {
                 ${displayFormGroup(serviceCount, "method", "Method", "text", "string, regex etc...")}
                 ${displayFormGroup(serviceCount, "pattern", "Pattern", "text", "/api/vault_hunter")}
                 ${displayFormGroup(serviceCount, "port", "Port", "number", "Port of the service")}
-                <button type="button" class="remove-button" onclick="removeService(this)">Remove</button>
+                <button type="button" class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2 px-4" onclick="removeService(this)">Remove</button>
             `;
             container.appendChild(newServiceBlock);
             serviceCount++;

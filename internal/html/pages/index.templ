@@ -15,29 +15,30 @@ templ configContentBlock(title, value string) {
 templ capybaraConfigBlock(capy *model.Capybara, servicesLen int) {
     if capy == nil {
         <div>Error loading capybara config</div>
-        return
     }
-    <div class="config-content">
-        @element.H1("Capybara")
-        <div>
-            @element.H2("Proxy")
-            @configContentBlock("Port", capy.Proxy.Port.String())
-            @configContentBlock("Host", capy.Proxy.TLSHost)
-            @element.H2("Services")
-            for it, service := range capy.Services {
-                <div class="pb-5">
-                    @configContentBlock("Name", service.ID)
-                    @configContentBlock("Method", service.Method)
-                    @configContentBlock("Pattern", service.Pattern)
-                    @configContentBlock("Port", service.Port.String())
-                </div>
-                if it < servicesLen -1 {
-                    <hr class="rounded w-5/6 border-slate-600 m-0 mx-auto mb-5"/>
+    if capy != nil {
+        <div class="config-content">
+            @element.H1("Capybara")
+            <div>
+                @element.H2("Proxy")
+                @configContentBlock("Port", capy.Proxy.Port.String())
+                @configContentBlock("Host", capy.Proxy.TLSHost)
+                @element.H2("Services")
+                for it, service := range capy.Services {
+                    <div class="pb-5">
+                        @configContentBlock("Name", service.ID)
+                        @configContentBlock("Method", service.Method)
+                        @configContentBlock("Pattern", service.Pattern)
+                        @configContentBlock("Port", service.Port.String())
+                    </div>
+                    if it < servicesLen -1 {
+                        <hr class="rounded w-5/6 border-slate-600 m-0 mx-auto mb-5"/>
+                    }
                 }
-            }
+            </div>
+            <a href="/capybara" class="p-2 my-1 button block w-fit bg-slate-700 hover:bg-slate-600">Edit Capybara Config</a>
         </div>
-        <a href="/capybara" class="p-2 my-1 button block w-fit bg-slate-700 hover:bg-slate-600">Edit Capybara Config</a>
-    </div>
+    }
 }
 
 templ (page IndexPage) Content() {
