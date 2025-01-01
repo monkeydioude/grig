@@ -3,20 +3,18 @@ package layouts
 templ domInitializer(jsDefinitions templ.Component, cssDefinitions templ.Component, pageTitle string) {
     <!DOCTYPE html>
     <html lang="en" class="h-full">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title> { pageTitle }</title>
+            @cssDefinitions
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title> { pageTitle }</title>
-        @cssDefinitions
+            <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+            @jsDefinitions
+        </head>
 
-        <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
-    </head>
-
-    <body class="bg-gray-950 text-slate-100 h-full">
-        { children...}
-    </body>
-    @jsDefinitions
-
+        <body class="bg-gray-950 text-slate-100 h-full">
+            { children...}
+        </body>
     </html>
 }

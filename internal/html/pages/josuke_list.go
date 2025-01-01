@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"fmt"
 	"log"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/fs"
@@ -27,10 +28,15 @@ func JosukeList(config *server.ServerConfig) Josuke {
 		log.Printf("[ERR ] pages.JosukeList: %s", err)
 		return p
 	}
+	jk.FillBaseData()
 	p.Data = &jk
 	return p
 }
 
-func (c Josuke) Title() string {
-	return c.Titl
+func (jk Josuke) Title() string {
+	return jk.Titl
+}
+
+func (jk Josuke) GetHookInputName(it int, key string) string {
+	return fmt.Sprintf("hook[%d][%s]", it, key)
 }

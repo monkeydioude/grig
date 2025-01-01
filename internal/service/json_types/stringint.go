@@ -25,5 +25,8 @@ func (p *StringInt) UnmarshalJSON(data []byte) error {
 }
 
 func (p StringInt) String() string {
+	if p == 0 {
+		return ""
+	}
 	return strconv.Itoa(int(p))
 }

@@ -2,14 +2,132 @@ package pages
 
 import (
     "monkeydioude/grig/internal/html/elements/hx"
-	"monkeydioude/grig/internal/html/elements/form"
+    "monkeydioude/grig/internal/html/elements/form"
+    "monkeydioude/grig/internal/html/elements/button"
+	"monkeydioude/grig/internal/html/elements/span"
+	"strings"
 )
+
+script josukeJsBlock(count int) {
+    try {
+        addFormGroupListener(
+            count,
+            $("#addHookButton"),
+            $('.hooks-list'),
+            $("#shadow-hook"),
+            ["name", "type", "path", "secret"]
+        );
+    } catch (e) {
+        console.error(e);
+        ToastError("ERROR: Could not display a new hook form group")
+    }
+}
 
 templ (page Josuke) Content() {
     <div id="josuke" class="pb-3">
         @hx.H1("Josuke")
         @form.JsonPostForm("/api/v1/josuke") {
             @hx.H2("Base settings")
+            @form.DisplayFormGroup(form.StringFormGroup("logLevel", "DEBUG, INFO, WARN, ERROR", page.Data.LogLevel)) {
+                { "Log level " }
+                @span.Advice() {(level of logs to display)}
+            }
+            @form.DisplayFormGroup(form.StringFormGroup("host", "localhost, https://...", page.Data.Host)) { Host }
+            @form.DisplayFormGroup(form.NumberFormGroup("port", "8080", page.Data.Port)) { Port Josuke will listen to }
+            @form.DisplayFormGroup(form.StringFormGroup("store", "/tmp/payloads", page.Data.Store).NotRequired()) {
+                { "Payloads store path "}
+                @span.Optional() { (optional)}
+            }
+            @form.DisplayFormGroup(form.StringFormGroup("healthcheck_route", "/josuke/healthcheck or empty",
+            page.Data.HealthcheckRoute).NotRequired()) {
+                { "Healtcheck route " } 
+                @span.Optional() { (optional)}
+                @span.Advice() {(should be "/josuke/healthcheck" or empty)}
+            }
+
+            // Hooks 
+            <div class="hooks-list">
+                @hx.H2("Hooks")
+                for it, hook := range page.Data.Hook {
+                    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "name"), "", hook.Name)) { Name }
+                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "type"), "github, bitbucket, gogs, bitbucket", hook.Type)) { Type }
+                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "path"), "/josuke/<type>", hook.Path)) {
+                            { "Path "}
+                            @span.Advice() { Will most likely match the Type of hook above }
+                        }
+                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "secret"), "<secret>", hook.Secret)) {
+                            Secret, should match the one in github
+                        }
+                        @button.RemoveParentButton() { Delete }
+                    </div>
+                }
+            </div>
+            @button.AddButton("addHookButton", "") { + Add a new Hook }
+
+            // Deployments
+            <div class="deployments-list">
+                @hx.H2("Deployments")
+                for it, dep := range page.Data.Deployment {
+                    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "repo"), "<username>/<project>", dep.Repo)) {
+                            Repo name
+                        }
+                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "proj_dir"), "<project>", dep.ProjDir)) {
+                            { "Project directory "}
+                            @span.Advice() { Most likely the name of the project on your repo, after git clone }
+                        }
+                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "base_dir"), "/home/user/projects", dep.BaseDir)) {
+                            { "Base directory "}
+                            @span.Advice() { Directory where your project is stored }
+                        }
+                        @hx.H3("Branches")
+                        <div class="branches-list">
+                            for bIt, branch := range dep.Branches {
+                                <div class="service-block border-sky-400 border-l-4  pt-4 px-4 mb-2.5">
+                                    @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(bIt, "branch"), "main", branch.Branch)) {
+                                        Branch name
+                                    }
+                                    <div class="service-block border-sky-300 border-l-2 pt-4 px-4">
+                                        for aIt, action := range branch.Actions {
+                                            @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(aIt, "action"), "push", action.Action)) {
+                                                { "Action definition " }
+                                                @span.Advice() { Set to "push" for CI/CD }
+                                            }
+                                            <div class="service-block border-sky-200 border-l-2 px-4">
+                                                @span.Optional() { Commands }
+                                                for cIt, cmd := range action.Commands {
+                                                    @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(cIt, "command"), "cd %base_dir%", strings.Join(cmd, " "))) {
+                                                    }
+                                                }
+                                            </div>
+                                        }
+                                    @button.AddButton("addCommandButton", "") { + Add a new Command }
+                                    </div>
+                                @button.AddButton("addActionButton", "") { + Add a new Action }
+                                </div>
+                            }
+                        </div>
+                        @button.AddButton("addBranchButton", "") { + Add a new Branch }
+                    </div>
+                }
+            </div>
+            @button.AddButton("addDeploymentButton", "") { + Add a new Deployment }
         }
+        // template hook used by JS node spawning
+        <div id="shadow-hook" class="hidden">
+            <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+                @form.DisplayFormGroup(form.StringFormGroup("", "", "")) { Name }
+                @form.DisplayFormGroup(form.StringFormGroup("", "github, bitbucket, gogs, bitbucket", "")) { Type }
+                @form.DisplayFormGroup(form.StringFormGroup("", "/josuke/<type>", "")) {
+                    Path, will most likely match the Type of hook above
+                }
+                @form.DisplayFormGroup(form.StringFormGroup("", "<secret>", "")) {
+                    Secret, should match the one in github
+                }
+            </div>
+            @button.RemoveParentButton() { Delete }
+        </div>
+        @josukeJsBlock(len(page.Data.Hook))
     </div>
 }

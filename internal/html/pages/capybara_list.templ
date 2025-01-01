@@ -6,6 +6,21 @@ import (
     "monkeydioude/grig/internal/html/elements/button"
 )
 
+script capybaraJsBlock(count int) {
+    try {
+        addFormGroupListener(
+            count,
+            $("#addServiceButton"),
+            $('.services-container'),
+            $("#shadow-form"),
+            ["id", "method", "pattern", "port"]
+        );
+    } catch (e) {
+        console.error(e);
+        ToastError("ERROR: Could not display a new capybara form group")
+    }
+}
+
 templ (page Capybara) Content() {
     <div id="capybara" class="pb-3">
         @hx.H1("Capybara")
@@ -33,8 +48,14 @@ templ (page Capybara) Content() {
             @button.AddButton("addServiceButton", "") { + Add a New Service }
         }
         <div id="shadow-form" class="hidden">
-            @form.EmptyFormGroup()
+            <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+                @form.DisplayFormGroup(form.StringFormGroup("", "Service name", "")) { Name }
+                @form.DisplayFormGroup(form.StringFormGroup("", "string, regex etc...", "")) { Method }
+                @form.DisplayFormGroup(form.StringFormGroup("", "/api/vault_hunter", "")) { Pattern }
+                @form.DisplayFormGroup(form.NumberFormGroup("", "Port of the service", nil)) { Port }
+            </div>
             @button.RemoveParentButton() { Delete }
         </div>
     </div>
+    @capybaraJsBlock(len(page.Data.Services))
 }

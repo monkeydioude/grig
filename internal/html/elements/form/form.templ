@@ -19,16 +19,21 @@ templ jsBlock() {
 templ DisplayFormGroup(fgroup FormGroup) {
     <div class="form-group mb-3 flex flex-col">
         <label class="text-lg text-sky-500 block mb-1.5" for={fgroup.ID()}>{children...}</label>
-        <input id={fgroup.ID()}
-            class="text-gray-200 placeholder:text-gray-400 bg-slate-900 rounded border border-sky-500 p-2"
-            type={fgroup.Type().String()} name={fgroup.ID()} value={fgroup.Value()} placeholder={fgroup.Placeholder()}
-            required>
+        if fgroup.Required() {
+            <input id={fgroup.ID()} class="text-gray-200 placeholder:text-gray-400 bg-slate-900 rounded border border-sky-500 p-2"
+                type={fgroup.Type().String()} name={fgroup.ID()} value={fgroup.Value()} placeholder={fgroup.Placeholder()} required>
+        }
+        if !fgroup.Required() {
+            <input id={fgroup.ID()} class="text-gray-200 placeholder:text-gray-400 bg-slate-900 rounded border border-sky-500 p-2"
+                type={fgroup.Type().String()} name={fgroup.ID()} value={fgroup.Value()} placeholder={fgroup.Placeholder()}>
+        }
+
     </div>
 }
 
 templ EmptyFormGroup() {
     <div class="form-group mb-3 flex flex-col">
-        <label class="text-lg text-sky-500 block mb-1.5" for=""></label>
+        <label class="text-lg text-sky-500 block mb-1.5" for="">{children...}</label>
         <input id=""
             class="text-gray-200 placeholder:text-gray-400 bg-slate-900 rounded border border-sky-500 p-2"
             type="" name="" value="" placeholder=""
