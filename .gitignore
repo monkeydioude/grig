@@ -1,6 +1,6 @@
-grig_server.config.json
-capybara.config.json
-josuke.config.json
+*.config.json
 **/*_templ.txt
 **/*_templ.go
 static/css/output.css
+
+.DS_Store
