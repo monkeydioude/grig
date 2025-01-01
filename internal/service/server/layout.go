@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"monkeydioude/grig/internal/errors"
-	"monkeydioude/grig/internal/html/element"
+	element "monkeydioude/grig/internal/html/elements"
 	"monkeydioude/grig/internal/service/os"
 	"net/http"
 	"sync"

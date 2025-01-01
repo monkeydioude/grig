@@ -1,13 +1,13 @@
 package v1
 
 import (
-	"monkeydioude/grig/internal/html/element"
+	"monkeydioude/grig/internal/html/elements"
 	"monkeydioude/grig/internal/html/layouts"
 	"monkeydioude/grig/internal/html/pages"
 	"net/http"
 )
 
-func (h Handler) Index(w http.ResponseWriter, r *http.Request, nav element.Nav) error {
+func (h Handler) Index(w http.ResponseWriter, r *http.Request, nav elements.Nav) error {
 	if r.URL.Path != "/" {
 		return h.NotFound(w, r)
 	}

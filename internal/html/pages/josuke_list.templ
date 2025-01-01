@@ -1,0 +1,15 @@
+package pages
+
+import (
+    "monkeydioude/grig/internal/html/elements/hx"
+	"monkeydioude/grig/internal/html/elements/form"
+)
+
+templ (page Josuke) Content() {
+    <div id="josuke" class="pb-3">
+        @hx.H1("Josuke")
+        @form.JsonPostForm("/api/v1/josuke") {
+            @hx.H2("Base settings")
+        }
+    </div>
+}

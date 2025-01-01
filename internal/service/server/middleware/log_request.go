@@ -36,8 +36,8 @@ func (r *responseRecorder) WriteHeader(code int) {
 
 func JsonApiLogRequest(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s[%s] >>> API call on %s%s", Blue, r.Header.Get(consts.X_REQUEST_ID_LABEL), r.URL, Reset)
-		rec := &responseRecorder{rw: w, status: 200}
+		log.Printf("%s[%s] >>> API call on %s %s%s", Blue, r.Header.Get(consts.X_REQUEST_ID_LABEL), r.Method, r.URL, Reset)
+		rec := &responseRecorder{rw: w, status: 0}
 		handler.ServeHTTP(rec, r)
 		if rec.status >= 400 {
 			color := Purple
@@ -48,9 +48,9 @@ func JsonApiLogRequest(handler http.Handler) http.Handler {
 			if rec.status >= 500 {
 				color = Red
 			}
-			log.Printf("%s[%s] <<< %d on API %s, response body: %+v %s", color, r.Header.Get(consts.X_REQUEST_ID_LABEL), rec.status, r.URL, string(data), Reset)
+			log.Printf("%s[%s] <<< %d on API %s %s, response body: %+v %s", color, r.Header.Get(consts.X_REQUEST_ID_LABEL), rec.status, r.Method, r.URL, string(data), Reset)
 		} else {
-			log.Printf("%s[%s] <<< %d on API %s%s", Green, r.Header.Get(consts.X_REQUEST_ID_LABEL), rec.status, r.URL, Reset)
+			log.Printf("%s[%s] <<< %d on API %s %s%s", Green, r.Header.Get(consts.X_REQUEST_ID_LABEL), rec.status, r.Method, r.URL, Reset)
 		}
 	})
 }

@@ -1,92 +1,40 @@
 package pages
 
 import (
-    "monkeydioude/grig/internal/html/element"
+    "monkeydioude/grig/internal/html/elements/hx"
+    "monkeydioude/grig/internal/html/elements/form"
+    "monkeydioude/grig/internal/html/elements/button"
 )
-
-templ jsBlock() {
-    <script type="text/javascript">
-        const displayFormGroup = (serviceCount, id, label, type, placeholder) => {
-            return `<div class="form-group mb-3 flex flex-col">
-                    <label class="text-lg text-sky-500 block mb-1.5" for="services[${ serviceCount }][${id}]">${label}</label>
-                    <input
-                        id="services[${ serviceCount }][${id}]"
-                        class="text-gray-200 placeholder:text-gray-400 bg-slate-900 w-fill rounded border border-sky-500 p-2"
-                        type="${type}"
-                        name="services[${ serviceCount }][${id}]"
-                        value=""
-                        placeholder="${placeholder}"
-                        required>
-                </div>`
-        }
-        let serviceCount = document.querySelectorAll("#servicesContainer .service-block").length; // Track the number of service blocks
-
-        // Add a new service block
-        document.getElementById('addServiceButton').addEventListener('click', function () {
-            const container = $('#servicesContainer');
-            const newServiceBlock = document.createElement('div');
-            newServiceBlock.className = 'service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5';
-            newServiceBlock.innerHTML = `
-                ${displayFormGroup(serviceCount, "id", "Name", "text", "Service name")}
-                ${displayFormGroup(serviceCount, "method", "Method", "text", "string, regex etc...")}
-                ${displayFormGroup(serviceCount, "pattern", "Pattern", "text", "/api/vault_hunter")}
-                ${displayFormGroup(serviceCount, "port", "Port", "number", "Port of the service")}
-                <button type="button" class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2 px-4" onclick="removeService(this)">Remove</button>
-            `;
-            container.appendChild(newServiceBlock);
-            serviceCount++;
-        });
-
-        // Remove a service block
-        function removeService(button) {
-            button.parentElement.remove();
-        }
-
-        function makeServiceLabel(it, name) {
-            return `services[${it}][${name}]`;
-        }
-    </script>
-}
-
-templ displayFormGroup(fgroup FormGroup) {
-    <div class="form-group mb-3 flex flex-col">
-        <label class="text-lg text-sky-500 block mb-1.5" for={fgroup.ID()}>{fgroup.Label()}</label>
-        <input
-            id={fgroup.ID()}
-            class="text-gray-200 placeholder:text-gray-400 bg-slate-900 rounded border border-sky-500 p-2"
-            type={fgroup.Type().String()}
-            name={fgroup.ID()}
-            value={fgroup.Value()}
-            placeholder={fgroup.Placeholder()}
-            required>
-    </div>
-}
 
 templ (page Capybara) Content() {
     <div id="capybara" class="pb-3">
-        @element.H1("Capybara")
-        @element.JsonPostForm("/api/v1/capybara") {
+        @hx.H1("Capybara")
+        @form.JsonPostForm("/api/v1/capybara") {
             <!-- Proxy Configuration -->
-            @element.H2("Proxy")
-            @displayFormGroup(NewNumberFormGroup("proxy[port]", "Reverse-Proxy Port", "80 or 443 for example", page.Data.Proxy.Port))
-            @displayFormGroup(NewStringFormGroup("proxy[tls_host]", "TLS Host", "TLS Host", page.Data.Proxy.TLSHost))
+            @hx.H2("Proxy")
+            @form.DisplayFormGroup(form.NumberFormGroup("proxy[port]", "80 or 443 for example", page.Data.Proxy.Port)) { Reverse-Proxy Port }
+            @form.DisplayFormGroup(form.StringFormGroup("proxy[tls_host]", "TLS Host", page.Data.Proxy.TLSHost)) { TLS Host }
+
             <!-- Services Configuration -->
             <div class="services-container" id="servicesContainer">
-                @element.H2("Services")
+                @hx.H2("Services")
                 for it, service := range page.Data.Services {
                 <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
-                    @displayFormGroup(NewStringFormGroup(page.GetServiceInputName(it, "id"), "Name", "Service name", service.ID))
-                    @displayFormGroup(NewStringFormGroup(page.GetServiceInputName(it, "method"), "Method", "string, regex etc...", service.Method))
-                    @displayFormGroup(NewStringFormGroup(page.GetServiceInputName(it, "pattern"), "Pattern", "/api/vault_hunter", service.Pattern))
-                    @displayFormGroup(NewNumberFormGroup(page.GetServiceInputName(it, "port"), "Port", "Port of the service", service.Port))
-                    <button type="button" class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2 px-4" onclick="removeService(this)">Remove</button>
+                    @form.DisplayFormGroup(form.StringFormGroup(page.GetServiceInputName(it, "id"), "Service name", service.ID)) { Name }
+                    @form.DisplayFormGroup(form.StringFormGroup(page.GetServiceInputName(it, "method"), "string, regex etc...", service.Method)) { Method }
+                    @form.DisplayFormGroup(form.StringFormGroup(page.GetServiceInputName(it, "pattern"), "/api/vault_hunter", service.Pattern)) { Pattern }
+                    @form.DisplayFormGroup(form.NumberFormGroup(page.GetServiceInputName(it, "port"), "Port of the service", service.Port)) { Port }
+                    @button.RemoveParentButton() { Delete }
                 </div>
                 }
             </div>
-
+            
             <!-- Add Service Button -->
-            <button type="button" class="add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none mt-2.5 py-2.5 px-4" id="addServiceButton">+ Add a New Service</button>
+            @button.AddButton("addServiceButton", "") { + Add a New Service }
         }
+        <div id="shadow-form" class="hidden">
+            @form.EmptyFormGroup()
+            @button.RemoveParentButton() { Delete }
+        </div>
     </div>
-    @jsBlock()
 }

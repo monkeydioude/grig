@@ -4,7 +4,7 @@ import (
 	"monkeydioude/grig/internal/api"
 	htmlApi "monkeydioude/grig/internal/api/htmlapi/v1"
 	jsonApi "monkeydioude/grig/internal/api/jsonapi/v1"
-	"monkeydioude/grig/internal/html/element"
+	element "monkeydioude/grig/internal/html/elements"
 	"monkeydioude/grig/internal/service/server"
 	with "monkeydioude/grig/internal/service/server/handler_wrapper"
 	"monkeydioude/grig/internal/service/server/middleware"

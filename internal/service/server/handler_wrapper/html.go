@@ -3,7 +3,7 @@ package with
 import (
 	"fmt"
 	"monkeydioude/grig/internal/errors"
-	"monkeydioude/grig/internal/html/element"
+	element "monkeydioude/grig/internal/html/elements"
 	"monkeydioude/grig/internal/service/server"
 	"monkeydioude/grig/internal/tiger/assert"
 	"net/http"
@@ -50,6 +50,7 @@ func (nw *NavWrapper) WithNav(handler func(w http.ResponseWriter, r *http.Reques
 	assert.NotEmpty(link.Text.String(), errors.ErrEmptyLinkText, fmt.Errorf("Here element.Link.Href is '%v'", link.Href))
 	nw.Links = append(nw.Links, link)
 	return func(w http.ResponseWriter, r *http.Request) error {
+		// w.WriteHeader(202)
 		return handler(w, r, element.Nav(*nw).WithCurent(r.URL.Path))
 	}
 }

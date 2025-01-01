@@ -2,7 +2,9 @@ package pages
 
 import (
     "monkeydioude/grig/internal/model"
-	"monkeydioude/grig/internal/html/element"
+	"monkeydioude/grig/internal/html/elements/hr"
+    "monkeydioude/grig/internal/html/elements/hx"
+    "monkeydioude/grig/internal/html/elements/a"
 )
 
 templ configContentBlock(title, value string) {
@@ -18,12 +20,12 @@ templ capybaraConfigBlock(capy *model.Capybara, servicesLen int) {
     }
     if capy != nil {
         <div class="config-content">
-            @element.H1("Capybara")
+            @hx.H1("Capybara")
             <div>
-                @element.H2("Proxy")
+                @hx.H2("Proxy")
                 @configContentBlock("Port", capy.Proxy.Port.String())
                 @configContentBlock("Host", capy.Proxy.TLSHost)
-                @element.H2("Services")
+                @hx.H2("Services")
                 for it, service := range capy.Services {
                     <div class="pb-5">
                         @configContentBlock("Name", service.ID)
@@ -31,12 +33,10 @@ templ capybaraConfigBlock(capy *model.Capybara, servicesLen int) {
                         @configContentBlock("Pattern", service.Pattern)
                         @configContentBlock("Port", service.Port.String())
                     </div>
-                    if it < servicesLen -1 {
-                        <hr class="rounded w-5/6 border-slate-600 m-0 mx-auto mb-5"/>
-                    }
+                    @hr.Default(it < servicesLen -1)
                 }
             </div>
-            <a href="/capybara" class="p-2 my-1 button block w-fit bg-slate-700 hover:bg-slate-600">Edit Capybara Config</a>
+            @a.Internal("/capybara") { Edit Capybara Config }
         </div>
     }
 }
