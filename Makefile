@@ -18,6 +18,11 @@ gow-watch:
 tailwind:
 	tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch
 
+.PHONY: compile
+compile:
+	tailwindcss -i ./static/css/input.css -o ./static/css/output.css
+	templ generate
+
 .PHONY: install-tailwind
 install-tailwind:
 	@if [ "$(shell uname)" = "Darwin" ]; then \
