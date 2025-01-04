@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"log"
 	"monkeydioude/grig/internal/consts"
-	"monkeydioude/grig/internal/service/server"
+	"monkeydioude/grig/internal/service/server/config"
+	"monkeydioude/grig/pkg/server"
 	"net/http"
 	"os"
 	"syscall"
@@ -14,7 +15,7 @@ import (
 	"github.com/oklog/run"
 )
 
-func setupServer(layout *server.Layout) *http.Server {
+func setupServer(layout *server.Layout[config.ServerConfig]) *http.Server {
 	// setup multiplexer
 	mux := routing(layout)
 	port := consts.DEFAULT_GRIG_SERVER_PORT

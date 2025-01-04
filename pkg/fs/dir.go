@@ -3,7 +3,6 @@ package fs
 import (
 	"errors"
 	"fmt"
-	customErrors "monkeydioude/grig/internal/errors"
 	"os"
 	"path/filepath"
 	"sync"
@@ -37,7 +36,7 @@ func NewDirFromPathAndFileParser[F File](
 	}
 	entries, err := os.ReadDir(path)
 	if err != nil {
-		return dir, fmt.Errorf("fs.NewDirFromPath: %w: %w", customErrors.ErrReadDir, err)
+		return dir, fmt.Errorf("fs.NewDirFromPath: %w: %w", ErrReadDir, err)
 	}
 	var stackedErrs error
 	dir.Files = make(map[string]F, 0)

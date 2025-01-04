@@ -2,13 +2,13 @@ package errors
 
 import "errors"
 
-// service
+var ErrHTTPNotFound = errors.New("Not found")
+var ErrInternalServerError = errors.New("Internal Server Error")
+
 // service/os
 var ErrUnknownOS = errors.New("unknown OS")
 
-// service/fs
-var ErrReadDir = errors.New("error reading directory")
-var ErrReadEntryFile = errors.New("unable to read entry file")
+// service/ini
 var ErrReadIniFile = errors.New("unable to read ini file")
 
 // http

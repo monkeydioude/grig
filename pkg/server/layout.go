@@ -3,18 +3,15 @@ package server
 import (
 	"fmt"
 	"monkeydioude/grig/internal/errors"
-	"monkeydioude/grig/internal/service/os"
 	element "monkeydioude/grig/pkg/html/elements"
+	"monkeydioude/grig/pkg/os"
 	"net/http"
 	"sync"
 )
 
-type Layout struct {
-	OS os.OS
-	// AppsServices *fs.Dir[model.Service]
-	// JosukeConfig   *model.Josuke
-	// CapybaraConfig *model.Capybara
-	ServerConfig ServerConfig
+type Layout[T any] struct {
+	OS           os.OS
+	ServerConfig T
 	Navigation   element.Nav
 	mutex        sync.Mutex
 }
@@ -26,7 +23,7 @@ type Handler func(http.ResponseWriter, *http.Request) error
 var Methods = [5]string{"GET", "POST", "PUT", "PATCH", "DELETE"}
 
 // WithMethod is a geeneric wrapper around a generic handler, forcing the a HTTP verb
-func (l *Layout) WithMethod(method string, handler Handler) func(http.ResponseWriter, *http.Request) {
+func (l *Layout[any]) WithMethod(method string, handler Handler) func(http.ResponseWriter, *http.Request) {
 	// #StephenCurrying
 	return func(w http.ResponseWriter, req *http.Request) {
 		resBuff := NewResponseWriterBuffer(w)
@@ -50,27 +47,27 @@ func (l *Layout) WithMethod(method string, handler Handler) func(http.ResponseWr
 }
 
 // Get is a wrapper around a generic handler, forcing the GET HTTP verb
-func (l *Layout) Get(handler Handler) func(http.ResponseWriter, *http.Request) {
+func (l *Layout[any]) Get(handler Handler) func(http.ResponseWriter, *http.Request) {
 	return l.WithMethod("GET", handler)
 }
 
 // Post is a wrapper around a generic handler, forcing the POST HTTP verb
-func (l *Layout) Post(handler Handler) func(http.ResponseWriter, *http.Request) {
+func (l *Layout[any]) Post(handler Handler) func(http.ResponseWriter, *http.Request) {
 	return l.WithMethod("POST", handler)
 }
 
 // Put is a wrapper around a generic handler, forcing the PUT HTTP verb
-func (l *Layout) Put(handler Handler) func(http.ResponseWriter, *http.Request) {
+func (l *Layout[any]) Put(handler Handler) func(http.ResponseWriter, *http.Request) {
 	return l.WithMethod("PUT", handler)
 }
 
 // Patch is a wrapper around a generic handler, forcing the PATCH HTTP verb
-func (l *Layout) Patch(handler Handler) func(http.ResponseWriter, *http.Request) {
+func (l *Layout[any]) Patch(handler Handler) func(http.ResponseWriter, *http.Request) {
 	return l.WithMethod("PATCH", handler)
 }
 
 // Delete is a wrapper around a generic handler, forcing the DELETE HTTP verb
-func (l *Layout) Delete(handler Handler) func(http.ResponseWriter, *http.Request) {
+func (l *Layout[any]) Delete(handler Handler) func(http.ResponseWriter, *http.Request) {
 	return l.WithMethod("DELETE", handler)
 }
 
@@ -88,7 +85,7 @@ func (l *Layout) Delete(handler Handler) func(http.ResponseWriter, *http.Request
 
 type UnlockMutexFn = func()
 
-func (l *Layout) LockMutex() UnlockMutexFn {
+func (l *Layout[any]) LockMutex() UnlockMutexFn {
 	l.mutex.Lock()
 	return l.mutex.Unlock
 }

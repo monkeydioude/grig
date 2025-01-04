@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"monkeydioude/grig/internal/model"
-	"monkeydioude/grig/internal/service/fs"
-	"monkeydioude/grig/internal/service/server"
+	"monkeydioude/grig/internal/service/server/config"
+	"monkeydioude/grig/pkg/fs"
 )
 
 type Josuke struct {
@@ -14,7 +14,7 @@ type Josuke struct {
 	FilePath string
 }
 
-func JosukeList(config *server.ServerConfig) Josuke {
+func JosukeList(config *config.ServerConfig) Josuke {
 	p := Josuke{
 		Titl: "Create a Josuke config",
 		Data: &model.Josuke{},

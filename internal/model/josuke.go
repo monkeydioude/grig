@@ -1,7 +1,7 @@
 package model
 
 import (
-	"monkeydioude/grig/internal/service/json_types"
+	"monkeydioude/grig/pkg/trans_types"
 	"os"
 )
 
@@ -34,13 +34,13 @@ type Deployment struct {
 }
 
 type Josuke struct {
-	LogLevel         string               `json:"logLevel"`
-	Host             string               `json:"host"`
-	Port             json_types.StringInt `json:"port"`
-	Store            string               `json:"store"`
-	HealthcheckRoute string               `json:"healthcheck_route"`
-	Hook             []Hook               `json:"hook"`
-	Deployment       []Deployment         `json:"deployment"`
+	LogLevel         string                `json:"logLevel"`
+	Host             string                `json:"host"`
+	Port             trans_types.StringInt `json:"port"`
+	Store            string                `json:"store"`
+	HealthcheckRoute string                `json:"healthcheck_route"`
+	Hook             []Hook                `json:"hook"`
+	Deployment       []Deployment          `json:"deployment"`
 }
 
 func (j Josuke) Save() error {

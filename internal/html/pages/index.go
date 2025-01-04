@@ -6,8 +6,8 @@ import (
 	"log"
 	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
-	"monkeydioude/grig/internal/service/fs"
-	"monkeydioude/grig/internal/service/server"
+	"monkeydioude/grig/internal/service/server/config"
+	"monkeydioude/grig/pkg/fs"
 )
 
 type IndexPage struct {
@@ -18,7 +18,7 @@ type IndexPage struct {
 }
 
 func Index(
-	config *server.ServerConfig,
+	config *config.ServerConfig,
 ) IndexPage {
 	p := IndexPage{}
 	if config == nil {

@@ -1,4 +1,4 @@
-package server
+package config
 
 import (
 	"encoding/json"
@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"monkeydioude/grig/internal/consts"
 	"monkeydioude/grig/internal/model"
-	"monkeydioude/grig/internal/service/fs"
 	"monkeydioude/grig/internal/service/parser"
-	"monkeydioude/grig/internal/tiger/assert"
+	"monkeydioude/grig/pkg/fs"
+	"monkeydioude/grig/pkg/tiger/assert"
 	"os"
 	"path/filepath"
 )

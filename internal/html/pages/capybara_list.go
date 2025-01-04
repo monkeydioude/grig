@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"monkeydioude/grig/internal/model"
-	"monkeydioude/grig/internal/service/fs"
-	"monkeydioude/grig/internal/service/server"
+	"monkeydioude/grig/internal/service/server/config"
+	"monkeydioude/grig/pkg/fs"
 )
 
 type Capybara struct {
@@ -14,7 +14,7 @@ type Capybara struct {
 	FilePath string
 }
 
-func CapybaraList(config *server.ServerConfig) Capybara {
+func CapybaraList(config *config.ServerConfig) Capybara {
 	p := Capybara{
 		Titl: "Create a Capybara config",
 		Data: &model.Capybara{

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"monkeydioude/grig/internal/service/server"
+	"monkeydioude/grig/pkg/server"
 	"net/http"
 )
 

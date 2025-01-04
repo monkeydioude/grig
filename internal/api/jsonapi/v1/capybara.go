@@ -5,7 +5,7 @@ import (
 	"monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/action"
-	"monkeydioude/grig/internal/service/fs"
+	"monkeydioude/grig/pkg/fs"
 	"net/http"
 )
 

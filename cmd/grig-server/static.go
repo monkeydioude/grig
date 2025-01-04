@@ -1,7 +1,7 @@
 package main
 
 import (
-	"monkeydioude/grig/internal/tiger/assert"
+	"monkeydioude/grig/pkg/tiger/assert"
 	"net/http"
 )
 

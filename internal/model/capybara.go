@@ -5,14 +5,14 @@ import (
 	"errors"
 	"fmt"
 	customErrors "monkeydioude/grig/internal/errors"
-	"monkeydioude/grig/internal/service/json_types"
+	"monkeydioude/grig/pkg/trans_types"
 	"os"
 	"strconv"
 )
 
 type Proxy struct {
-	Port    json_types.StringInt `json:"port"`
-	TLSHost string               `json:"tls_host"`
+	Port    trans_types.StringInt `json:"port"`
+	TLSHost string                `json:"tls_host"`
 }
 
 func (p Proxy) Verify() error {
@@ -26,11 +26,11 @@ func (p Proxy) Verify() error {
 }
 
 type ServiceDefinition struct {
-	ID       string               `json:"id"`
-	Method   string               `json:"method"`
-	Pattern  string               `json:"pattern"`
-	Port     json_types.StringInt `json:"port"`
-	Protocol string               `json:"protocol,omitempty"` // omitempty to handle the absence of this field
+	ID       string                `json:"id"`
+	Method   string                `json:"method"`
+	Pattern  string                `json:"pattern"`
+	Port     trans_types.StringInt `json:"port"`
+	Protocol string                `json:"protocol,omitempty"` // omitempty to handle the absence of this field
 }
 
 func (sd ServiceDefinition) Verify() error {

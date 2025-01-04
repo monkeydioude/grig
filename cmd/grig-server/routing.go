@@ -4,15 +4,16 @@ import (
 	"monkeydioude/grig/internal/api"
 	htmlApi "monkeydioude/grig/internal/api/htmlapi/v1"
 	jsonApi "monkeydioude/grig/internal/api/jsonapi/v1"
-	"monkeydioude/grig/internal/service/server"
+	"monkeydioude/grig/internal/service/server/config"
 	with "monkeydioude/grig/internal/service/server/handler_wrapper"
-	"monkeydioude/grig/internal/tiger/assert"
 	element "monkeydioude/grig/pkg/html/elements"
+	"monkeydioude/grig/pkg/server"
 	"monkeydioude/grig/pkg/server/middleware"
+	"monkeydioude/grig/pkg/tiger/assert"
 	"net/http"
 )
 
-func routing(layout *server.Layout) http.Handler {
+func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 	assert.NotNil(layout)
 	mux := http.NewServeMux()
 	serveStatic(mux)

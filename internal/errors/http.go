@@ -1,7 +1,6 @@
 package errors
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -50,6 +49,6 @@ func UnknownInternalServerError() HttpError {
 func NotFound() HttpError {
 	return HttpError{
 		Status: http.StatusNotFound,
-		Err:    errors.New("NOT FOUND"),
+		Err:    NotFound(),
 	}
 }

@@ -1,4 +1,4 @@
-package json_types
+package trans_types
 
 import (
 	"fmt"

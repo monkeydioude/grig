@@ -1,17 +1,18 @@
 package v1
 
 import (
-	"monkeydioude/grig/internal/service/server"
-	"monkeydioude/grig/internal/tiger/assert"
+	"monkeydioude/grig/internal/service/server/config"
+	"monkeydioude/grig/pkg/server"
+	"monkeydioude/grig/pkg/tiger/assert"
 )
 
 type Handler struct {
-	Layout *server.Layout
+	Layout *server.Layout[config.ServerConfig]
 }
 
 // func (h Handler) Ok()
 
-func New(layout *server.Layout) Handler {
+func New(layout *server.Layout[config.ServerConfig]) Handler {
 	assert.NotNil(layout)
 	return Handler{
 		Layout: layout,

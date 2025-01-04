@@ -3,9 +3,9 @@ package with
 import (
 	"fmt"
 	"monkeydioude/grig/internal/errors"
-	"monkeydioude/grig/internal/service/server"
-	"monkeydioude/grig/internal/tiger/assert"
 	element "monkeydioude/grig/pkg/html/elements"
+	"monkeydioude/grig/pkg/server"
+	"monkeydioude/grig/pkg/tiger/assert"
 	"net/http"
 	"unicode"
 )
