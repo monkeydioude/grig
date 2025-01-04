@@ -29,11 +29,16 @@ var Methods = [5]string{"GET", "POST", "PUT", "PATCH", "DELETE"}
 func (l *Layout) WithMethod(method string, handler Handler) func(http.ResponseWriter, *http.Request) {
 	// #StephenCurrying
 	return func(w http.ResponseWriter, req *http.Request) {
+		resBuff := NewResponseWriterBuffer(w)
 		for _, m := range Methods {
 			// a method matches
 			if m == method {
-				if err := handler(w, req); err != nil {
-					errors.WriteError(err, w)
+				if err := handler(resBuff, req); err != nil {
+					errors.WriteError(err, resBuff)
+				}
+				_, err := resBuff.End()
+				if err != nil {
+					errors.WriteError(errors.InternalServerError(err), resBuff)
 				}
 				return
 			}

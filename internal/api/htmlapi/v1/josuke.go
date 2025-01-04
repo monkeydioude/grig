@@ -10,6 +10,5 @@ import (
 
 func (h Handler) JosukeList(w http.ResponseWriter, r *http.Request, nav elements.Nav) error {
 	layout := layouts.Main(nav, pages.JosukeList(&h.Layout.ServerConfig))
-	layout.Render(context.Background(), w)
-	return nil
+	return layout.Render(context.Background(), w)
 }

@@ -37,7 +37,7 @@ func (r *responseRecorder) WriteHeader(code int) {
 func JsonApiLogRequest(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s[%s] >>> API call on %s %s%s", Blue, r.Header.Get(consts.X_REQUEST_ID_LABEL), r.Method, r.URL, Reset)
-		rec := &responseRecorder{rw: w, status: 0}
+		rec := &responseRecorder{rw: w, status: 200}
 		handler.ServeHTTP(rec, r)
 		if rec.status >= 400 {
 			color := Purple

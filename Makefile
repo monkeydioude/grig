@@ -4,7 +4,7 @@ dev-linux:
 
 .PHONY: dev
 dev:
-	make -j 3 templ-watch gow-watch tailwind
+	make -j 3 templ-watch gow-watch tailwind-watch
 
 .PHONY: templ-watch
 templ-watch:
@@ -14,8 +14,8 @@ templ-watch:
 gow-watch:
 	gow run cmd/grig-server/*.go
 
-.PHONY: tailwind
-tailwind:
+.PHONY: tailwind-watch
+tailwind-watch:
 	tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch
 
 .PHONY: compile
