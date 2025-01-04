@@ -4,11 +4,11 @@ import (
 	"monkeydioude/grig/internal/api"
 	htmlApi "monkeydioude/grig/internal/api/htmlapi/v1"
 	jsonApi "monkeydioude/grig/internal/api/jsonapi/v1"
-	element "monkeydioude/grig/internal/html/elements"
 	"monkeydioude/grig/internal/service/server"
 	with "monkeydioude/grig/internal/service/server/handler_wrapper"
-	"monkeydioude/grig/internal/service/server/middleware"
 	"monkeydioude/grig/internal/tiger/assert"
+	element "monkeydioude/grig/pkg/html/elements"
+	"monkeydioude/grig/pkg/server/middleware"
 	"net/http"
 )
 

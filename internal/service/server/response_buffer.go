@@ -1,6 +1,9 @@
 package server
 
-import "net/http"
+import (
+	"net/http"
+	"sync"
+)
 
 // ResponseWriterBuffer stores the status code
 // and the response data, and only calls `WriteHeader`
@@ -11,9 +14,10 @@ import "net/http"
 // By definition, any calls to `Write` without `WriteHeader`
 // being called beforehand will force a `WriteHeader(http.StatusCodeOk)`.
 type ResponseWriterBuffer struct {
-	rw     http.ResponseWriter
-	status int
-	data   *[]byte
+	rw           http.ResponseWriter
+	status       int
+	responseData *[]byte
+	mutex        sync.Mutex
 }
 
 func (r *ResponseWriterBuffer) Header() http.Header {
@@ -21,17 +25,23 @@ func (r *ResponseWriterBuffer) Header() http.Header {
 }
 
 func (r *ResponseWriterBuffer) Write(data []byte) (int, error) {
-	r.data = &data
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	r.responseData = &data
 	return len(data), nil
 }
 
 func (r *ResponseWriterBuffer) WriteHeader(code int) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 	r.status = code
 }
 
 func (r *ResponseWriterBuffer) End() (int, error) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 	r.rw.WriteHeader(r.status)
-	return r.rw.Write(*r.data)
+	return r.rw.Write(*r.responseData)
 }
 
 func NewResponseWriterBuffer(w http.ResponseWriter) *ResponseWriterBuffer {

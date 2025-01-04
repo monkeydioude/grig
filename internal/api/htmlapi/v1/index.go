@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"monkeydioude/grig/internal/html/elements"
 	"monkeydioude/grig/internal/html/layouts"
 	"monkeydioude/grig/internal/html/pages"
+	"monkeydioude/grig/pkg/html/elements"
 	"net/http"
 )
 
