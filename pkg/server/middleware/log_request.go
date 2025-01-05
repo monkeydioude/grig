@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"log"
-	"monkeydioude/grig/internal/consts"
 	"net/http"
 )
 
@@ -36,7 +35,7 @@ func (r *responseRecorder) WriteHeader(code int) {
 
 func (rec *responseRecorder) HandleResponse(r *http.Request) {
 	if rec.status < 300 {
-		log.Printf("%s[%s] <<< %d on API %s %s%s", Green, r.Header.Get(consts.X_REQUEST_ID_LABEL), rec.status, r.Method, r.URL, Reset)
+		log.Printf("%s[%s] <<< %d on API %s %s%s", Green, r.Header.Get(X_REQUEST_ID_LABEL), rec.status, r.Method, r.URL, Reset)
 		return
 	}
 	// 400+
@@ -48,12 +47,12 @@ func (rec *responseRecorder) HandleResponse(r *http.Request) {
 	if rec.status >= 500 {
 		color = Red
 	}
-	log.Printf("%s[%s] <<< %d on API %s %s, response body: %+v %s", color, r.Header.Get(consts.X_REQUEST_ID_LABEL), rec.status, r.Method, r.URL, string(data), Reset)
+	log.Printf("%s[%s] <<< %d on API %s %s, response body: %+v %s", color, r.Header.Get(X_REQUEST_ID_LABEL), rec.status, r.Method, r.URL, string(data), Reset)
 }
 
 func JsonApiLogRequest(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s[%s] >>> API call on %s %s%s", Blue, r.Header.Get(consts.X_REQUEST_ID_LABEL), r.Method, r.URL, Reset)
+		log.Printf("%s[%s] >>> API call on %s %s%s", Blue, r.Header.Get(X_REQUEST_ID_LABEL), r.Method, r.URL, Reset)
 		rec := &responseRecorder{rw: w, status: 200}
 		handler.ServeHTTP(rec, r)
 		rec.HandleResponse(r)

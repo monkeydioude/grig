@@ -1,11 +1,12 @@
 package os
 
 import (
+	"errors"
 	"log"
 	"runtime"
-
-	"monkeydioude/grig/internal/errors"
 )
+
+var ErrUnknownOS = errors.New("unknown OS")
 
 type OS string
 
@@ -22,6 +23,6 @@ func FindoutOS() OS {
 	case "darwin":
 		return MacOS
 	}
-	log.Fatalf("%s: %s\n", runtime.GOOS, errors.ErrUnknownOS)
+	log.Fatalf("%s: %s\n", runtime.GOOS, ErrUnknownOS)
 	return Unknown
 }

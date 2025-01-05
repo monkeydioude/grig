@@ -6,8 +6,8 @@ import (
 	"log"
 	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
+	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/server/config"
-	"monkeydioude/grig/pkg/fs"
 )
 
 type IndexPage struct {
@@ -26,7 +26,7 @@ func Index(
 		return p
 	}
 	// capybara
-	cp, err := fs.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
+	cp, err := file.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
 	if err != nil {
 		log.Printf("[ERR ] pages.Index: %q", err)
 		p.Err = errors.Join(p.Err, err)
@@ -36,7 +36,7 @@ func Index(
 	p.ServicesLen = len(cp.Services)
 
 	// josuke
-	jk, err := fs.UnmarshalFromPath[model.Josuke](config.JosukeConfigPath)
+	jk, err := file.UnmarshalFromPath[model.Josuke](config.JosukeConfigPath)
 	if err != nil {
 		log.Printf("[ERR ] pages.Index: %q", err)
 		p.Err = errors.Join(p.Err, err)

@@ -1,9 +1,15 @@
-package errors
+package http_errors
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 )
+
+var ErrInternalServerError = errors.New("Internal Server Error")
+var ErrHttpUnknownInternalServerError = errors.New("unknown internal server error")
+var ErrHTTPNotFound = errors.New("Not found")
+var ErrMethodNotAllowed = errors.New("method not allowed")
 
 type HttpError struct {
 	Status int32
@@ -44,6 +50,13 @@ func InternalServerError(err error) HttpError {
 
 func UnknownInternalServerError() HttpError {
 	return InternalServerError(ErrHttpUnknownInternalServerError)
+}
+
+func MethodNotAllowed() HttpError {
+	return HttpError{
+		Status: http.StatusMethodNotAllowed,
+		Err:    ErrMethodNotAllowed,
+	}
 }
 
 func NotFound() HttpError {

@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
 	"sync"
 )
@@ -28,6 +29,9 @@ func (r *ResponseWriterBuffer) Header() http.Header {
 func (r *ResponseWriterBuffer) Write(data []byte) (int, error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
+	if r.responseData == nil {
+		return 0, fmt.Errorf("ResponseWriterBuffer.Write(): %w", ErrNilPointer)
+	}
 	return r.responseData.Write(data)
 }
 
@@ -40,6 +44,9 @@ func (r *ResponseWriterBuffer) WriteHeader(code int) {
 func (r *ResponseWriterBuffer) End() (int, error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
+	if r.responseData == nil || r.rw == nil {
+		return 0, fmt.Errorf("ResponseWriterBuffer.End(): %w", ErrNilPointer)
+	}
 	r.rw.WriteHeader(r.status)
 	return r.rw.Write(r.responseData.Bytes())
 }

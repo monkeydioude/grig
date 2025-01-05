@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"monkeydioude/grig/internal/model"
+	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/server/config"
-	"monkeydioude/grig/pkg/fs"
 )
 
 type Josuke struct {
@@ -23,7 +23,7 @@ func JosukeList(config *config.ServerConfig) Josuke {
 	if config == nil || config.JosukeConfigPath == "" {
 		return p
 	}
-	jk, err := fs.UnmarshalFromPath[model.Josuke](config.JosukeConfigPath)
+	jk, err := file.UnmarshalFromPath[model.Josuke](config.JosukeConfigPath)
 	if err != nil {
 		log.Printf("[ERR ] pages.JosukeList: %s", err)
 		return p

@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
-	"monkeydioude/grig/internal/errors"
 	element "monkeydioude/grig/pkg/html/elements"
 	"monkeydioude/grig/pkg/os"
+	"monkeydioude/grig/pkg/server/http_errors"
 	"net/http"
 	"sync"
 )
@@ -27,15 +27,19 @@ func (l *Layout[any]) WithMethod(method string, handler Handler) func(http.Respo
 	// #StephenCurrying
 	return func(w http.ResponseWriter, req *http.Request) {
 		resBuff := NewResponseWriterBuffer(w)
+		if resBuff == nil {
+			http_errors.WriteError(http_errors.InternalServerError(fmt.Errorf("Layout.WithMethod(): %w", ErrNilPointer)), resBuff)
+			return
+		}
 		for _, m := range Methods {
 			// a method matches
 			if m == method {
 				if err := handler(resBuff, req); err != nil {
-					errors.WriteError(err, resBuff)
+					http_errors.WriteError(err, resBuff)
 				}
 				_, err := resBuff.End()
 				if err != nil {
-					errors.WriteError(errors.InternalServerError(err), resBuff)
+					http_errors.WriteError(http_errors.InternalServerError(err), resBuff)
 				}
 				return
 			}

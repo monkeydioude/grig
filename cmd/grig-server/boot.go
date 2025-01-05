@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"monkeydioude/grig/internal/consts"
+	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/server/config"
-	"monkeydioude/grig/pkg/fs"
 	"monkeydioude/grig/pkg/os"
 	"monkeydioude/grig/pkg/server"
 	"monkeydioude/grig/pkg/tiger/assert"
@@ -22,12 +22,12 @@ func boot() *server.Layout[config.ServerConfig] {
 	mainConfigPath := parseFlags()
 	conf := config.NewServerConfigFromPath(mainConfigPath)
 	if conf.CapybaraConfigPath == "" {
-		conf.CapybaraConfigPath = fs.AppendToThisFileDirectory(consts.DEFAULT_CAPYBARA_FILENAME, conf.ServerConfigPath)
-		assert.NoError(fs.CreateAndWriteFile(conf.CapybaraConfigPath, []byte("{}"), nativeOs.ModePerm))
+		conf.CapybaraConfigPath = file.AppendToThisFileDirectory(consts.DEFAULT_CAPYBARA_FILENAME, conf.ServerConfigPath)
+		assert.NoError(file.CreateAndWriteFile(conf.CapybaraConfigPath, []byte("{}"), nativeOs.ModePerm))
 	}
 	if conf.JosukeConfigPath == "" {
-		conf.JosukeConfigPath = fs.AppendToThisFileDirectory(consts.DEFAULT_JOSUKE_FILENAME, conf.ServerConfigPath)
-		assert.NoError(fs.CreateAndWriteFile(conf.JosukeConfigPath, []byte("{}"), nativeOs.ModePerm))
+		conf.JosukeConfigPath = file.AppendToThisFileDirectory(consts.DEFAULT_JOSUKE_FILENAME, conf.ServerConfigPath)
+		assert.NoError(file.CreateAndWriteFile(conf.JosukeConfigPath, []byte("{}"), nativeOs.ModePerm))
 	}
 	assert.NoError(conf.Save())
 	layout := server.Layout[config.ServerConfig]{

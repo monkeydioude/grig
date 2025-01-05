@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"monkeydioude/grig/internal/model"
+	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/server/config"
-	"monkeydioude/grig/pkg/fs"
 )
 
 type Capybara struct {
@@ -25,7 +25,7 @@ func CapybaraList(config *config.ServerConfig) Capybara {
 	if config == nil || config.CapybaraConfigPath == "" {
 		return p
 	}
-	cp, err := fs.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
+	cp, err := file.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
 	if err != nil {
 		log.Printf("[ERR ] pages.Capybaralist: %s", err)
 		return p

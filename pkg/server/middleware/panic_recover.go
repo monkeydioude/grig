@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"log"
-	"monkeydioude/grig/internal/errors"
+	"monkeydioude/grig/pkg/server/http_errors"
 	"net/http"
 	"runtime/debug"
 )
@@ -12,7 +12,7 @@ func PanicRecover(handler http.Handler) http.Handler {
 		defer func() {
 			if r := recover(); r != nil {
 				log.Printf("[ERR ] panic recovered: %v\n Stack trace:\n %s\n", r, debug.Stack())
-				errors.WriteError(errors.UnknownInternalServerError(), w)
+				http_errors.WriteError(http_errors.UnknownInternalServerError(), w)
 			}
 		}()
 		handler.ServeHTTP(w, r)
