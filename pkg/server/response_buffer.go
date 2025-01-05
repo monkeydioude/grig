@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"net/http"
 	"sync"
 )
@@ -16,7 +17,7 @@ import (
 type ResponseWriterBuffer struct {
 	rw           http.ResponseWriter
 	status       int
-	responseData *[]byte
+	responseData *bytes.Buffer
 	mutex        sync.Mutex
 }
 
@@ -27,8 +28,7 @@ func (r *ResponseWriterBuffer) Header() http.Header {
 func (r *ResponseWriterBuffer) Write(data []byte) (int, error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
-	r.responseData = &data
-	return len(data), nil
+	return r.responseData.Write(data)
 }
 
 func (r *ResponseWriterBuffer) WriteHeader(code int) {
@@ -41,12 +41,13 @@ func (r *ResponseWriterBuffer) End() (int, error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 	r.rw.WriteHeader(r.status)
-	return r.rw.Write(*r.responseData)
+	return r.rw.Write(r.responseData.Bytes())
 }
 
 func NewResponseWriterBuffer(w http.ResponseWriter) *ResponseWriterBuffer {
 	return &ResponseWriterBuffer{
-		status: http.StatusOK,
-		rw:     w,
+		status:       http.StatusOK,
+		rw:           w,
+		responseData: bytes.NewBuffer([]byte{}),
 	}
 }

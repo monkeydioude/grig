@@ -1,5 +1,1 @@
-{
-    "app_services_dir": "./services",
-    "josuke_config_path": "./config/josuke.config.json",
-    "capybara_config_path": "./config/capybara.config.json"
-}
+{"parsers_dir":"","josuke_config_path":"/Users/mkd/work/calq/grig/test/config/josuke.config.json","capybara_config_path":"/Users/mkd/work/calq/grig/test/config/capybara.config.json"}

@@ -49,6 +49,6 @@ func UnknownInternalServerError() HttpError {
 func NotFound() HttpError {
 	return HttpError{
 		Status: http.StatusNotFound,
-		Err:    NotFound(),
+		Err:    ErrHTTPNotFound,
 	}
 }

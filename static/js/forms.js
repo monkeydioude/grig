@@ -25,8 +25,8 @@ function addFormGroupListener(counter, listenOn, container, modelNode, childsLis
             }
         });
     } catch (e) {
-        console.log(e)
-        ToastError("ERROR: Could not display a new form group")
+        console.log(e);
+        // ToastError("ERROR: Could not display a new form group")
     }
 }
 
