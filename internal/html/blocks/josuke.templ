@@ -11,41 +11,47 @@ import (
 	"github.com/google/uuid"
 )
 
-templ JosukeCmd(idGeneratorFunc func (model.IndexBuilder) string, cmd model.Command) {
-    @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&cmd), "cd %base_dir%",
-    strings.Join(cmd.Command, " "))) { }
-}
-
-templ JosukeAction(idGeneratorFunc func (model.IndexBuilder) string, action model.Action) {
-    <div class="action-element">
-        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&action), "push", action.Action)) {
-            { "Action definition " }
-            @span.Advice() { Set to "push" for CI/CD }
-        }
-        <div class="commands-list">
-            @span.Optional() { Commands }
-            <div class="service-block border-sky-200 border-l-2 px-4">
-                for cIt, cmd := range action.Commands {
-                    {{ cmd.SetParent(&action) }}
-                    {{ cmd.SetIndex(cIt) }}
-                    @JosukeCmd(idGeneratorFunc, cmd)
-                }
-            </div>
-        </div>
-        @button.AddButton("addCommandButton", "bg-sky-700") { + Command }
-        // @button.RemoveL() { - Command }
+templ JosukeCmd(idGeneratorFunc func (model.IndexBuilder, string) string, cmd model.Command) {
+    <div class="service-block command-element">
+        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&cmd, "command"), "cd %base_dir%",
+        strings.Join(cmd.Command, " "))) { }
     </div>
 }
 
-templ JosukeBranch(idGeneratorFunc func (model.IndexBuilder) string, branch model.Branch) {
+templ JosukeAction(idGeneratorFunc func (model.IndexBuilder, string) string, action model.Action) {
+    {{ cmdClass := fmt.Sprintf("commands-list-%s-%d", uuid.NewString(), action.GetIndex()) }}
+    {{ selector := "."+cmdClass }}
+    {{ removeSelector := selector+ " .command-element" }}
+    <div class="action-element service-block">
+        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&action, "action"), "push", action.Action)) {
+            { "Action definition " }
+            @span.Advice() { Set to "push" for CI/CD }
+        }
+        @span.Optional() { Commands }
+        <div
+            class={"border-sky-200 border-l-2 px-4", cmdClass}
+            data-parent-name={idGeneratorFunc(&action, "")}
+            >
+            for cIt, cmd := range action.Commands {
+                {{ cmd.SetParent(&action) }}
+                {{ cmd.SetIndex(cIt) }}
+                @JosukeCmd(idGeneratorFunc, cmd)
+            }
+        </div>
+        @button.AjaxBlockButton("/blocks/josuke/command", selector, "rounded-none rounded-s mr-0", "bg-sky-700 hover:bg-sky-800") { + Command }
+        @button.RemoveLastOf(removeSelector, "rounded-none rounded-e", "bg-red-700 hover:bg-red-800") { - Command }
+    </div>
+}
+
+templ JosukeBranch(idGeneratorFunc func (model.IndexBuilder, string) string, branch model.Branch) {
     {{ actionClass := fmt.Sprintf("actions-list-%s-%d", uuid.NewString(), branch.GetIndex()) }}
     {{ selector := "."+actionClass }}
     {{ removeSelector := selector+ " .action-element" }}
     <div class="service-block border-sky-400 border-l-4  pt-4 px-4 mb-2.5 branch-item">
-        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&branch), "main", branch.Branch)) { Branch name }
+        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&branch, "branch"), "main", branch.Branch)) { Branch name }
         <div
             class={"border-sky-300 test-sky-600 border-l-2 pt-4 px-4 flex-col", actionClass}
-            data-parent-name={idGeneratorFunc(&branch)}
+            data-parent-name={idGeneratorFunc(&branch, "")}
         >
             for aIt, action := range branch.Actions {
                 {{ action.SetParent(&branch) }}
@@ -53,20 +59,22 @@ templ JosukeBranch(idGeneratorFunc func (model.IndexBuilder) string, branch mode
                 @JosukeAction(idGeneratorFunc, action)
             }
         </div>
-        @button.AjaxBlockButton("/blocks/josuke/action", selector, "bg-sky-600") { + Action }
-        @button.RemoveLastOf(removeSelector) { - Action }
+        <div class="mt-2">
+            @button.AjaxBlockButton("/blocks/josuke/action", selector, "rounded-none rounded-s mr-0", "bg-sky-600 hover:bg-sky-700") { + Action }
+            @button.RemoveLastOf(removeSelector, "rounded-none rounded-e", "bg-red-600 hover:bg-red-700") { - Action }
+        </div>
     </div>
 }
 
 templ JosukeDeployment(
     depIdGenFunc func (model.IndexBuilder, string) string,
-    idGenChainFunc func (model.IndexBuilder) string,
+    idGenChainFunc func (model.IndexBuilder, string) string,
     dep model.Deployment,
 ) {
     {{ branchClass := fmt.Sprintf("branches-list-%d", dep.GetIndex()) }}
     {{ selector := "."+branchClass }}
     {{ removeSelector := fmt.Sprintf("%s .branch-item", selector)}}
-    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+    <div class="deployment-element service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
         @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "repo"), "<username>/<project>", dep.Repo)) {
                 Repo name
         }
@@ -79,15 +87,17 @@ templ JosukeDeployment(
                 @span.Advice() { Directory where your project is stored }
             }
             @hx.H3("Branches")
-            <div class={branchClass} data-parent-name={idGenChainFunc(&dep)}>
+            <div class={branchClass} data-parent-name={idGenChainFunc(&dep, "")}>
                 for bIt, branch := range dep.Branches {
                     {{ branch.SetParent(&dep) }}
                     {{ branch.SetIndex(bIt) }}
                     @JosukeBranch(idGenChainFunc, branch)
                 }
             </div>
-            @button.AjaxBlockButton("/blocks/josuke/branch", selector) { + Branch }
-            @button.RemoveLastOf(removeSelector) { - Branch }
+            <div class="mt-2">
+                @button.AjaxBlockButton("/blocks/josuke/branch", selector, "rounded-none rounded-s mr-0") { + Branch }
+                @button.RemoveLastOf(removeSelector, "rounded-none rounded-e") { - Branch }
+            </div>
     </div>
 }
 

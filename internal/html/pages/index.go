@@ -11,10 +11,9 @@ import (
 )
 
 type IndexPage struct {
-	Capybara    *model.Capybara
-	Josuke      *model.Josuke
-	ServicesLen int
-	Err         error
+	Capybara *model.Capybara
+	Josuke   *model.Josuke
+	Err      error
 }
 
 func Index(
@@ -33,7 +32,6 @@ func Index(
 	} else {
 		p.Capybara = &cp
 	}
-	p.ServicesLen = len(cp.Services)
 
 	// josuke
 	jk, err := file.UnmarshalFromPath[model.Josuke](config.JosukeConfigPath)

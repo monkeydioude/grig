@@ -6,11 +6,13 @@ import (
     "monkeydioude/grig/pkg/html/elements/button"
 	"monkeydioude/grig/pkg/html/elements/span"
     "monkeydioude/grig/internal/html/blocks"
-	// "strings"
 	"monkeydioude/grig/internal/service/utils"
 )
 
 templ (page Josuke) Content() {
+    {{ depClass := "deployments-list" }}
+    {{ depSelector := ".deployments-list" }}
+    {{ removeDepSelector := ".deployments-list .deployment-element" }}
     <div id="josuke" class="pb-3">
         @hx.H1("Josuke")
         @form.JsonPostForm("/api/v1/josuke") {
@@ -39,10 +41,10 @@ templ (page Josuke) Content() {
                     @blocks.JosukeHook(it, GetHookInputName, hook)
                 }
             </div>
-            @button.AjaxBlockButton("/blocks/josuke/hook", ".hooks-list") { + Add a new Hook }
+            @button.AjaxBlockButton("/blocks/josuke/hook", ".hooks-list") { + Hook }
 
             // Deployments
-            <div class="deployments-list">
+            <div class={depClass}>
                 @hx.H2("Deployments")
                 for dIt, dep := range page.Data.Deployment {
                     {{ dep.SetParent(nil) }}
@@ -50,7 +52,10 @@ templ (page Josuke) Content() {
                     @blocks.JosukeDeployment(GetInputNameWithKey, utils.GetInputName, dep)
                 }
             </div>
-            @button.AjaxBlockButton("/blocks/josuke/deployment", ".deployments-list") { + Add a new Deployment }
+            <div class="my-2">
+                @button.AjaxBlockButton("/blocks/josuke/deployment", depSelector, "rounded-none rounded-s mr-0") { + Deployment }
+                @button.RemoveLastOf(removeDepSelector, "rounded-none rounded-e") { - Deployment }
+            </div>
         }
     </div>
 }

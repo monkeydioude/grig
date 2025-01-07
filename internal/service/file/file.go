@@ -11,7 +11,6 @@ import (
 
 type File interface {
 	Save() error
-	Source() *os.File
 }
 
 func AppendToThisFileDirectory(appendThisFilesPath, toThisFileDir string) string {
@@ -49,6 +48,7 @@ func CreateAndWriteFile(path string, data []byte, mode os.FileMode) error {
 	} else if err != nil {
 		return fmt.Errorf("fs.CreateAndWriteFile(): %q: %w: %w", path, errors.ErrCheckingFile, err)
 	}
+	fmt.Println("CreateAndWriteFile", string(data))
 	if err := os.WriteFile(path, data, mode); err != nil {
 		return fmt.Errorf("fs.CreateAndWriteFile(): %q: %w: %w", path, errors.ErrWritingFile, err)
 	}

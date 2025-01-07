@@ -43,5 +43,5 @@ func GetHookInputName(it int, key string) string {
 }
 
 func GetInputNameWithKey(hp model.IndexBuilder, key string) string {
-	return fmt.Sprintf("%s[%s]", utils.GetInputName(hp), key)
+	return utils.GetInputName(hp, key)
 }

@@ -1,0 +1,15 @@
+package blocks
+
+import "monkeydioude/grig/pkg/html/elements/form"
+import "monkeydioude/grig/internal/model"
+import "monkeydioude/grig/pkg/html/elements/button"
+
+templ CapybaraService(idGen func (it int, key string) string, it int, service model.ServiceDefinition) {
+    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+        @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "id"), "Service name", service.ID)) { Name }
+        @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "method"), "string, regex etc...", service.Method)) { Method }
+        @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "pattern"), "/api/vault_hunter", service.Pattern)) { Pattern }
+        @form.DisplayFormGroup(form.NumberFormGroup(idGen(it, "port"), "Port of the service", service.Port)) { Port }
+        @button.RemoveParentButton() { Delete }
+    </div>
+}

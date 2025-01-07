@@ -77,10 +77,6 @@ func (c Capybara) Save() error {
 	return nil
 }
 
-func (c Capybara) Source() *os.File {
-	return nil
-}
-
 func (c Capybara) Verify() error {
 	var errs error
 	if err := c.Proxy.Verify(); err != nil {

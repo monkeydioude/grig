@@ -59,17 +59,26 @@ func (h Handler) JosukeBranchBlock(w http.ResponseWriter, r *http.Request) error
 
 	branch := model.NewBranch(0)
 	josukeTree(branch, indexStr, parentNameStr)
-	// htmlinput.FillIndexesFromHTMLInput(branch.GetParent(), parentNameStr)
+	htmlinput.FillIndexesFromHTMLInput(branch.GetParent(), parentNameStr)
 	return blocks.JosukeBranch(utils.GetInputName, *branch).Render(context.Background(), w)
 }
 
-func (h Handler) JosukeBranchAction(w http.ResponseWriter, r *http.Request) error {
+func (h Handler) JosukeActionBlock(w http.ResponseWriter, r *http.Request) error {
 	indexStr := r.URL.Query().Get("index")
 	parentNameStr := r.URL.Query().Get("parent_name")
 	action := model.NewAction(0)
 	josukeTree(action, indexStr, parentNameStr)
 	htmlinput.FillIndexesFromHTMLInput(action.GetParent(), parentNameStr)
 	return blocks.JosukeAction(utils.GetInputName, *action).Render(context.Background(), w)
+}
+
+func (h Handler) JosukeCommandBlock(w http.ResponseWriter, r *http.Request) error {
+	indexStr := r.URL.Query().Get("index")
+	parentNameStr := r.URL.Query().Get("parent_name")
+	cmd := model.NewCommand(0)
+	josukeTree(cmd, indexStr, parentNameStr)
+	htmlinput.FillIndexesFromHTMLInput(cmd.GetParent(), parentNameStr)
+	return blocks.JosukeCmd(utils.GetInputName, *cmd).Render(context.Background(), w)
 }
 
 func josukeTree(hp model.IndexBuilder, indexStr string, parentNameStr string) error {

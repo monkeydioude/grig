@@ -38,7 +38,7 @@ func (c Capybara) Title() string {
 	return c.Titl
 }
 
-func (c Capybara) GetServiceInputName(it int, key string) string {
+func GetServiceInputName(it int, key string) string {
 	return fmt.Sprintf("services[%d][%s]", it, key)
 }
 

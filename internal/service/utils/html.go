@@ -5,7 +5,7 @@ import (
 	"monkeydioude/grig/internal/model"
 )
 
-func GetInputName(hp model.IndexBuilder) string {
+func GetInputName(hp model.IndexBuilder, typ string) string {
 	if hp == nil {
 		return ""
 	}
@@ -14,5 +14,8 @@ func GetInputName(hp model.IndexBuilder) string {
 		res = fmt.Sprintf("[%s][%d]%s", hp.GetName(), hp.GetIndex(), res)
 		hp = hp.GetParent()
 	}
-	return fmt.Sprintf("%s[%d]%s", hp.GetName(), hp.GetIndex(), res)
+	if typ != "" {
+		typ = fmt.Sprintf("[%s]", typ)
+	}
+	return fmt.Sprintf("%s[%d]%s%s", hp.GetName(), hp.GetIndex(), res, typ)
 }

@@ -4,22 +4,8 @@ import (
     "monkeydioude/grig/pkg/html/elements/hx"
     "monkeydioude/grig/pkg/html/elements/form"
     "monkeydioude/grig/pkg/html/elements/button"
+	"monkeydioude/grig/internal/html/blocks"
 )
-
-script capybaraJsBlock(count int) {
-    try {
-        addFormGroupListener(
-            count,
-            $("#addServiceButton"),
-            $('.services-container'),
-            $("#shadow-form"),
-            ["id", "method", "pattern", "port"]
-        );
-    } catch (e) {
-        console.error(e);
-        ToastError("ERROR: Could not display a new capybara form group")
-    }
-}
 
 templ (page Capybara) Content() {
     <div id="capybara" class="pb-3">
@@ -34,28 +20,12 @@ templ (page Capybara) Content() {
             <div class="services-container" id="servicesContainer">
                 @hx.H2("Services")
                 for it, service := range page.Data.Services {
-                <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
-                    @form.DisplayFormGroup(form.StringFormGroup(page.GetServiceInputName(it, "id"), "Service name", service.ID)) { Name }
-                    @form.DisplayFormGroup(form.StringFormGroup(page.GetServiceInputName(it, "method"), "string, regex etc...", service.Method)) { Method }
-                    @form.DisplayFormGroup(form.StringFormGroup(page.GetServiceInputName(it, "pattern"), "/api/vault_hunter", service.Pattern)) { Pattern }
-                    @form.DisplayFormGroup(form.NumberFormGroup(page.GetServiceInputName(it, "port"), "Port of the service", service.Port)) { Port }
-                    @button.RemoveParentButton() { Delete }
-                </div>
+                    @blocks.CapybaraService(GetServiceInputName, it, service)
                 }
             </div>
             
             <!-- Add Service Button -->
-            @button.AddButton("addServiceButton", "") { + Add a New Service }
+            @button.AjaxBlockButton("/blocks/capybara/service", "#servicesContainer"){ + Service }
         }
-        <div id="shadow-form" class="hidden">
-            <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
-                @form.DisplayFormGroup(form.StringFormGroup("", "Service name", "")) { Name }
-                @form.DisplayFormGroup(form.StringFormGroup("", "string, regex etc...", "")) { Method }
-                @form.DisplayFormGroup(form.StringFormGroup("", "/api/vault_hunter", "")) { Pattern }
-                @form.DisplayFormGroup(form.NumberFormGroup("", "Port of the service", nil)) { Port }
-            </div>
-            @button.RemoveParentButton() { Delete }
-        </div>
     </div>
-    @capybaraJsBlock(len(page.Data.Services))
 }

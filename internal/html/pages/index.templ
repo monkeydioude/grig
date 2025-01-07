@@ -5,6 +5,7 @@ import (
 	"monkeydioude/grig/pkg/html/elements/hr"
     "monkeydioude/grig/pkg/html/elements/hx"
     "monkeydioude/grig/pkg/html/elements/a"
+	"strings"
 )
 
 templ configContentBlock(title, value string) {
@@ -14,11 +15,9 @@ templ configContentBlock(title, value string) {
     </div>
 }
 
-templ capybaraConfigBlock(capy *model.Capybara, servicesLen int) {
-    if capy == nil {
-        <div>Error loading capybara config</div>
-    }
-    if capy != nil {
+templ capybaraConfigBlock(capy *model.Capybara) {
+    <div class="capy-config">
+        {{ servicesLen := len(capy.Services)}}
         <div class="config-content">
             @hx.H1("Capybara")
             <div>
@@ -38,14 +37,80 @@ templ capybaraConfigBlock(capy *model.Capybara, servicesLen int) {
             </div>
             @a.Internal("/capybara") { Edit Capybara Config }
         </div>
-    }
+    </div>
+}
+
+templ josukeConfigBlock(josuke *model.Josuke) {
+    {{ depLen := len(josuke.Deployment)}}
+    <div class="josuke-config">
+        <div class="config-content">
+            @hx.H1("Josuke")
+            <div>
+                @hx.H2("Base settings")
+                @configContentBlock("Log level", josuke.LogLevel)
+                @configContentBlock("Host", josuke.Host)
+                @configContentBlock("Port", josuke.Port.String())
+                @configContentBlock("Payloads store", josuke.Store)
+                @configContentBlock("Healthcheck", josuke.HealthcheckRoute)
+                @hx.H2("Hooks")
+                for _, hook := range josuke.Hook {
+                    <div class="pb-5">
+                        @configContentBlock("Name", hook.Name)
+                        @configContentBlock("Type", hook.Type)
+                        @configContentBlock("Path", hook.Path)
+                        @configContentBlock("Secret", hook.Secret)
+                    </div>
+                }
+                @hx.H2("Deployments")
+                for it, dep := range josuke.Deployment {
+                    <div class="pb-5">
+                        @configContentBlock("Repo", dep.Repo)
+                        @configContentBlock("Project dir", dep.ProjDir)
+                        @configContentBlock("Base dir", dep.BaseDir)
+                        @hx.H3("Branches")
+                        for _, branch := range dep.Branches {
+                            <div class="pb-5">
+                                @configContentBlock("Branch", branch.Branch)
+                                @configContentBlock("Project dir", dep.ProjDir)
+                                @configContentBlock("Base dir", dep.BaseDir)
+                                for _, action := range branch.Actions {
+                                    <div>
+                                        @configContentBlock("Action", action.Action)
+                                        <div class="highlighted p-1 text-lg text-sky-500">Commands</div>
+                                        <ul class="list-disc ml-2.5 pl-3">
+                                            for _, cmd := range action.Commands {
+                                                <li class="text-lg text-emerald-600">
+                                                    {strings.Join(cmd.Command, " ")}
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                    @hr.Default(it < depLen -1)
+                }
+                @a.Internal("/josuke") { Edit Josuke Config }
+            </div>
+        </div>
+    </div>
 }
 
 templ (page IndexPage) Content() {
-    <div id="index">
+    <div id="index" class="pb-4">
         if page.Err != nil {
             <div class="error-block">{page.Err.Error()}</div>
         }
-        @capybaraConfigBlock(page.Capybara, page.ServicesLen)
+        if page.Capybara != nil {
+            @capybaraConfigBlock(page.Capybara)
+        } else {
+            <div>Error loading capybara config</div>
+        }
+        if page.Josuke != nil {
+            @josukeConfigBlock(page.Josuke)
+        } else {
+            <div>Error loading josuke config</div>
+        }
     </div>
 }

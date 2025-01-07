@@ -26,6 +26,7 @@ func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 
 	// json api routes definition
 	mux.HandleFunc("/api/v1/capybara", layout.Post(with.JsonPayload(json.CapybaraSave)))
+	mux.HandleFunc("/api/v1/josuke", layout.Post(with.JsonPayload(json.JosukeSave)))
 
 	// html routes definition
 	mux.HandleFunc("/", layout.Get(nw.WithNav(html.Index, element.Link{Href: "/", Text: element.Text("Index")})))
@@ -35,7 +36,10 @@ func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 	mux.HandleFunc("/blocks/josuke/hook", layout.Get(html.JosukeHookBlock))
 	mux.HandleFunc("/blocks/josuke/deployment", layout.Get(html.JosukeDeploymentBlock))
 	mux.HandleFunc("/blocks/josuke/branch", layout.Get(html.JosukeBranchBlock))
-	mux.HandleFunc("/blocks/josuke/action", layout.Get(html.JosukeBranchAction))
+	mux.HandleFunc("/blocks/josuke/action", layout.Get(html.JosukeActionBlock))
+	mux.HandleFunc("/blocks/josuke/command", layout.Get(html.JosukeCommandBlock))
+
+	mux.HandleFunc("/blocks/capybara/service", layout.Get(html.CapybaraServiceBlock))
 
 	// Apply the middleware to your server
 	app := middleware.Mux(mux)

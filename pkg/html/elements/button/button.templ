@@ -35,26 +35,26 @@ templ AjaxBlockButton(path, target string, class ...string) {
     <button
         type="button"
         hx-get={path}
-        hx-trigger="click"
         hx-target={target}
         hx-swap="beforeend"
         hx-on::config-request="EditReq(event)"
-        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none mt-2.5 py-2.5 px-4", strings.Join(class, " ")}>
+        hx-on::after-request="event.stopPropagation()"
+        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none py-2.5 px-4 mr-2.5", strings.Join(class, " ")}>
         {children...}
     </button>
-}
+}   
 
-templ RemoveParentButton() {
-    <button type="button" class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4"
+templ RemoveParentButton(class ...string) {
+    <button type="button" class={"remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4", strings.Join(class, " ")}
         onclick="removeParent(this)">{children...}</button>
 }
 
-templ Remove(target string) {
-    <button type="button" data-target={target} class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4"
+templ Remove(target string, class ...string) {
+    <button type="button" data-target={target} class={"remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4", strings.Join(class, " ")}
         onclick="removeTarget(this)">{children...}</button>
 }
 
-templ RemoveLastOf(target string) {
-    <button type="button" data-target={target} class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4"
+templ RemoveLastOf(target string, class ...string) {
+    <button type="button" data-target={target} class={"remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4", strings.Join(class, " ")}
         onclick="removeLastOf(this)">{children...}</button>
 }
