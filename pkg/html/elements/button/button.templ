@@ -7,6 +7,25 @@ templ AddButton(id, class string) {
         id={id}>{children...}</button>
 }
 
+templ AddHTMXGetButton(path, target, class string) {
+    <script>
+        function EditReq(event) {
+            const length = $$(".hooks-list .service-block").length;
+            event.detail.parameters["index"] = length;
+        }
+    </script>
+    <button
+        type="button"
+        hx-get={path}
+        hx-trigger="click"
+        hx-target={target}
+        hx-swap="beforeend"
+        hx-on::config-request="EditReq(event)"
+        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none mt-2.5 py-2.5 px-4", class}>
+        {children...}
+    </button>
+}
+
 templ RemoveParentButton() {
     <button type="button" class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2 px-4"
         onclick="removeParent(this)">{children...}</button>

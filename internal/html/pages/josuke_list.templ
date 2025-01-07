@@ -5,17 +5,26 @@ import (
     "monkeydioude/grig/pkg/html/elements/form"
     "monkeydioude/grig/pkg/html/elements/button"
 	"monkeydioude/grig/pkg/html/elements/span"
-	"strings"
+    "monkeydioude/grig/internal/html/blocks"
+	// "strings"
+	"monkeydioude/grig/internal/service/utils"
 )
 
 script josukeJsBlock(count int) {
     try {
+        // addFormGroupListener(
+        //     count,
+        //     $("#addHookButton"),
+        //     $('.hooks-list'),
+        //     $("#shadow-hook"),
+        //     ["name", "type", "path", "secret"]
+        // );
         addFormGroupListener(
             count,
-            $("#addHookButton"),
-            $('.hooks-list'),
-            $("#shadow-hook"),
-            ["name", "type", "path", "secret"]
+            $("#addCommandButton"),
+            $('.commands-list'),
+            $("#shadow-command"),
+            ["command"]
         );
     } catch (e) {
         console.error(e);
@@ -49,67 +58,19 @@ templ (page Josuke) Content() {
             <div class="hooks-list">
                 @hx.H2("Hooks")
                 for it, hook := range page.Data.Hook {
-                    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
-                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "name"), "", hook.Name)) { Name }
-                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "type"), "github, bitbucket, gogs, bitbucket", hook.Type)) { Type }
-                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "path"), "/josuke/<type>", hook.Path)) {
-                            { "Path "}
-                            @span.Advice() { Will most likely match the Type of hook above }
-                        }
-                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "secret"), "<secret>", hook.Secret)) {
-                            Secret, should match the one in github
-                        }
-                        @button.RemoveParentButton() { Delete }
-                    </div>
+                    @blocks.JosukeHook(it, GetHookInputName, hook)
                 }
             </div>
-            @button.AddButton("addHookButton", "") { + Add a new Hook }
+            @button.AddHTMXGetButton("/blocks/josuke/hook", ".hooks-list", "") { + Add a new Hook }
+            // @button.AddButton("addHookButton", "") { + Add a new Hook }
 
             // Deployments
             <div class="deployments-list">
                 @hx.H2("Deployments")
-                for it, dep := range page.Data.Deployment {
-                    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
-                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "repo"), "<username>/<project>", dep.Repo)) {
-                            Repo name
-                        }
-                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "proj_dir"), "<project>", dep.ProjDir)) {
-                            { "Project directory "}
-                            @span.Advice() { Most likely the name of the project on your repo, after git clone }
-                        }
-                        @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(it, "base_dir"), "/home/user/projects", dep.BaseDir)) {
-                            { "Base directory "}
-                            @span.Advice() { Directory where your project is stored }
-                        }
-                        @hx.H3("Branches")
-                        <div class="branches-list">
-                            for bIt, branch := range dep.Branches {
-                                <div class="service-block border-sky-400 border-l-4  pt-4 px-4 mb-2.5">
-                                    @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(bIt, "branch"), "main", branch.Branch)) {
-                                        Branch name
-                                    }
-                                    <div class="service-block border-sky-300 border-l-2 pt-4 px-4">
-                                        for aIt, action := range branch.Actions {
-                                            @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(aIt, "action"), "push", action.Action)) {
-                                                { "Action definition " }
-                                                @span.Advice() { Set to "push" for CI/CD }
-                                            }
-                                            <div class="service-block border-sky-200 border-l-2 px-4">
-                                                @span.Optional() { Commands }
-                                                for cIt, cmd := range action.Commands {
-                                                    @form.DisplayFormGroup(form.StringFormGroup(page.GetHookInputName(cIt, "command"), "cd %base_dir%", strings.Join(cmd, " "))) {
-                                                    }
-                                                }
-                                            </div>
-                                        }
-                                    @button.AddButton("addCommandButton", "") { + Add a new Command }
-                                    </div>
-                                @button.AddButton("addActionButton", "") { + Add a new Action }
-                                </div>
-                            }
-                        </div>
-                        @button.AddButton("addBranchButton", "") { + Add a new Branch }
-                    </div>
+                for dIt, dep := range page.Data.Deployment {
+                    {{ dep.SetParent(nil) }}
+                    {{ dep.SetIndex(dIt)}}
+                    @blocks.JosukeDeployment(GetInputNameWithKey, utils.GetInputName, dep)
                 }
             </div>
             @button.AddButton("addDeploymentButton", "") { + Add a new Deployment }
@@ -125,6 +86,25 @@ templ (page Josuke) Content() {
                 @form.DisplayFormGroup(form.StringFormGroup("", "<secret>", "")) {
                     Secret, should match the one in github
                 }
+            </div>
+            @button.RemoveParentButton() { Delete }
+        </div>
+        <div id="shadow-action" class="hidden">
+            <div class="service-block border-sky-400 border-l-4  pt-4 px-4 mb-2.5">
+                @form.DisplayFormGroup(form.StringFormGroup("", "main", "")) { "Branch name" }
+                <div class="service-block border-sky-300 test-sky-600 border-l-2 pt-4 px-4">
+                    @form.DisplayFormGroup(form.StringFormGroup("", "push", "")) {
+                        { "Action definition " }
+                        @span.Advice() { Set to "push" for CI/CD }
+                    }
+                    @button.AddButton("addCommandButton", "bg-sky-700") { + Command }
+                </div>
+                @button.AddButton("addActionButton", "bg-sky-600") { + Action }
+            </div>
+        </div>
+        <div id="shadow-command" class="hidden">
+            <div class="service-block border-sky-200 border-l-2 px-4">
+                @form.DisplayFormGroup(form.StringFormGroup("", "cd %base_dir%", "")) {}
             </div>
             @button.RemoveParentButton() { Delete }
         </div>

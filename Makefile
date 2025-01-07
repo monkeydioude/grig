@@ -12,7 +12,7 @@ templ-watch:
 
 .PHONY: gow-watch
 gow-watch:
-	gow run cmd/grig-server/*.go
+	gow run cmd/grig-server/*.go -c ./test/test.config.json
 
 .PHONY: tailwind-watch
 tailwind-watch:

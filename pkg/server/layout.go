@@ -23,7 +23,7 @@ type Handler func(http.ResponseWriter, *http.Request) error
 var Methods = [5]string{"GET", "POST", "PUT", "PATCH", "DELETE"}
 
 // WithMethod is a geeneric wrapper around a generic handler, forcing the a HTTP verb
-func (l *Layout[any]) WithMethod(method string, handler Handler) func(http.ResponseWriter, *http.Request) {
+func WithMethod(method string, handler Handler) func(http.ResponseWriter, *http.Request) {
 	// #StephenCurrying
 	return func(w http.ResponseWriter, req *http.Request) {
 		resBuff := NewResponseWriterBuffer(w)
@@ -51,28 +51,28 @@ func (l *Layout[any]) WithMethod(method string, handler Handler) func(http.Respo
 }
 
 // Get is a wrapper around a generic handler, forcing the GET HTTP verb
-func (l *Layout[any]) Get(handler Handler) func(http.ResponseWriter, *http.Request) {
-	return l.WithMethod("GET", handler)
+func (*Layout[any]) Get(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return WithMethod("GET", handler)
 }
 
 // Post is a wrapper around a generic handler, forcing the POST HTTP verb
-func (l *Layout[any]) Post(handler Handler) func(http.ResponseWriter, *http.Request) {
-	return l.WithMethod("POST", handler)
+func (*Layout[any]) Post(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return WithMethod("POST", handler)
 }
 
 // Put is a wrapper around a generic handler, forcing the PUT HTTP verb
-func (l *Layout[any]) Put(handler Handler) func(http.ResponseWriter, *http.Request) {
-	return l.WithMethod("PUT", handler)
+func (*Layout[any]) Put(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return WithMethod("PUT", handler)
 }
 
 // Patch is a wrapper around a generic handler, forcing the PATCH HTTP verb
-func (l *Layout[any]) Patch(handler Handler) func(http.ResponseWriter, *http.Request) {
-	return l.WithMethod("PATCH", handler)
+func (*Layout[any]) Patch(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return WithMethod("PATCH", handler)
 }
 
 // Delete is a wrapper around a generic handler, forcing the DELETE HTTP verb
-func (l *Layout[any]) Delete(handler Handler) func(http.ResponseWriter, *http.Request) {
-	return l.WithMethod("DELETE", handler)
+func (*Layout[any]) Delete(handler Handler) func(http.ResponseWriter, *http.Request) {
+	return WithMethod("DELETE", handler)
 }
 
 // func (l *Layout) SetParams(

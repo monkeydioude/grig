@@ -30,6 +30,28 @@ function addFormGroupListener(counter, listenOn, container, modelNode, childsLis
     }
 }
 
+function addFormGroupListenerV2(counter, listenOn, container, childsList) {
+    try {
+        const modelNode = container;
+        listenOn.addEventListener('click', function () {
+            try {
+                const newBlock = modelNode.querySelector(".service-block").cloneNode(true);
+                for (const it in childsList) {
+                    updateFormGroup(newBlock.childNodes[it], counter, childsList[it]);
+                }
+                newBlock.appendChild(modelNode.querySelector(".remove-button").cloneNode(true));
+                container.appendChild(newBlock);
+                counter++;
+            } catch (e) {
+                throw e;
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        // ToastError("ERROR: Could not display a new form group")
+    }
+}
+
 // Remove a parent block
 function removeParent(button) {
     button.parentElement.remove();

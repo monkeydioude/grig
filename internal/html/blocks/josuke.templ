@@ -1,0 +1,94 @@
+package blocks
+
+import (
+    "monkeydioude/grig/pkg/html/elements/form"
+    "monkeydioude/grig/internal/model"
+    "monkeydioude/grig/pkg/html/elements/span"
+    "monkeydioude/grig/pkg/html/elements/button"
+    "strings"
+	"monkeydioude/grig/pkg/html/elements/hx"
+)
+
+templ JosukeCmd(idGeneratorFunc func (model.IndexBuilder) string, cmd model.Command) {
+    @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&cmd), "cd %base_dir%",
+    strings.Join(cmd.Command, " "))) { }
+}
+
+templ JosukeAction(idGeneratorFunc func (model.IndexBuilder) string, action model.Action) {
+    @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&action), "push", action.Action)) {
+        { "Action definition " }
+        @span.Advice() { Set to "push" for CI/CD }
+    }
+    <div class="commands-list">
+        @span.Optional() { Commands }
+        <div class="service-block border-sky-200 border-l-2 px-4">
+            for cIt, cmd := range action.Commands {
+                {{ cmd.SetParent(&action) }}
+                {{ cmd.SetIndex(cIt) }}
+                @JosukeCmd(idGeneratorFunc, cmd)
+            }
+            @button.RemoveParentButton() { Delete }
+        </div>
+    </div>
+}
+
+templ JosukeBranch(idGeneratorFunc func (model.IndexBuilder) string, branch model.Branch) {
+    <div class="service-block border-sky-400 border-l-4  pt-4 px-4 mb-2.5">
+        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&branch), "main", branch.Branch)) {
+        Branch name
+        }
+        <div class="service-block border-sky-300 test-sky-600 border-l-2 pt-4 px-4">
+            for aIt, action := range branch.Actions {
+                {{ action.SetParent(&branch) }}
+                {{ action.SetIndex(aIt) }}
+                @JosukeAction(idGeneratorFunc, action)
+            }
+            @button.AddButton("addCommandButton", "bg-sky-700") { + Command }
+        </div>
+        @button.AddButton("addActionButton", "bg-sky-600") { + Action }
+    </div>
+}
+
+templ JosukeDeployment(
+    depIdGenFunc func (model.IndexBuilder, string) string,
+    idGenChainFunc func (model.IndexBuilder) string,
+    dep model.Deployment,
+) {
+    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+        @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "repo"), "<username>/<project>", dep.Repo)) {
+                Repo name
+        }
+            @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "proj_dir"), "<project>", dep.ProjDir)) {
+                { "Project directory "}
+                @span.Advice() { Most likely the name of the project on your repo, after git clone }
+            }
+            @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "base_dir"), "/home/user/projects", dep.BaseDir)) {
+                { "Base directory "}
+                @span.Advice() { Directory where your project is stored }
+            }
+            @hx.H3("Branches")
+            <div class="branches-list">
+                for bIt, branch := range dep.Branches {
+                    {{ branch.SetParent(&dep) }}
+                    {{ branch.SetIndex(bIt) }}
+                    @JosukeBranch(idGenChainFunc, branch)
+                }
+            </div>
+            @button.AddButton("addBranchButton", "bg-sky-400") { + Branch }
+    </div>
+}
+
+templ JosukeHook(it int, idGeneratorFunc func (it int, key string) string, hook model.Hook) {
+    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(it, "name"), "", hook.Name)) { Name }
+        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(it, "type"), "github, bitbucket, gogs, bitbucket",
+        hook.Type)) { Type }
+        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(it, "path"), "/josuke/<type>", hook.Path)) {
+            { "Path "}
+            @span.Advice() { Will most likely match the Type of hook above } }
+            @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(it, "secret"), "<secret>", hook.Secret)) {
+                Secret, should match the one in github
+            }
+                @button.RemoveParentButton() { Delete }
+    </div>
+}

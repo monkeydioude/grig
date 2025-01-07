@@ -32,6 +32,8 @@ func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 	mux.HandleFunc("/capybara", layout.Get(nw.WithNav(html.CapybaraList, element.Link{Href: "/capybara"})))
 	mux.HandleFunc("/josuke", layout.Get(nw.WithNav(html.JosukeList, element.Link{Href: "/josuke"})))
 
+	mux.HandleFunc("/blocks/josuke/hook", layout.Get(html.JosukeHookBlock))
+
 	// Apply the middleware to your server
 	app := middleware.Mux(mux)
 	app.Use(
