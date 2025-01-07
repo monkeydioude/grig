@@ -15,16 +15,16 @@ type IndexBuilder interface {
 	GetName() string
 }
 
-type indexer struct {
-	index int `json:"-"`
+type Indexer struct {
+	Index int `json:"-"`
 }
 
-func (i indexer) GetIndex() int {
-	return i.index
+func (i Indexer) GetIndex() int {
+	return i.Index
 }
 
-func (i *indexer) SetIndex(index int) {
-	i.index = index
+func (i *Indexer) SetIndex(index int) {
+	i.Index = index
 }
 
 type Hook struct {
@@ -41,7 +41,7 @@ func (Hook) GetName() string {
 type Command struct {
 	Command []string `json:"commands"`
 	parent  IndexBuilder
-	indexer
+	Indexer
 }
 
 func (Command) GetName() string {
@@ -67,11 +67,17 @@ func (c Command) GetParent() IndexBuilder {
 	return c.parent
 }
 
+func (c *Command) InitParent() {
+	act := &Action{}
+	act.InitParent()
+	c.SetParent(act)
+}
+
 type Action struct {
 	Action   string    `json:"action"`
 	Commands []Command `json:"commands"`
 	parent   IndexBuilder
-	indexer
+	Indexer
 }
 
 func (Action) GetName() string {
@@ -86,11 +92,30 @@ func (c Action) GetParent() IndexBuilder {
 	return c.parent
 }
 
+func (c *Action) FillBaseData() {
+	c.Commands = make([]Command, 1)
+	c.Commands[0].SetParent(c)
+}
+
+func (c *Action) InitParent() {
+	br := &Branch{}
+	br.InitParent()
+	c.SetParent(br)
+}
+
+func NewAction(index int) *Action {
+	act := Action{}
+	act.SetIndex(index)
+	act.FillBaseData()
+	act.InitParent()
+	return &act
+}
+
 type Branch struct {
 	Branch  string   `json:"branch"`
 	Actions []Action `json:"actions"`
 	parent  IndexBuilder
-	indexer
+	Indexer
 }
 
 func (Branch) GetName() string {
@@ -105,13 +130,31 @@ func (c Branch) GetParent() IndexBuilder {
 	return c.parent
 }
 
+func (c *Branch) FillBaseData() {
+	c.Actions = make([]Action, 1)
+	c.Actions[0].FillBaseData()
+	c.Actions[0].SetParent(c)
+}
+
+func (c *Branch) InitParent() {
+	c.SetParent((&Deployment{}))
+}
+
+func NewBranch(index int) *Branch {
+	br := Branch{}
+	br.SetIndex(index)
+	br.FillBaseData()
+	br.InitParent()
+	return &br
+}
+
 type Deployment struct {
 	Repo     string   `json:"repo"`
 	ProjDir  string   `json:"proj_dir"`
 	BaseDir  string   `json:"base_dir"`
 	Branches []Branch `json:"branches"`
 	parent   any
-	indexer
+	Indexer
 }
 
 func (Deployment) GetName() string {
@@ -124,6 +167,12 @@ func (c *Deployment) SetParent(p IndexBuilder) {
 
 func (c Deployment) GetParent() IndexBuilder {
 	return nil
+}
+
+func (c *Deployment) FillBaseData() {
+	c.Branches = make([]Branch, 1)
+	c.Branches[0].FillBaseData()
+	c.Branches[0].SetParent(c)
 }
 
 type Josuke struct {
@@ -153,8 +202,5 @@ func (j *Josuke) FillBaseData() {
 	}
 	if len(j.Deployment) == 0 {
 		j.Deployment = make([]Deployment, 1)
-		j.Deployment[0].Branches = make([]Branch, 1)
-		j.Deployment[0].Branches[0].Actions = make([]Action, 1)
-		j.Deployment[0].Branches[0].Actions[0].Commands = make([]Command, 1)
 	}
 }

@@ -10,28 +10,6 @@ import (
 	"monkeydioude/grig/internal/service/utils"
 )
 
-script josukeJsBlock(count int) {
-    try {
-        // addFormGroupListener(
-        //     count,
-        //     $("#addHookButton"),
-        //     $('.hooks-list'),
-        //     $("#shadow-hook"),
-        //     ["name", "type", "path", "secret"]
-        // );
-        addFormGroupListener(
-            count,
-            $("#addCommandButton"),
-            $('.commands-list'),
-            $("#shadow-command"),
-            ["command"]
-        );
-    } catch (e) {
-        console.error(e);
-        ToastError("ERROR: Could not display a new hook form group")
-    }
-}
-
 templ (page Josuke) Content() {
     <div id="josuke" class="pb-3">
         @hx.H1("Josuke")
@@ -61,8 +39,7 @@ templ (page Josuke) Content() {
                     @blocks.JosukeHook(it, GetHookInputName, hook)
                 }
             </div>
-            @button.AddHTMXGetButton("/blocks/josuke/hook", ".hooks-list", "") { + Add a new Hook }
-            // @button.AddButton("addHookButton", "") { + Add a new Hook }
+            @button.AjaxBlockButton("/blocks/josuke/hook", ".hooks-list") { + Add a new Hook }
 
             // Deployments
             <div class="deployments-list">
@@ -73,41 +50,7 @@ templ (page Josuke) Content() {
                     @blocks.JosukeDeployment(GetInputNameWithKey, utils.GetInputName, dep)
                 }
             </div>
-            @button.AddButton("addDeploymentButton", "") { + Add a new Deployment }
+            @button.AjaxBlockButton("/blocks/josuke/deployment", ".deployments-list") { + Add a new Deployment }
         }
-        // template hook used by JS node spawning
-        <div id="shadow-hook" class="hidden">
-            <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
-                @form.DisplayFormGroup(form.StringFormGroup("", "", "")) { Name }
-                @form.DisplayFormGroup(form.StringFormGroup("", "github, bitbucket, gogs, bitbucket", "")) { Type }
-                @form.DisplayFormGroup(form.StringFormGroup("", "/josuke/<type>", "")) {
-                    Path, will most likely match the Type of hook above
-                }
-                @form.DisplayFormGroup(form.StringFormGroup("", "<secret>", "")) {
-                    Secret, should match the one in github
-                }
-            </div>
-            @button.RemoveParentButton() { Delete }
-        </div>
-        <div id="shadow-action" class="hidden">
-            <div class="service-block border-sky-400 border-l-4  pt-4 px-4 mb-2.5">
-                @form.DisplayFormGroup(form.StringFormGroup("", "main", "")) { "Branch name" }
-                <div class="service-block border-sky-300 test-sky-600 border-l-2 pt-4 px-4">
-                    @form.DisplayFormGroup(form.StringFormGroup("", "push", "")) {
-                        { "Action definition " }
-                        @span.Advice() { Set to "push" for CI/CD }
-                    }
-                    @button.AddButton("addCommandButton", "bg-sky-700") { + Command }
-                </div>
-                @button.AddButton("addActionButton", "bg-sky-600") { + Action }
-            </div>
-        </div>
-        <div id="shadow-command" class="hidden">
-            <div class="service-block border-sky-200 border-l-2 px-4">
-                @form.DisplayFormGroup(form.StringFormGroup("", "cd %base_dir%", "")) {}
-            </div>
-            @button.RemoveParentButton() { Delete }
-        </div>
-        @josukeJsBlock(len(page.Data.Hook))
     </div>
 }

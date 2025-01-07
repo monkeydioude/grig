@@ -1,6 +1,22 @@
 // THE FEELS! Old jQuery like selector shortcuts!! We went full circle
-const $ = document.querySelector.bind(document);
-const $$ = document.querySelectorAll.bind(document);
+const $ = function(selectorOrNode, thenSelector) {
+    if (selectorOrNode instanceof Node) {
+        return selectorOrNode.querySelector(thenSelector);
+    }
+    return document.querySelector(selectorOrNode);
+}
+
+const $$ = function(selectorOrNode, thenSelector) {
+    if (selectorOrNode instanceof Node) {
+        return selectorOrNode.querySelectorAll(thenSelector);
+    }
+    return document.querySelectorAll(selectorOrNode);
+};
+
+const $_ = function(node, thenSelector) {
+    const directChildren = Array.from(node.children);
+    return directChildren.filter(child => child.classList.contains(thenSelector));
+}
 
 if (!Node.prototype.removeClass) {
     Node.prototype.removeClass = function (className) {

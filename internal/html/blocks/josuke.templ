@@ -7,6 +7,8 @@ import (
     "monkeydioude/grig/pkg/html/elements/button"
     "strings"
 	"monkeydioude/grig/pkg/html/elements/hx"
+    "fmt"
+	"github.com/google/uuid"
 )
 
 templ JosukeCmd(idGeneratorFunc func (model.IndexBuilder) string, cmd model.Command) {
@@ -15,37 +17,44 @@ templ JosukeCmd(idGeneratorFunc func (model.IndexBuilder) string, cmd model.Comm
 }
 
 templ JosukeAction(idGeneratorFunc func (model.IndexBuilder) string, action model.Action) {
-    @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&action), "push", action.Action)) {
-        { "Action definition " }
-        @span.Advice() { Set to "push" for CI/CD }
-    }
-    <div class="commands-list">
-        @span.Optional() { Commands }
-        <div class="service-block border-sky-200 border-l-2 px-4">
-            for cIt, cmd := range action.Commands {
-                {{ cmd.SetParent(&action) }}
-                {{ cmd.SetIndex(cIt) }}
-                @JosukeCmd(idGeneratorFunc, cmd)
-            }
-            @button.RemoveParentButton() { Delete }
+    <div class="action-element">
+        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&action), "push", action.Action)) {
+            { "Action definition " }
+            @span.Advice() { Set to "push" for CI/CD }
+        }
+        <div class="commands-list">
+            @span.Optional() { Commands }
+            <div class="service-block border-sky-200 border-l-2 px-4">
+                for cIt, cmd := range action.Commands {
+                    {{ cmd.SetParent(&action) }}
+                    {{ cmd.SetIndex(cIt) }}
+                    @JosukeCmd(idGeneratorFunc, cmd)
+                }
+            </div>
         </div>
+        @button.AddButton("addCommandButton", "bg-sky-700") { + Command }
+        // @button.RemoveL() { - Command }
     </div>
 }
 
 templ JosukeBranch(idGeneratorFunc func (model.IndexBuilder) string, branch model.Branch) {
-    <div class="service-block border-sky-400 border-l-4  pt-4 px-4 mb-2.5">
-        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&branch), "main", branch.Branch)) {
-        Branch name
-        }
-        <div class="service-block border-sky-300 test-sky-600 border-l-2 pt-4 px-4">
+    {{ actionClass := fmt.Sprintf("actions-list-%s-%d", uuid.NewString(), branch.GetIndex()) }}
+    {{ selector := "."+actionClass }}
+    {{ removeSelector := selector+ " .action-element" }}
+    <div class="service-block border-sky-400 border-l-4  pt-4 px-4 mb-2.5 branch-item">
+        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&branch), "main", branch.Branch)) { Branch name }
+        <div
+            class={"border-sky-300 test-sky-600 border-l-2 pt-4 px-4 flex-col", actionClass}
+            data-parent-name={idGeneratorFunc(&branch)}
+        >
             for aIt, action := range branch.Actions {
                 {{ action.SetParent(&branch) }}
                 {{ action.SetIndex(aIt) }}
                 @JosukeAction(idGeneratorFunc, action)
             }
-            @button.AddButton("addCommandButton", "bg-sky-700") { + Command }
         </div>
-        @button.AddButton("addActionButton", "bg-sky-600") { + Action }
+        @button.AjaxBlockButton("/blocks/josuke/action", selector, "bg-sky-600") { + Action }
+        @button.RemoveLastOf(removeSelector) { - Action }
     </div>
 }
 
@@ -54,6 +63,9 @@ templ JosukeDeployment(
     idGenChainFunc func (model.IndexBuilder) string,
     dep model.Deployment,
 ) {
+    {{ branchClass := fmt.Sprintf("branches-list-%d", dep.GetIndex()) }}
+    {{ selector := "."+branchClass }}
+    {{ removeSelector := fmt.Sprintf("%s .branch-item", selector)}}
     <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
         @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "repo"), "<username>/<project>", dep.Repo)) {
                 Repo name
@@ -67,14 +79,15 @@ templ JosukeDeployment(
                 @span.Advice() { Directory where your project is stored }
             }
             @hx.H3("Branches")
-            <div class="branches-list">
+            <div class={branchClass} data-parent-name={idGenChainFunc(&dep)}>
                 for bIt, branch := range dep.Branches {
                     {{ branch.SetParent(&dep) }}
                     {{ branch.SetIndex(bIt) }}
                     @JosukeBranch(idGenChainFunc, branch)
                 }
             </div>
-            @button.AddButton("addBranchButton", "bg-sky-400") { + Branch }
+            @button.AjaxBlockButton("/blocks/josuke/branch", selector) { + Branch }
+            @button.RemoveLastOf(removeSelector) { - Branch }
     </div>
 }
 
@@ -89,6 +102,6 @@ templ JosukeHook(it int, idGeneratorFunc func (it int, key string) string, hook 
             @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(it, "secret"), "<secret>", hook.Secret)) {
                 Secret, should match the one in github
             }
-                @button.RemoveParentButton() { Delete }
+            @button.RemoveParentButton() { Delete }
     </div>
 }

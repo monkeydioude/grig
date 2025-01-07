@@ -1,19 +1,37 @@
 package button
 
-templ AddButton(id, class string) {
+import "strings"
+
+templ AddButton(id string, class ...string) {
     <button type="button"
         onclick=""
-        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none mt-2.5 py-2.5 px-4", class}
+        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none mt-2.5 py-2.5 px-4", strings.Join(class, " ")}
         id={id}>{children...}</button>
 }
 
-templ AddHTMXGetButton(path, target, class string) {
-    <script>
-        function EditReq(event) {
-            const length = $$(".hooks-list .service-block").length;
-            event.detail.parameters["index"] = length;
-        }
-    </script>
+var ajaxBlockButtonHandle = templ.NewOnceHandle()
+
+templ AjaxBlockButton(path, target string, class ...string) {
+    @ajaxBlockButtonHandle.Once() {
+        <script>
+            function EditReq(event) {
+                try {
+                    const length = $_(event.detail.target, "service-block").length;
+                    const parentName = event.detail.target.getAttribute('data-parent-name');
+                    
+                    event.detail.parameters = {
+                        ...event.detail.parameters,
+                        index: length,
+                        parent_name: parentName,
+                    }
+                } catch (err) {
+                    console.error(err);
+                    ToastError("ERROR: Could not display a new block")
+                }
+            }
+        </script>
+    }
+
     <button
         type="button"
         hx-get={path}
@@ -21,12 +39,22 @@ templ AddHTMXGetButton(path, target, class string) {
         hx-target={target}
         hx-swap="beforeend"
         hx-on::config-request="EditReq(event)"
-        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none mt-2.5 py-2.5 px-4", class}>
+        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none mt-2.5 py-2.5 px-4", strings.Join(class, " ")}>
         {children...}
     </button>
 }
 
 templ RemoveParentButton() {
-    <button type="button" class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2 px-4"
+    <button type="button" class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4"
         onclick="removeParent(this)">{children...}</button>
+}
+
+templ Remove(target string) {
+    <button type="button" data-target={target} class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4"
+        onclick="removeTarget(this)">{children...}</button>
+}
+
+templ RemoveLastOf(target string) {
+    <button type="button" data-target={target} class="remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4"
+        onclick="removeLastOf(this)">{children...}</button>
 }
