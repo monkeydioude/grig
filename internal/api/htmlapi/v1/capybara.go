@@ -6,11 +6,10 @@ import (
 	"monkeydioude/grig/internal/html/layouts"
 	"monkeydioude/grig/internal/html/pages"
 	"monkeydioude/grig/internal/model"
+	"monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/html/elements"
 	"net/http"
 	"strconv"
-
-	"github.com/pkg/errors"
 )
 
 func (h Handler) CapybaraList(w http.ResponseWriter, r *http.Request, nav elements.Nav) error {

@@ -8,11 +8,10 @@ import (
 	"monkeydioude/grig/internal/model"
 	htmlinput "monkeydioude/grig/internal/service/html_input"
 	"monkeydioude/grig/internal/service/utils"
+	"monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/html/elements"
 	"net/http"
 	"strconv"
-
-	"github.com/pkg/errors"
 )
 
 func (h Handler) JosukeList(w http.ResponseWriter, r *http.Request, nav elements.Nav) error {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
-	"monkeydioude/grig/internal/service/action"
 	"monkeydioude/grig/internal/service/file"
+	"monkeydioude/grig/internal/service/payload"
 	"monkeydioude/grig/pkg/server/http_errors"
 	"net/http"
 )
@@ -16,7 +16,7 @@ func (h Handler) CapybaraSave(w http.ResponseWriter, r *http.Request, cp *model.
 	}
 	cp.Path = h.Layout.ServerConfig.CapybaraConfigPath
 	cp.FileWriter = file.CreateAndWriteFile
-	if err := action.HydrateCapybaraFromPayload(cp); err != nil {
+	if err := payload.VerifyAndSanitizeCapybara(cp); err != nil {
 		return http_errors.BadRequest(fmt.Errorf("api.CapybaraSave(): %w", err))
 	}
 	// Mutex is locked. Callback unlocks it
