@@ -3,18 +3,14 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"monkeydioude/grig/internal/consts"
 	customErrors "monkeydioude/grig/internal/errors"
+	"monkeydioude/grig/internal/service/utils"
+	"monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/trans_types"
 	"os"
+	"slices"
 )
-
-type IndexBuilder interface {
-	SetIndex(int)
-	GetIndex() int
-	GetParent() IndexBuilder
-	SetParent(IndexBuilder)
-	GetName() string
-}
 
 type Indexer struct {
 	Index int `json:"-"`
@@ -64,4 +60,30 @@ func (j *Josuke) FillBaseData() {
 	if len(j.Deployment) == 0 {
 		j.Deployment = make([]Deployment, 1)
 	}
+}
+
+func (j Josuke) Verify() error {
+	if j.Port <= 0 {
+		return errors.Wrap(customErrors.ErrNilPointer, "Josuke.Verify: Port")
+	}
+	if j.Host == "" {
+		return errors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Josuke.Verify: Host")
+	}
+	return nil
+}
+
+func (j *Josuke) VerifyAndSanitize() error {
+	if err := j.Verify(); err != nil {
+		return err
+	}
+	if j.LogLevel == "" {
+		j.LogLevel = consts.JOSUKE_DEFAULT_LOG_LEVEL
+	}
+	if j.Store == "" {
+		j.Store = utils.GetDefaultTMPDirectory()
+	}
+	j.Deployment = slices.DeleteFunc(j.Deployment, func(dep Deployment) bool {
+		return dep.VerifyAndSanitize() != nil
+	})
+	return nil
 }

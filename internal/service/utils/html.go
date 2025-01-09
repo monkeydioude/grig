@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"monkeydioude/grig/internal/model"
+	"monkeydioude/grig/pkg/model"
 )
 
 func GetInputName(hp model.IndexBuilder, typ string) string {

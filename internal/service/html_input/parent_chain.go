@@ -1,7 +1,7 @@
 package htmlinput
 
 import (
-	"monkeydioude/grig/internal/model"
+	"monkeydioude/grig/pkg/model"
 	"regexp"
 	"slices"
 	"strconv"

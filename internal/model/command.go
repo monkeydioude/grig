@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"monkeydioude/grig/pkg/model"
 	"strings"
 )
 
@@ -10,7 +11,7 @@ import (
 // shaped into a struct, so it gets along well with our chain of Josuke structs.
 type Command struct {
 	Command []string `json:"command"`
-	parent  IndexBuilder
+	parent  model.IndexBuilder
 	Indexer
 }
 
@@ -56,11 +57,11 @@ func (c *Command) MarshalJSON() ([]byte, error) {
 	return json.Marshal(res)
 }
 
-func (c *Command) SetParent(p IndexBuilder) {
+func (c *Command) SetParent(p model.IndexBuilder) {
 	c.parent = p
 }
 
-func (c Command) GetParent() IndexBuilder {
+func (c Command) GetParent() model.IndexBuilder {
 	return c.parent
 }
 
@@ -68,6 +69,24 @@ func (c *Command) InitParent() {
 	act := &Action{}
 	act.InitParent()
 	c.SetParent(act)
+}
+
+func (c Command) Verify() error {
+
+	return nil
+}
+
+func (c *Command) VerifyAndSanitize() error {
+	if err := c.Verify(); err != nil {
+		return err
+	}
+
+	for _, cmd := range c.Command {
+		if cmd == "" {
+
+		}
+	}
+	return nil
 }
 
 func NewCommand(index int) *Command {

@@ -3,6 +3,7 @@ package blocks
 import (
     "monkeydioude/grig/pkg/html/elements/form"
     "monkeydioude/grig/internal/model"
+    pkgModel "monkeydioude/grig/pkg/model"
     "monkeydioude/grig/pkg/html/elements/span"
     "monkeydioude/grig/pkg/html/elements/button"
     "strings"
@@ -11,14 +12,14 @@ import (
 	"github.com/google/uuid"
 )
 
-templ JosukeCmd(idGeneratorFunc func (model.IndexBuilder, string) string, cmd model.Command) {
+templ JosukeCmd(idGeneratorFunc func (pkgModel.IndexBuilder, string) string, cmd model.Command) {
     <div class="service-block command-element">
         @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&cmd, "command"), "cd %base_dir%",
         strings.Join(cmd.Command, " "))) { }
     </div>
 }
 
-templ JosukeAction(idGeneratorFunc func (model.IndexBuilder, string) string, action model.Action) {
+templ JosukeAction(idGeneratorFunc func (pkgModel.IndexBuilder, string) string, action model.Action) {
     {{ cmdClass := fmt.Sprintf("commands-list-%s-%d", uuid.NewString(), action.GetIndex()) }}
     {{ selector := "."+cmdClass }}
     {{ removeSelector := selector+ " .command-element" }}
@@ -43,7 +44,7 @@ templ JosukeAction(idGeneratorFunc func (model.IndexBuilder, string) string, act
     </div>
 }
 
-templ JosukeBranch(idGeneratorFunc func (model.IndexBuilder, string) string, branch model.Branch) {
+templ JosukeBranch(idGeneratorFunc func (pkgModel.IndexBuilder, string) string, branch model.Branch) {
     {{ actionClass := fmt.Sprintf("actions-list-%s-%d", uuid.NewString(), branch.GetIndex()) }}
     {{ selector := "."+actionClass }}
     {{ removeSelector := selector+ " .action-element" }}
@@ -67,8 +68,8 @@ templ JosukeBranch(idGeneratorFunc func (model.IndexBuilder, string) string, bra
 }
 
 templ JosukeDeployment(
-    depIdGenFunc func (model.IndexBuilder, string) string,
-    idGenChainFunc func (model.IndexBuilder, string) string,
+    depIdGenFunc func (pkgModel.IndexBuilder, string) string,
+    idGenChainFunc func (pkgModel.IndexBuilder, string) string,
     dep model.Deployment,
 ) {
     {{ branchClass := fmt.Sprintf("branches-list-%d", dep.GetIndex()) }}

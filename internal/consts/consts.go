@@ -8,3 +8,4 @@ const DEFAULT_CAPYBARA_FILENAME = "capybara.config.json"
 const DEFAULT_JOSUKE_FILENAME = "josuke.config.json"
 
 const ERROR_STACK_SIZE = 32
+const JOSUKE_DEFAULT_LOG_LEVEL = "DEBUG"

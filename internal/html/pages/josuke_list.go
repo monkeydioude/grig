@@ -7,6 +7,7 @@ import (
 	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/server/config"
 	"monkeydioude/grig/internal/service/utils"
+	pkgModel "monkeydioude/grig/pkg/model"
 )
 
 type Josuke struct {
@@ -42,6 +43,6 @@ func GetHookInputName(it int, key string) string {
 	return fmt.Sprintf("hook[%d][%s]", it, key)
 }
 
-func GetInputNameWithKey(hp model.IndexBuilder, key string) string {
+func GetInputNameWithKey(hp pkgModel.IndexBuilder, key string) string {
 	return utils.GetInputName(hp, key)
 }

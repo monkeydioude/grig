@@ -10,6 +10,7 @@ import (
 	"monkeydioude/grig/internal/service/utils"
 	"monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/html/elements"
+	pkgModel "monkeydioude/grig/pkg/model"
 	"net/http"
 	"strconv"
 )
@@ -80,7 +81,7 @@ func (h Handler) JosukeCommandBlock(w http.ResponseWriter, r *http.Request) erro
 	return blocks.JosukeCmd(utils.GetInputName, *cmd).Render(context.Background(), w)
 }
 
-func josukeTree(hp model.IndexBuilder, indexStr string, parentNameStr string) error {
+func josukeTree(hp pkgModel.IndexBuilder, indexStr string, parentNameStr string) error {
 	index := 0
 	if indexStr != "" {
 		it, err := strconv.Atoi(indexStr)

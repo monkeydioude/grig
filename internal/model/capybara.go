@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	customErr "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/trans_types"
@@ -79,6 +80,26 @@ func (c Capybara) Save() error {
 		return errors.Wrapf(err, "Capybara.Save(): %w", customErr.ErrWritingFile)
 	}
 	return nil
+}
+
+func (c *Capybara) Sanitize() {
+	// c.Services = slices.DeleteFunc(c.Services, func (sd ServiceDefinition) bool {
+	// 	return sd.Verify() != nil
+	// })
+	// use of a custom index, so we dont range into a non existant element
+	// in case we delete one
+	j := 0
+	for i := 0; i < len(c.Services); i++ {
+		sd := c.Services[i]
+		if err := sd.Verify(); err != nil {
+			log.Printf("[ERR ] Capybara.Sanitize: %+v", err.Error())
+			// Skip the element by not copying it to the new position
+			continue
+		}
+		c.Services[j] = c.Services[i]
+		j++
+	}
+	c.Services = c.Services[:j]
 }
 
 func (c Capybara) CloneBase() Capybara {
