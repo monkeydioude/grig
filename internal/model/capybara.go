@@ -3,7 +3,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	customErr "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/trans_types"
@@ -92,7 +92,7 @@ func (c *Capybara) Sanitize() {
 	for i := 0; i < len(c.Services); i++ {
 		sd := c.Services[i]
 		if err := sd.Verify(); err != nil {
-			log.Printf("[ERR ] Capybara.Sanitize: %+v", err.Error())
+			slog.Error("Capybara.Sanitize", "error", err)
 			// Skip the element by not copying it to the new position
 			continue
 		}

@@ -2,7 +2,7 @@ package pages
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/server/config"
@@ -27,7 +27,7 @@ func JosukeList(config *config.ServerConfig) Josuke {
 	}
 	jk, err := file.UnmarshalFromPath[model.Josuke](config.JosukeConfigPath)
 	if err != nil {
-		log.Printf("[ERR ] pages.JosukeList: %s", err)
+		slog.Error("pages.JosukeList", "error", err)
 		return p
 	}
 	jk.FillBaseData()

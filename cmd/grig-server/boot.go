@@ -2,13 +2,17 @@ package main
 
 import (
 	"flag"
+	"log/slog"
 	"monkeydioude/grig/internal/consts"
 	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/server/config"
 	"monkeydioude/grig/pkg/os"
 	"monkeydioude/grig/pkg/server"
 	"monkeydioude/grig/pkg/tiger/assert"
+
 	nativeOs "os"
+
+	"github.com/lmittmann/tint"
 )
 
 func parseFlags() string {
@@ -18,7 +22,14 @@ func parseFlags() string {
 	return *mainConfigPath
 }
 
+func setLogger() {
+	logger := slog.New(tint.NewHandler(nativeOs.Stdout, nil))
+	slog.SetDefault(logger)
+	slog.SetLogLoggerLevel(slog.LevelDebug)
+}
+
 func boot() *server.Layout[config.ServerConfig] {
+	setLogger()
 	mainConfigPath := parseFlags()
 	conf := config.NewServerConfigFromPath(mainConfigPath)
 	if conf.CapybaraConfigPath == "" {

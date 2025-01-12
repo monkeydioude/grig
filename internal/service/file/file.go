@@ -3,7 +3,7 @@ package file
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"log/slog"
 	"monkeydioude/grig/internal/errors"
 	"os"
 	"path/filepath"
@@ -18,7 +18,7 @@ func AppendToThisFileDirectory(appendThisFilesPath, toThisFileDir string) string
 	appendedPath := filepath.Join(dir, appendThisFilesPath)
 	res, err := filepath.Abs(appendedPath)
 	if err != nil {
-		log.Printf("[WARN] AppendToThisFileDirectory: filepath.Abs: %s\n", err)
+		slog.Warn("AppendToThisFileDirectory: filepath.Abs", "error", err)
 		return appendThisFilesPath
 	}
 	return res
@@ -48,7 +48,6 @@ func CreateAndWriteFile(path string, data []byte, mode os.FileMode) error {
 	} else if err != nil {
 		return fmt.Errorf("fs.CreateAndWriteFile(): %q: %w: %w", path, errors.ErrCheckingFile, err)
 	}
-	fmt.Println("CreateAndWriteFile", string(data))
 	if err := os.WriteFile(path, data, mode); err != nil {
 		return fmt.Errorf("fs.CreateAndWriteFile(): %q: %w: %w", path, errors.ErrWritingFile, err)
 	}

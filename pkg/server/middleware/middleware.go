@@ -1,6 +1,9 @@
 package middleware
 
-import "net/http"
+import (
+	"net/http"
+	"slices"
+)
 
 type API struct {
 	chain http.Handler
@@ -10,7 +13,8 @@ func Mux(handler http.Handler) *API {
 	return &API{handler}
 }
 
-// Use declares a middleware. `Use` allows to freely chose
+// Use declares a middleware. Handlers are called in argument order.
+// `Use` allows to freely choose
 // when the middleware should apply, before or after (or both) the main HTTP handler function.
 // At the cost of having to call ServeHttp of the http.Handler.
 // To be used when needing to act before and after the main HTTP handler function.
@@ -19,7 +23,7 @@ func Mux(handler http.Handler) *API {
 // - middleware using `defer`, such as panic recover middlewares
 // - log incoming/outgoing requests
 func (a *API) Use(handlers ...func(http.Handler) http.Handler) {
-	for _, handler := range handlers {
+	for _, handler := range slices.Backward(handlers) {
 		a.chain = handler(a.chain)
 	}
 }

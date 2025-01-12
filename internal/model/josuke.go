@@ -76,6 +76,11 @@ func (j *Josuke) VerifyAndSanitize() error {
 	if err := j.Verify(); err != nil {
 		return err
 	}
+	for _, dep := range j.Deployment {
+		if err := dep.Verify(); err != nil {
+			return err
+		}
+	}
 	if j.LogLevel == "" {
 		j.LogLevel = consts.JOSUKE_DEFAULT_LOG_LEVEL
 	}

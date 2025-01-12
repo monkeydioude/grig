@@ -2,7 +2,7 @@ package parser
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
 
@@ -12,13 +12,13 @@ import (
 func fetchSectionAndKey(cfg *ini.File, section, key string) string {
 	unit := cfg.Section(section)
 	if unit == nil {
-		log.Println("fetchSectionAndKey: invalid section")
+		slog.Info("fetchSectionAndKey: invalid section")
 		return ""
 	}
 
 	sectionKey := unit.Key(key)
 	if sectionKey == nil {
-		log.Println("fetchSectionAndKey: invalid key")
+		slog.Info("fetchSectionAndKey: invalid key")
 		return ""
 	}
 
@@ -28,13 +28,13 @@ func fetchSectionAndKey(cfg *ini.File, section, key string) string {
 func fetchSectionAndKeys(cfg *ini.File, section, key string) []string {
 	sec := cfg.Section(section)
 	if sec == nil || !sec.HasKey(key) {
-		log.Println("fetchSectionAndKey: invalid section")
+		slog.Info("fetchSectionAndKey: invalid section")
 		return []string{}
 	}
 
 	sectionKey := sec.Key(key)
 	if sectionKey == nil {
-		log.Println("fetchSectionAndKey: invalid key")
+		slog.Info("fetchSectionAndKey: invalid key")
 		return []string{}
 	}
 

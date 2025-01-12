@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"monkeydioude/grig/internal/consts"
 	"monkeydioude/grig/internal/service/server/config"
 	"monkeydioude/grig/pkg/server"
@@ -40,12 +41,12 @@ func main() {
 	// JSON API goroutine
 	runGroup.Add(func() error {
 		// Start the server on port
-		log.Println("API starting on", server.Addr)
+		slog.Info("API started", "addr", server.Addr)
 		return server.ListenAndServe()
 	}, func(_ error) {
-		log.Println("closing API server")
+		slog.Info("closing API server")
 		if err := server.Close(); err != nil {
-			log.Println("failed to stop web server", "err", err)
+			slog.Info("failed to stop web server", "err", err)
 		}
 	})
 

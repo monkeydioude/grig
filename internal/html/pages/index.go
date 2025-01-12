@@ -3,7 +3,7 @@ package pages
 import (
 	"errors"
 	"fmt"
-	"log"
+	"log/slog"
 	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/file"
@@ -27,7 +27,7 @@ func Index(
 	// capybara
 	cp, err := file.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
 	if err != nil {
-		log.Printf("[ERR ] pages.Index: %q", err)
+		slog.Error("pages.Index", "error", err)
 		p.Err = errors.Join(p.Err, err)
 	} else {
 		p.Capybara = &cp
@@ -36,7 +36,7 @@ func Index(
 	// josuke
 	jk, err := file.UnmarshalFromPath[model.Josuke](config.JosukeConfigPath)
 	if err != nil {
-		log.Printf("[ERR ] pages.Index: %q", err)
+		slog.Error("pages.Index", "error", err)
 		p.Err = errors.Join(p.Err, err)
 	} else {
 		p.Josuke = &jk

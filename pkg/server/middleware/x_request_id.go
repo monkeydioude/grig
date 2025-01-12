@@ -16,6 +16,7 @@ func JsonApiXRequestID(handler http.Handler) http.Handler {
 			xRequestID = uuid.NewString()
 			r.Header.Add(X_REQUEST_ID_LABEL, xRequestID)
 		}
+		// slog.SetDefault(slog.With(X_REQUEST_ID_LABEL, xRequestID))
 		handler.ServeHTTP(w, r)
 		w.Header().Add(X_REQUEST_ID_LABEL, xRequestID)
 	})

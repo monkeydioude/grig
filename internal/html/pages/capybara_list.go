@@ -2,7 +2,7 @@ package pages
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/server/config"
@@ -27,7 +27,7 @@ func CapybaraList(config *config.ServerConfig) Capybara {
 	}
 	cp, err := file.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
 	if err != nil {
-		log.Printf("[ERR ] pages.Capybaralist: %s", err)
+		slog.Error("pages.Capybaralist", "error", err)
 		return p
 	}
 	p.Data = &cp

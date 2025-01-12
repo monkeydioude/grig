@@ -45,8 +45,8 @@ func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 	app := middleware.Mux(mux)
 	app.Use(
 		middleware.PanicRecover,
-		middleware.JsonApiLogRequest,
 		middleware.JsonApiXRequestID,
+		middleware.JsonApiLogRequest,
 	)
 	return app
 }
