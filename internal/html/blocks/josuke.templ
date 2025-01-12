@@ -15,7 +15,7 @@ import (
 templ JosukeCmd(idGeneratorFunc func (pkgModel.IndexBuilder, string) string, cmd model.Command) {
     <div class="service-block command-element">
         @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(&cmd, "command"), "cd %base_dir%",
-        strings.Join(cmd.Command, " "))) { }
+        strings.Join(cmd.Parts, " "))) { }
     </div>
 }
 

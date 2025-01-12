@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"monkeydioude/grig/pkg/model"
+	"slices"
 	"strings"
 )
 
 // Command is the representation of a command from the json config file,
 // shaped into a struct, so it gets along well with our chain of Josuke structs.
 type Command struct {
-	Command []string `json:"command"`
-	parent  model.IndexBuilder
+	Parts  []string `json:"command"`
+	parent model.IndexBuilder
 	Indexer
 }
 
@@ -28,7 +29,7 @@ type FlatCommand struct {
 }
 
 func (c *Command) UnmarshalJSON(data []byte) error {
-	cmds := []string{}
+	parts := []string{}
 	flatCmd := FlatCommand{}
 	// not perfect, but we handle both json from the html (flatCmd, one command => "cd /tmp")
 	// and from the json file ([]string{}, one command => ["cd", "/tmp"]).
@@ -36,14 +37,14 @@ func (c *Command) UnmarshalJSON(data []byte) error {
 	// First we handle html input...
 	if errHtml := json.Unmarshal(data, &flatCmd); errHtml != nil {
 		// ...then we try to handle file source
-		if errFile := json.Unmarshal(data, &cmds); errFile != nil {
+		if errFile := json.Unmarshal(data, &parts); errFile != nil {
 			return fmt.Errorf("UnmarshalJSON: %w: %w", errHtml, errFile)
 		}
 		// That means we handled a file source
-		c.Command = cmds
+		c.Parts = parts
 	} else {
 		// We handled html input
-		c.Command = strings.Split(flatCmd.Command, " ")
+		c.Parts = strings.Split(flatCmd.Command, " ")
 	}
 	return nil
 }
@@ -51,7 +52,7 @@ func (c *Command) UnmarshalJSON(data []byte) error {
 func (c *Command) MarshalJSON() ([]byte, error) {
 	res := make([]string, 0)
 
-	for _, cmd := range c.Command {
+	for _, cmd := range c.Parts {
 		res = append(res, cmd)
 	}
 	return json.Marshal(res)
@@ -71,21 +72,10 @@ func (c *Command) InitParent() {
 	c.SetParent(act)
 }
 
-func (c Command) Verify() error {
-
-	return nil
-}
-
 func (c *Command) VerifyAndSanitize() error {
-	if err := c.Verify(); err != nil {
-		return err
-	}
-
-	for _, cmd := range c.Command {
-		if cmd == "" {
-
-		}
-	}
+	c.Parts = slices.DeleteFunc(c.Parts, func(cmd string) bool {
+		return cmd == ""
+	})
 	return nil
 }
 

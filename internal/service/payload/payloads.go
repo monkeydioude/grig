@@ -25,7 +25,7 @@ func VerifyAndSanitizeJosuke(jk *model.Josuke) error {
 		return errors.Wrap(customErr.ErrNilPointer, "VerifyAndSanitizeJosuke: *model.Josuke")
 	}
 	if err := jk.VerifyAndSanitize(); err != nil {
-		return errors.Wrap(err, "VerifyAndSanitizeJosuke: cp.Proxy.Verify")
+		return errors.Wrap(err, "VerifyAndSanitizeJosuke: *model.Josuke.VerifyAndSanitize")
 	}
 	return nil
 }

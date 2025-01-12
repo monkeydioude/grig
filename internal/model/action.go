@@ -2,9 +2,8 @@ package model
 
 import (
 	customErrors "monkeydioude/grig/internal/errors"
-	"monkeydioude/grig/pkg/errors"
+	pkgErrors "monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/model"
-	"slices"
 )
 
 type Action struct {
@@ -47,7 +46,7 @@ func NewAction(index int) *Action {
 
 func (c Action) Verify() error {
 	if c.Action == "" {
-		return errors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Action.Verify: Action")
+		return pkgErrors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Action.Verify: Action")
 	}
 	return nil
 }
@@ -56,9 +55,13 @@ func (c *Action) VerifyAndSanitize() error {
 	if err := c.Verify(); err != nil {
 		return err
 	}
-
-	c.Commands = slices.DeleteFunc(c.Commands, func(cmd Command) bool {
-		return cmd.VerifyAndSanitize() != nil
-	})
+	if len(c.Commands) == 0 {
+		return customErrors.ErrEmptySlice
+	}
+	for it, cmd := range c.Commands {
+		cmd.VerifyAndSanitize()
+		// @todo: eta pizdec
+		c.Commands[it] = cmd
+	}
 	return nil
 }

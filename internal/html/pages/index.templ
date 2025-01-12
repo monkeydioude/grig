@@ -80,7 +80,7 @@ templ josukeConfigBlock(josuke *model.Josuke) {
                                         <ul class="list-disc ml-2.5 pl-3">
                                             for _, cmd := range action.Commands {
                                                 <li class="text-lg text-emerald-600">
-                                                    {strings.Join(cmd.Command, " ")}
+                                                    {strings.Join(cmd.Parts, " ")}
                                                 </li>
                                             }
                                         </ul>

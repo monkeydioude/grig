@@ -1,23 +1,28 @@
 package v1
 
 import (
-	"fmt"
-	"monkeydioude/grig/internal/errors"
+	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/file"
+	"monkeydioude/grig/internal/service/payload"
+	"monkeydioude/grig/pkg/errors"
+	"monkeydioude/grig/pkg/server/http_errors"
 	"net/http"
 )
 
-func (h Handler) JosukeSave(w http.ResponseWriter, r *http.Request, cp *model.Josuke) error {
-	if r == nil || cp == nil {
-		return fmt.Errorf("api.JosukeSave: %w", errors.ErrNilPointer)
+func (h Handler) JosukeSave(w http.ResponseWriter, r *http.Request, jk *model.Josuke) error {
+	if r == nil || jk == nil {
+		return errors.Wrap(customErrors.ErrNilPointer, "api.JosukeSave")
 	}
-	cp.Path = h.Layout.ServerConfig.JosukeConfigPath
-	cp.FileWriter = file.CreateAndWriteFile
+	jk.Path = h.Layout.ServerConfig.JosukeConfigPath
+	jk.FileWriter = file.CreateAndWriteFile
+	if err := payload.VerifyAndSanitizeJosuke(jk); err != nil {
+		return http_errors.BadRequest(errors.Wrap(err, "api.JosukeSave"))
+	}
 	// Mutex is locked. Callback unlocks it
 	defer (h.Layout.LockMutex())()
-	if err := cp.Save(); err != nil {
-		return fmt.Errorf("api.JosukeSave(): %w", err)
+	if err := jk.Save(); err != nil {
+		return errors.Wrap(err, "api.JosukeSave")
 	}
 	// replace layout's config
 	// h.Layout.CapybaraConfig = &cp

@@ -2,11 +2,12 @@ package model
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"monkeydioude/grig/internal/consts"
 	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/service/utils"
-	"monkeydioude/grig/pkg/errors"
+	pkgErrors "monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/trans_types"
 	"os"
 	"slices"
@@ -64,10 +65,13 @@ func (j *Josuke) FillBaseData() {
 
 func (j Josuke) Verify() error {
 	if j.Port <= 0 {
-		return errors.Wrap(customErrors.ErrNilPointer, "Josuke.Verify: Port")
+		return pkgErrors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Josuke.Verify: Port")
 	}
 	if j.Host == "" {
-		return errors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Josuke.Verify: Host")
+		return pkgErrors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Josuke.Verify: Host")
+	}
+	if len(j.Hook) == 0 {
+		return pkgErrors.Wrap(customErrors.ErrEmptySlice, "Josuke.Verify: Hook")
 	}
 	return nil
 }
@@ -76,8 +80,8 @@ func (j *Josuke) VerifyAndSanitize() error {
 	if err := j.Verify(); err != nil {
 		return err
 	}
-	for _, dep := range j.Deployment {
-		if err := dep.Verify(); err != nil {
+	for _, hook := range slices.Backward(j.Hook) {
+		if err := hook.Verify(); err != nil {
 			return err
 		}
 	}
@@ -87,8 +91,17 @@ func (j *Josuke) VerifyAndSanitize() error {
 	if j.Store == "" {
 		j.Store = utils.GetDefaultTMPDirectory()
 	}
-	j.Deployment = slices.DeleteFunc(j.Deployment, func(dep Deployment) bool {
-		return dep.VerifyAndSanitize() != nil
-	})
+	if len(j.Deployment) == 0 {
+		return customErrors.ErrEmptySlice
+	}
+	for i, dep := range slices.Backward(j.Deployment) {
+		if err := dep.VerifyAndSanitize(); err != nil {
+			if errors.Is(err, customErrors.ErrModelVerifyInvalidValue) {
+				return err
+			}
+			j.Deployment = slices.Delete(j.Deployment, i, i+1)
+		}
+	}
+
 	return nil
 }

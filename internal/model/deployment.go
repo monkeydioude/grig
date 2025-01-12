@@ -1,9 +1,11 @@
 package model
 
 import (
+	"errors"
 	customErrors "monkeydioude/grig/internal/errors"
-	"monkeydioude/grig/pkg/errors"
+	pkgErrors "monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/model"
+	"slices"
 )
 
 type Deployment struct {
@@ -35,7 +37,7 @@ func (c *Deployment) FillBaseData() {
 
 func (c Deployment) Verify() error {
 	if c.Repo == "" {
-		return errors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Deployment.Verify: Repo")
+		return pkgErrors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Deployment.Verify: Repo")
 	}
 	return nil
 }
@@ -44,10 +46,15 @@ func (c *Deployment) VerifyAndSanitize() error {
 	if err := c.Verify(); err != nil {
 		return err
 	}
-
-	for _, br := range c.Branches {
+	if len(c.Branches) == 0 {
+		return customErrors.ErrEmptySlice
+	}
+	for it, br := range slices.Backward(c.Branches) {
 		if err := br.VerifyAndSanitize(); err != nil {
-			return err
+			if errors.Is(err, customErrors.ErrModelVerifyInvalidValue) {
+				return err
+			}
+			c.Branches = slices.Delete(c.Branches, it, it+1)
 		}
 	}
 	return nil

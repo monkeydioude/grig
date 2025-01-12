@@ -1,8 +1,9 @@
 package model
 
 import (
+	"errors"
 	customErrors "monkeydioude/grig/internal/errors"
-	"monkeydioude/grig/pkg/errors"
+	pkgErrors "monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/model"
 	"slices"
 )
@@ -46,7 +47,7 @@ func NewBranch(index int) *Branch {
 
 func (c Branch) Verify() error {
 	if c.Branch == "" {
-		return errors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Branch.Verify: Branch")
+		return pkgErrors.Wrap(customErrors.ErrModelVerifyInvalidValue, "Branch.Verify: Branch")
 	}
 	return nil
 }
@@ -55,9 +56,16 @@ func (c *Branch) VerifyAndSanitize() error {
 	if err := c.Verify(); err != nil {
 		return err
 	}
-
-	c.Actions = slices.DeleteFunc(c.Actions, func(act Action) bool {
-		return act.VerifyAndSanitize() != nil
-	})
+	if len(c.Actions) == 0 {
+		return customErrors.ErrEmptySlice
+	}
+	for it, act := range slices.Backward(c.Actions) {
+		if err := act.VerifyAndSanitize(); err != nil {
+			if errors.Is(err, customErrors.ErrModelVerifyInvalidValue) {
+				return err
+			}
+			c.Actions = slices.Delete(c.Actions, it, it+1)
+		}
+	}
 	return nil
 }
