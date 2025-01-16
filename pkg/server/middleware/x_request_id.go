@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -16,8 +17,8 @@ func JsonApiXRequestID(handler http.Handler) http.Handler {
 			xRequestID = uuid.NewString()
 			r.Header.Add(X_REQUEST_ID_LABEL, xRequestID)
 		}
-		// slog.SetDefault(slog.With(X_REQUEST_ID_LABEL, xRequestID))
-		handler.ServeHTTP(w, r)
+		ctx := context.WithValue(r.Context(), X_REQUEST_ID_LABEL, xRequestID)
+		handler.ServeHTTP(w, r.WithContext(ctx))
 		w.Header().Add(X_REQUEST_ID_LABEL, xRequestID)
 	})
 }

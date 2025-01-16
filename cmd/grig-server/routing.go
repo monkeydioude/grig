@@ -32,6 +32,7 @@ func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 	mux.HandleFunc("/", layout.Get(nw.WithNav(html.Index, element.Link{Href: "/", Text: element.Text("Index")})))
 	mux.HandleFunc("/capybara", layout.Get(nw.WithNav(html.CapybaraList, element.Link{Href: "/capybara"})))
 	mux.HandleFunc("/josuke", layout.Get(nw.WithNav(html.JosukeList, element.Link{Href: "/josuke"})))
+	mux.HandleFunc("/services", layout.Get(nw.WithNav(html.ServicesList, element.Link{Href: "/services"})))
 
 	mux.HandleFunc("/blocks/josuke/hook", layout.Get(html.JosukeHookBlock))
 	mux.HandleFunc("/blocks/josuke/deployment", layout.Get(html.JosukeDeploymentBlock))

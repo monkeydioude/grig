@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log/slog"
 	element "monkeydioude/grig/pkg/html/elements"
 	"monkeydioude/grig/pkg/os"
 	"monkeydioude/grig/pkg/server/http_errors"
@@ -17,7 +18,7 @@ type Layout[T any] struct {
 }
 
 // Handler our basic generic route handler
-type Handler func(http.ResponseWriter, *http.Request) error
+type Handler func(http.ResponseWriter, *http.Request, *slog.Logger) error
 
 // Methods vector of available HTTP Methods
 var Methods = [5]string{"GET", "POST", "PUT", "PATCH", "DELETE"}
@@ -34,7 +35,7 @@ func WithMethod(method string, handler Handler) func(http.ResponseWriter, *http.
 		for _, m := range Methods {
 			// a method matches
 			if m == method {
-				if err := handler(resBuff, req); err != nil {
+				if err := handler(resBuff, req, slog.Default()); err != nil {
 					http_errors.WriteError(err, resBuff)
 				}
 				_, err := resBuff.End()

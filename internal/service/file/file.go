@@ -24,15 +24,15 @@ func AppendToThisFileDirectory(appendThisFilesPath, toThisFileDir string) string
 	return res
 }
 
-func UnmarshalFromPath[F File](josukeConfigPath string) (F, error) {
-	rawData, err := os.ReadFile(josukeConfigPath)
+func UnmarshalFromPath[F File](configPath string) (F, error) {
+	rawData, err := os.ReadFile(configPath)
 	var res F
 	if err != nil {
-		return res, fmt.Errorf("josuke.UnmarshalFromPath: %s: %s", errors.ErrReadingFile, err)
+		return res, fmt.Errorf("fs.UnmarshalFromPath: %s: %s", errors.ErrReadingFile, err)
 	}
 	err = json.Unmarshal(rawData, &res)
 	if err != nil {
-		return res, fmt.Errorf("josuke.UnmarshalFromPath: %s: %s", errors.ErrUnmarshaling, err)
+		return res, fmt.Errorf("fs.UnmarshalFromPath: %s: %s", errors.ErrUnmarshaling, err)
 	}
 	return res, nil
 }

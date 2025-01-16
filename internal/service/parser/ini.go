@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	customErrors "monkeydioude/grig/internal/errors"
@@ -54,4 +55,18 @@ func IniServiceParser(path string) (model.Service, error) {
 	service.Exec = fetchSectionAndKey(cfg, "Service", "ExecStart")
 	service.Environments = fetchSectionAndKeys(cfg, "Service", "Environment")
 	return service, nil
+}
+
+func IniServicesParser(paths []string) ([]model.Service, error) {
+	res := make([]model.Service, len(paths))
+	var errs error
+	for _, path := range paths {
+		srvc, err := IniServiceParser(path)
+		if err != nil {
+			errs = errors.Join(errs, err)
+			continue
+		}
+		res = append(res, srvc)
+	}
+	return res, errs
 }

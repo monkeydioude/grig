@@ -3,6 +3,7 @@ package with
 import (
 	"encoding/json"
 	"io"
+	"log/slog"
 	"monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/server"
 	"net/http"
@@ -15,7 +16,7 @@ func cleanJSONFromNull(input []byte) []byte {
 }
 
 func JsonPayload[T any](handler func(w http.ResponseWriter, r *http.Request, payload *T) error) server.Handler {
-	return func(w http.ResponseWriter, r *http.Request) error {
+	return func(w http.ResponseWriter, r *http.Request, _ *slog.Logger) error {
 		data, err := io.ReadAll(r.Body)
 		if err != nil {
 			return errors.Wrap(err, "JsonPayload")

@@ -6,13 +6,12 @@ import (
 	"monkeydioude/grig/internal/consts"
 	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/server/config"
+	"monkeydioude/grig/internal/service/server/logger"
 	"monkeydioude/grig/pkg/os"
 	"monkeydioude/grig/pkg/server"
 	"monkeydioude/grig/pkg/tiger/assert"
 
 	nativeOs "os"
-
-	"github.com/lmittmann/tint"
 )
 
 func parseFlags() string {
@@ -23,7 +22,7 @@ func parseFlags() string {
 }
 
 func setLogger() {
-	logger := slog.New(tint.NewHandler(nativeOs.Stdout, nil))
+	logger := slog.New(logger.SlogTintWithContext(consts.X_REQUEST_ID_LABEL))
 	slog.SetDefault(logger)
 	slog.SetLogLoggerLevel(slog.LevelDebug)
 }

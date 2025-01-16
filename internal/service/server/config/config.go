@@ -4,11 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"monkeydioude/grig/internal/consts"
-	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/file"
-	"monkeydioude/grig/internal/service/parser"
-	"monkeydioude/grig/pkg/fs"
 	"monkeydioude/grig/pkg/tiger/assert"
 	"os"
 	"path/filepath"
@@ -17,10 +13,10 @@ import (
 // ServerConfig holds the app config and is also
 // a factory for generating some model's entities
 type ServerConfig struct {
-	ServerConfigPath   string `json:"-"`
-	AppsServicesDir    string `json:"parsers_dir"`
-	JosukeConfigPath   string `json:"josuke_config_path"`
-	CapybaraConfigPath string `json:"capybara_config_path"`
+	ServerConfigPath   string   `json:"-"`
+	AppsServicesPaths  []string `json:"services_paths"`
+	JosukeConfigPath   string   `json:"josuke_config_path"`
+	CapybaraConfigPath string   `json:"capybara_config_path"`
 }
 
 func unmarshalConfig(configRaw []byte) ServerConfig {
@@ -71,42 +67,4 @@ func NewServerConfigFromPath(mainConfigPath string) ServerConfig {
 	config := unmarshalConfig(configRaw)
 	config.ServerConfigPath = mainConfigPath
 	return config
-}
-
-func (sc ServerConfig) ProcessAppsServicesDir() (*fs.Dir[model.Service], error) {
-	if sc.AppsServicesDir == "" {
-		return nil, nil
-	}
-	sc.AppsServicesDir = file.AppendToThisFileDirectory(sc.AppsServicesDir, sc.ServerConfigPath)
-	res, err := fs.NewDirFromPathAndFileParser(sc.AppsServicesDir, parser.ServiceFileParser)
-	if err != nil {
-		return nil, fmt.Errorf("server.ServerConfig.ProcessAppsServicesDir: %w", err)
-	}
-	return &res, nil
-}
-
-func (sc ServerConfig) ProcessJosuke() (*model.Josuke, error) {
-	if sc.JosukeConfigPath == "" {
-		return nil, nil
-	}
-	sc.JosukeConfigPath = file.AppendToThisFileDirectory(sc.JosukeConfigPath, sc.ServerConfigPath)
-	jojo, err := file.UnmarshalFromPath[model.Josuke](sc.JosukeConfigPath)
-	if err != nil {
-		return nil, fmt.Errorf("server.ServerConfig.ProcessJosuke: %w", err)
-	}
-	return &jojo, nil
-}
-
-func (sc ServerConfig) ProcessCapybara() (*model.Capybara, error) {
-	if sc.CapybaraConfigPath == "" {
-		sc.CapybaraConfigPath = consts.DEFAULT_CAPYBARA_FILENAME
-	}
-	sc.CapybaraConfigPath = file.AppendToThisFileDirectory(sc.CapybaraConfigPath, sc.ServerConfigPath)
-	capy, err := file.UnmarshalFromPath[model.Capybara](sc.CapybaraConfigPath)
-	if err != nil {
-		return nil, fmt.Errorf("server.ServerConfig.ProcessJosuke: %w", err)
-	}
-	capy.Path = sc.CapybaraConfigPath
-	capy.FileWriter = file.CreateAndWriteFile
-	return &capy, nil
 }

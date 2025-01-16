@@ -2,6 +2,7 @@ package with
 
 import (
 	"fmt"
+	"log/slog"
 	"monkeydioude/grig/internal/errors"
 	element "monkeydioude/grig/pkg/html/elements"
 	"monkeydioude/grig/pkg/server"
@@ -39,7 +40,7 @@ func transform(input string) string {
 	return string(runes)
 }
 
-func (nw *NavWrapper) WithNav(handler func(w http.ResponseWriter, r *http.Request, nav element.Nav) error, link element.Link) server.Handler {
+func (nw *NavWrapper) WithNav(handler func(http.ResponseWriter, *http.Request, *slog.Logger, element.Nav) error, link element.Link) server.Handler {
 	assert.NotEmpty(string(link.Href), errors.ErrEmptyLinkHref)
 	if link.Target == "" {
 		link.Target = element.Self
@@ -49,8 +50,8 @@ func (nw *NavWrapper) WithNav(handler func(w http.ResponseWriter, r *http.Reques
 	}
 	assert.NotEmpty(link.Text.String(), errors.ErrEmptyLinkText, fmt.Errorf("Here element.Link.Href is '%v'", link.Href))
 	nw.Links = append(nw.Links, link)
-	return func(w http.ResponseWriter, r *http.Request) error {
+	return func(w http.ResponseWriter, r *http.Request, logger *slog.Logger) error {
 		// w.WriteHeader(202)
-		return handler(w, r, element.Nav(*nw).WithCurent(r.URL.Path))
+		return handler(w, r, logger, element.Nav(*nw).WithCurent(r.URL.Path))
 	}
 }

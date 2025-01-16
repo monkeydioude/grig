@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"log/slog"
 	"monkeydioude/grig/internal/html/blocks"
 	"monkeydioude/grig/internal/html/layouts"
 	"monkeydioude/grig/internal/html/pages"
@@ -12,13 +13,13 @@ import (
 	"strconv"
 )
 
-func (h Handler) CapybaraList(w http.ResponseWriter, r *http.Request, nav elements.Nav) error {
+func (h Handler) CapybaraList(w http.ResponseWriter, r *http.Request, _ *slog.Logger, nav elements.Nav) error {
 	layout := layouts.Main(nav, pages.CapybaraList(&h.Layout.ServerConfig))
 	layout.Render(context.Background(), w)
 	return nil
 }
 
-func (h Handler) CapybaraServiceBlock(w http.ResponseWriter, r *http.Request) error {
+func (h Handler) CapybaraServiceBlock(w http.ResponseWriter, r *http.Request, _ *slog.Logger) error {
 	indexStr := r.URL.Query().Get("index")
 	index := 0
 	if indexStr != "" {
