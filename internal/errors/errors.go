@@ -9,6 +9,10 @@ var ErrReadIniFile = errors.New("unable to read ini file")
 var ErrEmptyLinkText = errors.New("WithNav: element.Link.Text can absolutely not be empty. WithNav can derive a page's name from element.Link.Href, unless it's empty or a single '/'")
 var ErrEmptyLinkHref = errors.New("WithNav: element.Link.Href cannot be empty")
 
+// services
+var ErrServicesInvalidFilepath = errors.New("Provided filepath does not exist")
+var ErrServicesUnableFileParsing = errors.New("Unable to read the provided filepath")
+
 // model
 var ErrModelVerifyInvalidValue = errors.New("invalid value during verification")
 

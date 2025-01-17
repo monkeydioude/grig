@@ -22,11 +22,11 @@ func (h Handler) ServicesList(w http.ResponseWriter, r *http.Request, logger *sl
 	return layout.Render(r.Context(), w)
 }
 
-func (h Handler) AddServiceByFilename(
+func (h Handler) AddServiceByFilepath(
 	w http.ResponseWriter,
 	r *http.Request,
 	logger *slog.Logger,
-	p *services.ServiceFilename,
+	p *services.Filepath,
 ) error {
 	if p == nil {
 		return http_errors.InternalServerError(pkgErrors.Wrap(cErrors.ErrNilPointer, "AddServiceByFilename: *services.ServiceFilename"))
@@ -34,10 +34,11 @@ func (h Handler) AddServiceByFilename(
 
 	srv, err := p.TryLoadAndParse()
 	if err != nil {
+		logger.Error("AddServiceByFilename: *services.TryLoadAndParse", "error", err)
 		if os.IsNotExist(err) {
-			return http_errors.BadRequest(pkgErrors.Wrap(err, "AddServiceByFilename: *services.TryLoadAndParse"))
+			return http_errors.BadRequest(cErrors.ErrServicesInvalidFilepath)
 		}
-		return http_errors.InternalServerError(pkgErrors.Wrap(err, "AddServiceByFilename: *services.TryLoadAndParse"))
+		return http_errors.InternalServerError(cErrors.ErrServicesUnableFileParsing)
 	}
 	h.Layout.ServerConfig.AppsServicesPaths = append(h.Layout.ServerConfig.AppsServicesPaths, srv.Path)
 	return blocks.ServicesService(srv).Render(r.Context(), w)

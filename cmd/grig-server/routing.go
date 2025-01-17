@@ -42,7 +42,7 @@ func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 	mux.HandleFunc("/josuke/command/block", layout.Get(html.JosukeCommandBlock))
 
 	mux.HandleFunc("/services", layout.Get(nw.WithNav(html.ServicesList, element.Link{Href: "/services"})))
-	mux.HandleFunc("/services/by_filename", layout.Post(with.JsonPayload(html.AddServiceByFilename)))
+	mux.HandleFunc("/services/by_filepath", layout.Post(with.JsonPayload(html.AddServiceByFilepath)))
 	mux.HandleFunc("/services/environment/block", layout.Get(html.ServicesEnvironmentBlock))
 
 	// Apply the middleware to your server

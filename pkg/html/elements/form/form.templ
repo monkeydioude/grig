@@ -1,22 +1,28 @@
 package form
 
+import "monkeydioude/grig/internal/consts"
+
+var performAnimHandle = templ.NewOnceHandle()
 templ jsBlock() {
-    <script type="text/javascript">
-        function performAnimation(node, event) {
-            if (node !== event.target) {
-                return ;
-            }
-            try {
-                if (event.detail.xhr.status === 200) {
-                    ToastSuccess("SUCCESS: Saved");
-                } else {
-                    ToastError(`FAILURE (${event.detail.xhr.status}): Could not save`);
+    @performAnimHandle.Once() {
+        <script type="text/javascript">
+            function performAnimation(node, event) {
+                if (node !== event.target) {
+                    return ;
                 }
-            } catch (err) {
-                ToastError("ERROR: "+ err);
+                try {
+                    if (event.detail.xhr.status === 200) {
+                        ToastSuccess(`SUCCESS: ${node.dataset.successMsg}`);
+                    } else {
+                        const err = xhrIntoErr(event.detail.xhr);
+                        ToastError(`FAILURE (${err.status}): ${err.error}`);
+                    }
+                } catch (err) {
+                    ToastError("ERROR: "+ err);
+                }
             }
-        }
-    </script>
+        </script>
+    }
 }
 
 templ DisplayFormGroup(fgroup FormGroup) {
@@ -49,6 +55,8 @@ templ JsonPostForm(path string) {
         hx-post={path}
         hx-swap="none"
         hx-ext="json-enc-custom"
+        data-success-msg={consts.FORM_SUCCESS_MSG}
+        data-error-msg={consts.FORM_ERR_MSG}
         hx-on::after-request="performAnimation(this, event)"
     >
     { children...}

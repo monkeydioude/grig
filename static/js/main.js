@@ -18,6 +18,37 @@ const $_ = function(node, thenSelector) {
     return directChildren.filter(child => child.classList.contains(thenSelector));
 }
 
+const intoErr = function(response, status) {
+    try {
+        const err = JSON.parse(response);
+        if (!err || !err.error) {
+            throw "invalid response body"
+        }
+        return {
+            status,
+            error: err.error,
+        }
+    } catch (err) {
+        console.error(err);
+        return {
+            status,
+            error: "unexpected error"
+        }
+    } 
+}
+
+const xhrIntoErr = function(xhr) {
+    try {
+        return intoErr(xhr.response, xhr.status);
+    } catch (err) {
+        console.error(err);
+        return {
+            status: -1,
+            error: "unexpected error"
+        }
+    }
+}
+
 if (!Node.prototype.removeClass) {
     Node.prototype.removeClass = function (className) {
         if (this.classList) {
