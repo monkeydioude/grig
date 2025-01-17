@@ -30,17 +30,20 @@ func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 
 	// html routes definition
 	mux.HandleFunc("/", layout.Get(nw.WithNav(html.Index, element.Link{Href: "/", Text: element.Text("Index")})))
+
 	mux.HandleFunc("/capybara", layout.Get(nw.WithNav(html.CapybaraList, element.Link{Href: "/capybara"})))
+	mux.HandleFunc("/capybara/service", layout.Get(html.CapybaraServiceBlock))
+
 	mux.HandleFunc("/josuke", layout.Get(nw.WithNav(html.JosukeList, element.Link{Href: "/josuke"})))
+	mux.HandleFunc("/josuke/hook/block", layout.Get(html.JosukeHookBlock))
+	mux.HandleFunc("/josuke/deployment/block", layout.Get(html.JosukeDeploymentBlock))
+	mux.HandleFunc("/josuke/branch/block", layout.Get(html.JosukeBranchBlock))
+	mux.HandleFunc("/josuke/action/block", layout.Get(html.JosukeActionBlock))
+	mux.HandleFunc("/josuke/command/block", layout.Get(html.JosukeCommandBlock))
+
 	mux.HandleFunc("/services", layout.Get(nw.WithNav(html.ServicesList, element.Link{Href: "/services"})))
-
-	mux.HandleFunc("/blocks/josuke/hook", layout.Get(html.JosukeHookBlock))
-	mux.HandleFunc("/blocks/josuke/deployment", layout.Get(html.JosukeDeploymentBlock))
-	mux.HandleFunc("/blocks/josuke/branch", layout.Get(html.JosukeBranchBlock))
-	mux.HandleFunc("/blocks/josuke/action", layout.Get(html.JosukeActionBlock))
-	mux.HandleFunc("/blocks/josuke/command", layout.Get(html.JosukeCommandBlock))
-
-	mux.HandleFunc("/blocks/capybara/service", layout.Get(html.CapybaraServiceBlock))
+	mux.HandleFunc("/services/by_filename", layout.Post(with.JsonPayload(html.AddServiceByFilename)))
+	mux.HandleFunc("/services/environment/block", layout.Get(html.ServicesEnvironmentBlock))
 
 	// Apply the middleware to your server
 	app := middleware.Mux(mux)

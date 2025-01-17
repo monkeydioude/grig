@@ -39,7 +39,7 @@ templ JosukeAction(idGeneratorFunc func (pkgModel.IndexBuilder, string) string, 
                 @JosukeCmd(idGeneratorFunc, cmd)
             }
         </div>
-        @button.AjaxBlockButton("/blocks/josuke/command", selector, "rounded-none rounded-s mr-0", "bg-sky-700 hover:bg-sky-800") { + Command }
+        @button.AjaxBlockButton("/josuke/command/block", selector, "rounded-none rounded-s mr-0", "bg-sky-700 hover:bg-sky-800") { + Command }
         @button.RemoveLastOf(removeSelector, "rounded-none rounded-e", "bg-red-700 hover:bg-red-800") { - Command }
     </div>
 }
@@ -61,7 +61,7 @@ templ JosukeBranch(idGeneratorFunc func (pkgModel.IndexBuilder, string) string, 
             }
         </div>
         <div class="mt-2">
-            @button.AjaxBlockButton("/blocks/josuke/action", selector, "rounded-none rounded-s mr-0", "bg-sky-600 hover:bg-sky-700") { + Action }
+            @button.AjaxBlockButton("/josuke/action/block", selector, "rounded-none rounded-s mr-0", "bg-sky-600 hover:bg-sky-700") { + Action }
             @button.RemoveLastOf(removeSelector, "rounded-none rounded-e", "bg-red-600 hover:bg-red-700") { - Action }
         </div>
     </div>
@@ -79,26 +79,26 @@ templ JosukeDeployment(
         @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "repo"), "<username>/<project>", dep.Repo)) {
                 Repo name
         }
-            @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "proj_dir"), "<project>", dep.ProjDir)) {
-                { "Project directory "}
-                @span.Advice() { Most likely the name of the project on your repo, after git clone }
+        @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "proj_dir"), "<project>", dep.ProjDir)) {
+            { "Project directory "}
+            @span.Advice() { Most likely the name of the project on your repo, after git clone }
+        }
+        @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "base_dir"), "/home/user/projects", dep.BaseDir)) {
+            { "Base directory "}
+            @span.Advice() { Directory where your project is stored }
+        }
+        @hx.H3("Branches")
+        <div class={branchClass} data-parent-name={idGenChainFunc(&dep, "")}>
+            for bIt, branch := range dep.Branches {
+                {{ branch.SetParent(&dep) }}
+                {{ branch.SetIndex(bIt) }}
+                @JosukeBranch(idGenChainFunc, branch)
             }
-            @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "base_dir"), "/home/user/projects", dep.BaseDir)) {
-                { "Base directory "}
-                @span.Advice() { Directory where your project is stored }
-            }
-            @hx.H3("Branches")
-            <div class={branchClass} data-parent-name={idGenChainFunc(&dep, "")}>
-                for bIt, branch := range dep.Branches {
-                    {{ branch.SetParent(&dep) }}
-                    {{ branch.SetIndex(bIt) }}
-                    @JosukeBranch(idGenChainFunc, branch)
-                }
-            </div>
-            <div class="mt-2">
-                @button.AjaxBlockButton("/blocks/josuke/branch", selector, "rounded-none rounded-s mr-0") { + Branch }
-                @button.RemoveLastOf(removeSelector, "rounded-none rounded-e") { - Branch }
-            </div>
+        </div>
+        <div class="mt-2">
+            @button.AjaxBlockButton("/josuke/branch/block", selector, "rounded-none rounded-s mr-0") { + Branch }
+            @button.RemoveLastOf(removeSelector, "rounded-none rounded-e") { - Branch }
+        </div>
     </div>
 }
 

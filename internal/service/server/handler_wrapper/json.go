@@ -15,8 +15,8 @@ func cleanJSONFromNull(input []byte) []byte {
 	return re.ReplaceAll(input, []byte{})
 }
 
-func JsonPayload[T any](handler func(w http.ResponseWriter, r *http.Request, payload *T) error) server.Handler {
-	return func(w http.ResponseWriter, r *http.Request, _ *slog.Logger) error {
+func JsonPayload[T any](handler func(http.ResponseWriter, *http.Request, *slog.Logger, *T) error) server.Handler {
+	return func(w http.ResponseWriter, r *http.Request, logger *slog.Logger) error {
 		data, err := io.ReadAll(r.Body)
 		if err != nil {
 			return errors.Wrap(err, "JsonPayload")
@@ -27,6 +27,6 @@ func JsonPayload[T any](handler func(w http.ResponseWriter, r *http.Request, pay
 		if err != nil {
 			return errors.Wrap(err, "JsonPayload")
 		}
-		return handler(w, r, &payload)
+		return handler(w, r, logger, &payload)
 	}
 }

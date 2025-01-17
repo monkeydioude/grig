@@ -41,7 +41,7 @@ templ (page Josuke) Content() {
                     @blocks.JosukeHook(it, GetHookInputName, hook)
                 }
             </div>
-            @button.AjaxBlockButton("/blocks/josuke/hook", ".hooks-list") { + Hook }
+            @button.AjaxBlockButton("/josuke/hook/block", ".hooks-list") { + Hook }
 
             // Deployments
             <div class={depClass}>
@@ -53,7 +53,7 @@ templ (page Josuke) Content() {
                 }
             </div>
             <div class="my-2">
-                @button.AjaxBlockButton("/blocks/josuke/deployment", depSelector, "rounded-none rounded-s mr-0") { + Deployment }
+                @button.AjaxBlockButton("/josuke/deployment/block", depSelector, "rounded-none rounded-s mr-0") { + Deployment }
                 @button.RemoveLastOf(removeDepSelector, "rounded-none rounded-e") { - Deployment }
             </div>
         }

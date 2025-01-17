@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
+	"path/filepath"
 
 	"gopkg.in/ini.v1"
 )
@@ -58,7 +59,7 @@ func IniServiceParser(path string) (model.Service, error) {
 }
 
 func IniServicesParser(paths []string) ([]model.Service, error) {
-	res := make([]model.Service, len(paths))
+	res := make([]model.Service, 0, len(paths))
 	var errs error
 	for _, path := range paths {
 		srvc, err := IniServiceParser(path)
@@ -66,6 +67,8 @@ func IniServicesParser(paths []string) ([]model.Service, error) {
 			errs = errors.Join(errs, err)
 			continue
 		}
+		srvc.Path = path
+		srvc.Name = filepath.Base(path)
 		res = append(res, srvc)
 	}
 	return res, errs

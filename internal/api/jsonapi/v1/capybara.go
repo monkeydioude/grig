@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+	"log/slog"
 	"monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/file"
@@ -10,7 +11,7 @@ import (
 	"net/http"
 )
 
-func (h Handler) CapybaraSave(w http.ResponseWriter, r *http.Request, cp *model.Capybara) error {
+func (h Handler) CapybaraSave(w http.ResponseWriter, r *http.Request, _ *slog.Logger, cp *model.Capybara) error {
 	if r == nil || cp == nil {
 		return fmt.Errorf("api.CapybaraSave: %w", errors.ErrNilPointer)
 	}

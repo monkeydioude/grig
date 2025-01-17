@@ -1,5 +1,18 @@
 package pages
 
-templ (page Services)Content() {
-    <div></div>
+import "monkeydioude/grig/pkg/html/elements/form"
+import "monkeydioude/grig/pkg/html/elements/hx"
+import "monkeydioude/grig/pkg/html/elements/input"
+import "monkeydioude/grig/internal/html/blocks"
+
+templ (page Services) Content() {
+    <div>
+        for _, srvc := range page.Data {
+            @form.JsonPostForm("/api/v1/service") {
+                @hx.H2(srvc.Name)
+                @input.Hidden("service_path", srvc.Path)
+                @blocks.ServicesService(srvc)
+            }
+        }
+    </div>
 }

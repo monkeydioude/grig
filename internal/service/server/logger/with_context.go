@@ -14,7 +14,7 @@ func (swc *slogWithContext) Enabled(ctx context.Context, lvl slog.Level) bool {
 	return swc.handler.Enabled(ctx, lvl)
 }
 func (swc *slogWithContext) Handle(ctx context.Context, rec slog.Record) error {
-	attrs := make([]slog.Attr, len(swc.ctxKeys))
+	attrs := make([]slog.Attr, 0, len(swc.ctxKeys))
 	for _, key := range swc.ctxKeys {
 		val := ctx.Value(key)
 		if val == nil {

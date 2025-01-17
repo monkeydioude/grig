@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"log/slog"
 	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/file"
@@ -10,7 +11,7 @@ import (
 	"net/http"
 )
 
-func (h Handler) JosukeSave(w http.ResponseWriter, r *http.Request, jk *model.Josuke) error {
+func (h Handler) JosukeSave(w http.ResponseWriter, r *http.Request, _ *slog.Logger, jk *model.Josuke) error {
 	if r == nil || jk == nil {
 		return errors.Wrap(customErrors.ErrNilPointer, "api.JosukeSave")
 	}

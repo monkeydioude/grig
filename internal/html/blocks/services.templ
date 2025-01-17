@@ -1,0 +1,36 @@
+package blocks
+
+import (
+    "monkeydioude/grig/internal/model"
+    "monkeydioude/grig/pkg/html/elements/form"
+    "monkeydioude/grig/pkg/html/elements/button"
+    "monkeydioude/grig/pkg/html/elements/span"
+    "fmt"
+	"strings"
+)
+templ ServicesEnvironmentBlock(it int, env string, service model.Service) {
+    <div class="service-block env-element">
+        @form.DisplayFormGroup(form.StringFormGroup(service.EnvironmentIdGen(it), "Environment", env)) { }
+    </div>
+}
+
+templ ServicesService(service model.Service) {
+    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+        @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("name"), "", service.Name)) { Name }
+        @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("description"), "", service.Description)) { Description }
+        @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("exececution"), "/home/mkd/go/bin/josuke -c /home/mkd/config/josuke.config.json", service.Exec)) { Execution Command }
+        @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("path"), "File path", service.Path)) { Path }
+        @span.Optional() { Environments }
+        {{ envClass := fmt.Sprintf("%s-env-container", strings.Replace(service.Name, ".", "_", 1))}}
+        {{ selector := "."+envClass }}
+        {{ removeSelector := selector+ " .env-element" }}
+        <div class={envClass}>
+            for it, env := range service.Environments {
+                @ServicesEnvironmentBlock(it, env, service)
+            }
+        </div>
+        @button.AjaxBlockButton("/services/environment/block", selector, "rounded-none rounded-s mr-0", "bg-sky-700 over:bg-sky-800") { + Environment }
+        @button.RemoveLastOf(removeSelector, "rounded-none rounded-e", "bg-red-700 hover:bg-red-800") { - Environment }
+        @button.RemoveParentButton() { Delete }
+    </div>
+}
