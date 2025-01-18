@@ -51,7 +51,8 @@ func IniServiceParser(path string) (model.Service, error) {
 	if err != nil {
 		return service, fmt.Errorf("fs.NewServiceFromPath: ini.Load: %w: %w", customErrors.ErrReadIniFile, err)
 	}
-
+	service.Path = path
+	service.Name = filepath.Base(path)
 	service.Description = fetchSectionAndKey(cfg, "Unit", "Description")
 	service.Exec = fetchSectionAndKey(cfg, "Service", "ExecStart")
 	service.Environments = fetchSectionAndKeys(cfg, "Service", "Environment")
@@ -67,8 +68,6 @@ func IniServicesParser(paths []string) ([]model.Service, error) {
 			errs = errors.Join(errs, err)
 			continue
 		}
-		srvc.Path = path
-		srvc.Name = filepath.Base(path)
 		res = append(res, srvc)
 	}
 	return res, errs

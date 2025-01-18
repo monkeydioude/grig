@@ -1,0 +1,16 @@
+package htmx
+
+templ (f Factory) Form(path string) {
+        <form
+            hx-post={path}
+            hx-swap={f.Swap.String()}
+            hx-target={f.Target}
+            hx-ext={f.Ext}
+            data-success-msg={f.SuccessMsg}
+            data-error-msg={f.ErrorMsg}
+            hx-on::after-request="performAnimation(this, event)">
+            { children...}
+            <button type="submit"
+                class="text-gray-100 bg-emerald-500 hover:bg-emerald-600 block rounded pointer py-2 px-4 mx-auto mt-4 mb-0">Submit</button>
+        </form>
+}

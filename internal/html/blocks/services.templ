@@ -7,6 +7,8 @@ import (
     "monkeydioude/grig/pkg/html/elements/span"
     "fmt"
 	"strings"
+	"monkeydioude/grig/pkg/html/elements/hx"
+	"monkeydioude/grig/pkg/html/elements/input"
 )
 templ ServicesEnvironmentBlock(it int, env string, service model.Service) {
     <div class="service-block env-element">
@@ -15,6 +17,8 @@ templ ServicesEnvironmentBlock(it int, env string, service model.Service) {
 }
 
 templ ServicesService(service model.Service) {
+    @hx.H2(service.Name)
+    @input.Hidden("service_path", service.Path)
     <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
         @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("name"), "", service.Name)) { Name }
         @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("description"), "", service.Description)) { Description }

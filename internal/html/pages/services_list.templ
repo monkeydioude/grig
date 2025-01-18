@@ -1,24 +1,26 @@
 package pages
 
-import "monkeydioude/grig/pkg/html/elements/form"
-import "monkeydioude/grig/pkg/html/elements/hx"
-import "monkeydioude/grig/pkg/html/elements/input"
-import "monkeydioude/grig/internal/html/blocks"
+import (
+    "monkeydioude/grig/pkg/html/elements/form"
+    "monkeydioude/grig/pkg/html/elements/hx"
+    "monkeydioude/grig/pkg/html/elements/input"
+    "monkeydioude/grig/internal/html/blocks"
+    "monkeydioude/grig/pkg/html/elements/htmx"
+)
 
 templ (page Services) Content() {
-    <div>
-        for _, srvc := range page.Data {
-            @form.JsonPostForm("/services/by_filepath") {
-                <div class="flex flex-col">
-                    @hx.H3("Add a service by filepath")
-                    @input.Text("filepath", "Path to the service file")
-                </div>
-            }
-            @form.JsonPostForm("/api/v1/service") {
-                @hx.H2(srvc.Name)
-                @input.Hidden("service_path", srvc.Path)
+    {{ factory := page.HtmxFactory.WithSwapTarget(htmx.BeforeEnd, "next .services-container")}}
+    @factory.Form("/services/by_filepath") {
+        <div class="flex flex-col">
+            @hx.H3("Add a service by filepath")
+            @input.Text("filepath", "Path to the service file")
+        </div>
+    }
+    @form.JsonPostForm("/api/v1/service") {
+        <div class="services-container">
+            for _, srvc := range page.Data {
                 @blocks.ServicesService(srvc)
             }
-        }
-    </div>
+        </div>
+    }
 }
