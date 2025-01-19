@@ -1,8 +1,8 @@
 [Unit]
-Description = weshhhhhh
+Description = salut
 After       = 
 
 [Service]
-ExecStart   = PWD=/home/mkd/work/logchest
+ExecStart   = 
 Type        = 
 Environment = PWD=/home/mkd/work/logchestsss

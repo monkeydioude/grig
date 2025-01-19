@@ -8,8 +8,8 @@ import (
 )
 
 type Service struct {
-	Service ServiceSection
-	Unit    UnitSection
+	Service ServiceSection `ini:"Service"`
+	Unit    UnitSection    `ini:"Unit"`
 	Path    string
 	Name    string
 	OGPath  string `json:"og_path"`
@@ -34,7 +34,7 @@ func (s Service) IdGen(section, key string) string {
 }
 
 func (s Service) EnvironmentIdGen(it int) string {
-	return fmt.Sprintf("%s[%d]", s.IdGen("service", "environments"), it)
+	return fmt.Sprintf("%s[%d]", s.IdGen("service", "environment"), it)
 }
 
 func (s Service) hydrateIni(cfg *ini.File) error {
@@ -48,10 +48,13 @@ func (s Service) hydrateIni(cfg *ini.File) error {
 	serviceSec := cfg.Section("Service")
 	serviceSec.Key("ExecStart").SetValue(s.Service.ExecStart)
 	serviceSec.Key("Type").SetValue(string(s.Service.Type))
+	// remake Environment key
+	serviceSec.DeleteKey("Environment")
 	envK := serviceSec.Key("Environment")
 	for _, env := range s.Service.Environment {
 		envK.AddShadow(env)
 	}
+
 	return nil
 }
 
@@ -62,9 +65,9 @@ const (
 )
 
 type ServiceSection struct {
-	Environment []string
-	ExecStart   string
-	Type        ServiceType
+	Environment []string    `ini:"Environment,allowshadow" json:"environment"`
+	ExecStart   string      `ini:"ExecStart,allowshadow" json:"exec_start"`
+	Type        ServiceType `ini:"Type,allowshadow"`
 }
 
 type UnitAfter string
@@ -74,6 +77,6 @@ const (
 )
 
 type UnitSection struct {
-	Description string
-	After       UnitAfter
+	Description string    `ini:"Description"`
+	After       UnitAfter `ini:"After"`
 }

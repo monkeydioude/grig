@@ -24,7 +24,7 @@ templ ServicesService(service model.Service) {
             // @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("name"), "", service.Name)) { Name }
             @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("", "path"), "File path", service.Path)) { Path }
             @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("unit", "description"), "", service.Unit.Description)) { Description }
-            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("seection", "exec"), "/home/mkd/go/bin/josuke -c /home/mkd/config/josuke.config.json", service.Service.ExecStart)) { Execution Command }
+            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("service", "exec_start"), "/home/mkd/go/bin/josuke -c /home/mkd/config/josuke.config.json", service.Service.ExecStart)) { Execution Command }
             @span.Default() { Environment Variables }
             {{ envClass := fmt.Sprintf("%s-env-container", strings.Replace(service.Name, ".", "_", 1))}}
             {{ selector := "."+envClass }}
