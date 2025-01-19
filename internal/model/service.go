@@ -3,23 +3,13 @@ package model
 import (
 	"fmt"
 	"monkeydioude/grig/internal/errors"
-	"os"
 
 	"gopkg.in/ini.v1"
 )
 
-type ServiceSection struct {
-	Environments []string `ini:"Environment,allowshadows"`
-	Exec         string   `ini:"ExecStart"`
-}
-
-type UnitSection struct {
-	Description string `ini:"Description"`
-}
-
 type Service struct {
-	Service ServiceSection `ini:"Service"`
-	Unit    UnitSection    `ini:"Unit"`
+	Service ServiceSection
+	Unit    UnitSection
 	Path    string
 	Name    string
 	OGPath  string `json:"og_path"`
@@ -27,16 +17,12 @@ type Service struct {
 }
 
 func (s Service) Save() error {
-	if err := s.HydrateIni(s.IniFile); err != nil {
+	if err := s.hydrateIni(s.IniFile); err != nil {
 		return err
 	}
 	if err := s.IniFile.SaveTo(s.Path); err != nil {
 		return err
 	}
-	return nil
-}
-
-func (s Service) Source() *os.File {
 	return nil
 }
 
@@ -51,17 +37,43 @@ func (s Service) EnvironmentIdGen(it int) string {
 	return fmt.Sprintf("%s[%d]", s.IdGen("service", "environments"), it)
 }
 
-func (s Service) HydrateIni(cfg *ini.File) error {
+func (s Service) hydrateIni(cfg *ini.File) error {
 	if cfg == nil {
 		return errors.ErrNilPointer
 	}
-	fmt.Printf("HydrateIni %+v\n", s)
-	cfg.Section("Unit").Key("Description").SetValue(s.Unit.Description)
+	unit := cfg.Section("Unit")
+	unit.Key("Description").SetValue(s.Unit.Description)
+	unit.Key("After").SetValue(string(s.Unit.After))
+
 	serviceSec := cfg.Section("Service")
-	serviceSec.Key("ExecStart").SetValue(s.Service.Exec)
+	serviceSec.Key("ExecStart").SetValue(s.Service.ExecStart)
+	serviceSec.Key("Type").SetValue(string(s.Service.Type))
 	envK := serviceSec.Key("Environment")
-	for _, env := range s.Service.Environments {
+	for _, env := range s.Service.Environment {
 		envK.AddShadow(env)
 	}
-	return cfg.SaveTo(s.Path)
+	return nil
+}
+
+type ServiceType string
+
+const (
+	SimpleService ServiceType = "simple"
+)
+
+type ServiceSection struct {
+	Environment []string
+	ExecStart   string
+	Type        ServiceType
+}
+
+type UnitAfter string
+
+const (
+	NetworkOnline UnitAfter = "network-online.target"
+)
+
+type UnitSection struct {
+	Description string
+	After       UnitAfter
 }

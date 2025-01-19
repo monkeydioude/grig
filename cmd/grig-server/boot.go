@@ -22,7 +22,7 @@ func parseFlags() string {
 }
 
 func setLogger() {
-	logger := slog.New(logger.SlogTintWithContext(consts.X_REQUEST_ID_LABEL))
+	logger := slog.New(logger.SlogTintWithContext(server.X_REQUEST_ID_LABEL))
 	slog.SetDefault(logger)
 	slog.SetLogLoggerLevel(slog.LevelDebug)
 }

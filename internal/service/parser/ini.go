@@ -2,10 +2,10 @@ package parser
 
 import (
 	"errors"
-	"fmt"
 	"log/slog"
 	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
+	pkgErr "monkeydioude/grig/pkg/errors"
 	"path/filepath"
 
 	"gopkg.in/ini.v1"
@@ -50,20 +50,19 @@ func IniNewFile(path string) *ini.File {
 }
 
 func IniServiceParser(path string) (model.Service, error) {
-	cfg, err := ini.ShadowLoad(path)
 	service := model.Service{}
+	cfg, err := ini.ShadowLoad(path)
 	if err != nil {
-		return service, fmt.Errorf("fs.IniServiceParser: ini.Load: %w: %w", customErrors.ErrReadIniFile, err)
+		return service, pkgErr.Wrapf(err, "fs.IniServiceParser: ini.Load: %w", customErrors.ErrReadIniFile)
 	}
 	service.Path = path
 	service.Name = filepath.Base(path)
-	service.Unit = model.UnitSection{
-		Description: fetchSectionAndKey(cfg, "Unit", "Description"),
+	if err := cfg.MapTo(&service); err != nil {
+		return service, pkgErr.Wrapf(err, "cfg.MapTo: %w", customErrors.ErrReadIniFile)
 	}
-	service.Service = model.ServiceSection{
-		Exec:         fetchSectionAndKey(cfg, "Service", "ExecStart"),
-		Environments: fetchSectionAndKeys(cfg, "Service", "Environment"),
-	}
+	serviceSection := cfg.Section("Service")
+	// mapping by hand, cause the pkg doesnt handle it well
+	service.Service.Environment = serviceSection.Key("Environment").ValueWithShadows()
 	return service, nil
 }
 

@@ -1,6 +1,8 @@
 [Unit]
 Description = weshhhhhh
+After       = 
 
 [Service]
 ExecStart   = 
 Environment = PWD=/home/mkd/work/logchest
+Type        = 

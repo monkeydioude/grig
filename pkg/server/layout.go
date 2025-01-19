@@ -10,6 +10,9 @@ import (
 	"sync"
 )
 
+const X_REQUEST_ID_LABEL = "X-Request-ID"
+const NO_X_REQUEST_ID = "no_x_request_id"
+
 type Layout[T any] struct {
 	OS           os.OS
 	ServerConfig T
@@ -35,7 +38,8 @@ func WithMethod(method string, handler Handler) func(http.ResponseWriter, *http.
 		for _, m := range Methods {
 			// a method matches
 			if m == method {
-				if err := handler(resBuff, req, slog.Default()); err != nil {
+				logger := slog.Default().With(X_REQUEST_ID_LABEL, req.Context().Value(X_REQUEST_ID_LABEL))
+				if err := handler(resBuff, req, logger); err != nil {
 					http_errors.WriteError(err, resBuff)
 				}
 				_, err := resBuff.End()

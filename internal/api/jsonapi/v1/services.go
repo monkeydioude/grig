@@ -1,10 +1,13 @@
 package v1
 
 import (
+	"context"
 	"log/slog"
 	customErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/model"
+	"monkeydioude/grig/pkg/os"
 	"net/http"
+	"time"
 )
 
 func (h Handler) ServicesSave(
@@ -29,5 +32,10 @@ func (h Handler) ServicesSave(
 		logger.Error("api.ServicesSave::Save", "error", err)
 		return customErrors.ErrConfigSaveFail
 	}
+
+	ctx, cancelFn := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancelFn()
+	os.DaemonReload(ctx, logger)
+
 	return nil
 }

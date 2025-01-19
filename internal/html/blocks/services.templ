@@ -24,13 +24,13 @@ templ ServicesService(service model.Service) {
             // @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("name"), "", service.Name)) { Name }
             @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("", "path"), "File path", service.Path)) { Path }
             @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("unit", "description"), "", service.Unit.Description)) { Description }
-            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("seection", "exec"), "/home/mkd/go/bin/josuke -c /home/mkd/config/josuke.config.json", service.Service.Exec)) { Execution Command }
+            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("seection", "exec"), "/home/mkd/go/bin/josuke -c /home/mkd/config/josuke.config.json", service.Service.ExecStart)) { Execution Command }
             @span.Default() { Environment Variables }
             {{ envClass := fmt.Sprintf("%s-env-container", strings.Replace(service.Name, ".", "_", 1))}}
             {{ selector := "."+envClass }}
             {{ removeSelector := selector+ " .env-element" }}
             <div class={envClass} data-parent-name={service.Name}>
-                for it, env := range service.Service.Environments {
+                for it, env := range service.Service.Environment {
                     @ServicesEnvironmentBlock(it, env, service)
                 }
             </div>
