@@ -8,6 +8,7 @@ import (
 	"monkeydioude/grig/internal/html/pages"
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/services"
+	"monkeydioude/grig/pkg/dt"
 	"monkeydioude/grig/pkg/errors"
 	pkgErrors "monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/html/elements"
@@ -40,7 +41,15 @@ func (h Handler) AddServiceByFilepath(
 		}
 		return http_errors.InternalServerError(cErrors.ErrServicesUnableFileParsing)
 	}
-	h.Layout.ServerConfig.AppsServicesPaths = append(h.Layout.ServerConfig.AppsServicesPaths, srv.Path)
+	// we don't want to add an already existing file
+	slice, res := dt.AppendUnique(h.Layout.ServerConfig.AppsServicesPaths, srv.Path)
+	if res == false {
+		return http_errors.BadRequest(cErrors.ErrServicesFilepathExists)
+	}
+	h.Layout.ServerConfig.AppsServicesPaths = slice
+	if err := h.Layout.ServerConfig.Save(); err != nil {
+		return http_errors.InternalServerError(cErrors.ErrWritingFile)
+	}
 	return blocks.ServicesService(srv).Render(r.Context(), w)
 }
 
@@ -54,5 +63,7 @@ func (h Handler) ServicesEnvironmentBlock(w http.ResponseWriter, r *http.Request
 		}
 		index = it
 	}
-	return blocks.ServicesEnvironmentBlock(index, "", model.Service{}).Render(r.Context(), w)
+	return blocks.ServicesEnvironmentBlock(index, "", model.Service{
+		Name: r.URL.Query().Get("parent_name"),
+	}).Render(r.Context(), w)
 }

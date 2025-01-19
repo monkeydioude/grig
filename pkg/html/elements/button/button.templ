@@ -39,7 +39,8 @@ templ AjaxBlockButton(path, target string, class ...string) {
         hx-swap="beforeend"
         hx-on::config-request="EditReq(event)"
         hx-on::after-request="event.stopPropagation()"
-        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none py-2.5 px-4 mr-2.5", strings.Join(class, " ")}>
+        style="top: -0.5px;"
+        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none py-2.5 px-4 relative", strings.Join(class, " ")}>
         {children...}
     </button>
 }   

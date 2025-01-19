@@ -17,24 +17,28 @@ templ ServicesEnvironmentBlock(it int, env string, service model.Service) {
 }
 
 templ ServicesService(service model.Service) {
-    @hx.H2(service.Name)
-    @input.Hidden("service_path", service.Path)
-    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
-        @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("name"), "", service.Name)) { Name }
-        @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("description"), "", service.Description)) { Description }
-        @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("path"), "File path", service.Path)) { Path }
-        @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("exececution"), "/home/mkd/go/bin/josuke -c /home/mkd/config/josuke.config.json", service.Exec)) { Execution Command }
-        @span.Default() { Environment Variables }
-        {{ envClass := fmt.Sprintf("%s-env-container", strings.Replace(service.Name, ".", "_", 1))}}
-        {{ selector := "."+envClass }}
-        {{ removeSelector := selector+ " .env-element" }}
-        <div class={envClass}>
-            for it, env := range service.Environments {
-                @ServicesEnvironmentBlock(it, env, service)
-            }
+    <div>
+        @hx.H2(service.Name)
+        @input.Hidden(service.IdGen("", "og_path"), service.Path)
+        <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+            // @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("name"), "", service.Name)) { Name }
+            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("", "path"), "File path", service.Path)) { Path }
+            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("unit", "description"), "", service.Unit.Description)) { Description }
+            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("seection", "exec"), "/home/mkd/go/bin/josuke -c /home/mkd/config/josuke.config.json", service.Service.Exec)) { Execution Command }
+            @span.Default() { Environment Variables }
+            {{ envClass := fmt.Sprintf("%s-env-container", strings.Replace(service.Name, ".", "_", 1))}}
+            {{ selector := "."+envClass }}
+            {{ removeSelector := selector+ " .env-element" }}
+            <div class={envClass} data-parent-name={service.Name}>
+                for it, env := range service.Service.Environments {
+                    @ServicesEnvironmentBlock(it, env, service)
+                }
+            </div>
+            <div class="my-2">
+                @button.AjaxBlockButton("/services/environment/block", selector, "rounded-none rounded-s mr-0", "bg-sky-700 over:bg-sky-800") { + Env }
+                @button.RemoveLastOf(removeSelector, "rounded-none rounded-e", "bg-red-700 hover:bg-red-800") { - Env }
+            </div>
         </div>
-        @button.AjaxBlockButton("/services/environment/block", selector, "rounded-none rounded-s mr-0", "bg-sky-700 over:bg-sky-800") { + Env }
-        @button.RemoveLastOf(removeSelector, "rounded-none rounded-e", "bg-red-700 hover:bg-red-800") { - Env }
-        // @button.RemoveParentButton() { Delete }
+        @button.RemoveParentButton() { Delete }
     </div>
 }

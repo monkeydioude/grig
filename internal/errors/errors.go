@@ -10,8 +10,10 @@ var ErrEmptyLinkText = errors.New("WithNav: element.Link.Text can absolutely not
 var ErrEmptyLinkHref = errors.New("WithNav: element.Link.Href cannot be empty")
 
 // services
+var ErrServicesFilepathExists = errors.New("Provided filepath already exists")
 var ErrServicesInvalidFilepath = errors.New("Provided filepath does not exist")
 var ErrServicesUnableFileParsing = errors.New("Unable to read the provided filepath")
+var ErrServicesServicesUpdateFail = errors.New("Could not update services")
 
 // model
 var ErrModelVerifyInvalidValue = errors.New("invalid value during verification")
@@ -25,3 +27,5 @@ var ErrWritingFile = errors.New("unable to write to file")
 var ErrCreatingFile = errors.New("unable to create file")
 var ErrNilPointer = errors.New("nil pointer")
 var ErrEmptySlice = errors.New("empty slice")
+var ErrConfigSaveFail = errors.New("Could not save config")
+var ErrInvalidProvidedParameters = errors.New("Invalid provided parameters")

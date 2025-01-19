@@ -27,6 +27,7 @@ func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 	// json api routes definition
 	mux.HandleFunc("/api/v1/capybara", layout.Post(with.JsonPayload(json.CapybaraSave)))
 	mux.HandleFunc("/api/v1/josuke", layout.Post(with.JsonPayload(json.JosukeSave)))
+	mux.HandleFunc("/api/v1/services", layout.Post(with.JsonPayload(json.ServicesSave)))
 
 	// html routes definition
 	mux.HandleFunc("/", layout.Get(nw.WithNav(html.Index, element.Link{Href: "/", Text: element.Text("Index")})))

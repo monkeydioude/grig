@@ -1,0 +1,8 @@
+[Unit]
+Description = salut
+
+[Service]
+ExecStart   = 
+Environment = CARGO=/home/mkd/.cargo/bin/cargo
+Environment = PWD=/home/mkd/work/logchest
+Environment = PWD_BYPASSCORS=/home/mkd/work/bypasscors

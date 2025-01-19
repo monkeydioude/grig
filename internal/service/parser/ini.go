@@ -43,19 +43,27 @@ func fetchSectionAndKeys(cfg *ini.File, section, key string) []string {
 	return sectionKey.ValueWithShadows()
 }
 
-func IniServiceParser(path string) (model.Service, error) {
-	cfg, err := ini.LoadSources(ini.LoadOptions{
+func IniNewFile(path string) *ini.File {
+	return ini.Empty(ini.LoadOptions{
 		AllowShadows: true,
-	}, path)
+	})
+}
+
+func IniServiceParser(path string) (model.Service, error) {
+	cfg, err := ini.ShadowLoad(path)
 	service := model.Service{}
 	if err != nil {
-		return service, fmt.Errorf("fs.NewServiceFromPath: ini.Load: %w: %w", customErrors.ErrReadIniFile, err)
+		return service, fmt.Errorf("fs.IniServiceParser: ini.Load: %w: %w", customErrors.ErrReadIniFile, err)
 	}
 	service.Path = path
 	service.Name = filepath.Base(path)
-	service.Description = fetchSectionAndKey(cfg, "Unit", "Description")
-	service.Exec = fetchSectionAndKey(cfg, "Service", "ExecStart")
-	service.Environments = fetchSectionAndKeys(cfg, "Service", "Environment")
+	service.Unit = model.UnitSection{
+		Description: fetchSectionAndKey(cfg, "Unit", "Description"),
+	}
+	service.Service = model.ServiceSection{
+		Exec:         fetchSectionAndKey(cfg, "Service", "ExecStart"),
+		Environments: fetchSectionAndKeys(cfg, "Service", "Environment"),
+	}
 	return service, nil
 }
 

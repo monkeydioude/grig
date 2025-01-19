@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"monkeydioude/grig/internal/service/file"
+	"monkeydioude/grig/internal/service/services"
 	"monkeydioude/grig/pkg/tiger/assert"
 	"os"
 	"path/filepath"
@@ -13,10 +14,10 @@ import (
 // ServerConfig holds the app config and is also
 // a factory for generating some model's entities
 type ServerConfig struct {
-	ServerConfigPath   string   `json:"-"`
-	AppsServicesPaths  []string `json:"services_paths"`
-	JosukeConfigPath   string   `json:"josuke_config_path"`
-	CapybaraConfigPath string   `json:"capybara_config_path"`
+	ServerConfigPath   string                   `json:"-"`
+	AppsServicesPaths  services.AppServicePaths `json:"services_paths"`
+	JosukeConfigPath   string                   `json:"josuke_config_path"`
+	CapybaraConfigPath string                   `json:"capybara_config_path"`
 }
 
 func unmarshalConfig(configRaw []byte) ServerConfig {
