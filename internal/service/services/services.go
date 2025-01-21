@@ -60,14 +60,14 @@ func handleIniSymlink(srvc model.Service, logger *slog.Logger) error {
 // after being updated with respect to the map
 // of services passed.
 func (sp AppServicePaths) WithUpdate(
-	srvcs *map[string]model.Service,
+	srvcs []model.Service,
 	logger *slog.Logger,
 ) (AppServicePaths, error) {
 	res := []string{}
 	if logger == nil {
 		return res, pkgErr.Wrap(errors.ErrNilPointer, "WithUpdate")
 	}
-	for _, srvc := range *srvcs {
+	for _, srvc := range srvcs {
 		file, err := getIniFile(sp, srvc.Path)
 		if err != nil {
 			return res, pkgErr.Wrap(err, "WithUpdate::getIniFile")

@@ -1,6 +1,30 @@
 package htmx
 
+var configReqFormHandle = templ.NewOnceHandle()
+
+templ configRequest() {
+    @configReqFormHandle.Once() {
+        <script>
+            function ConfigReqForm(self, event) {
+                try {
+                    const length = $$(self.getAttribute('data-index-target')).length;
+                    const parentName = self.getAttribute('data-parent-name');
+
+                    event.detail.parameters = {
+                        ...event.detail.parameters,
+                        index: length,
+                        parent_name: parentName,
+                    }
+                } catch (err) {
+                    console.error(err);
+                    ToastError("ERROR: Could not display a new block")
+                }
+            }
+        </script>
+    }
+}
 templ (f Factory) Form(path string) {
+    @configRequest()
         <form
             hx-post={path}
             hx-swap={f.Swap.String()}
@@ -8,9 +32,27 @@ templ (f Factory) Form(path string) {
             hx-ext={f.Ext}
             data-success-msg={f.SuccessMsg}
             data-error-msg={f.ErrorMsg}
+            data-index-target={f.IndexCounter}
+            hx-on::config-request="ConfigReqForm(this, event)"
             hx-on::after-request="performAnimation(this, event)">
             { children...}
             <button type="submit"
                 class="text-gray-100 bg-emerald-500 hover:bg-emerald-600 block rounded pointer py-2 px-4 mx-auto mt-4 mb-0">Submit</button>
         </form>
+}
+
+templ (f Factory) Button(path string) {
+    @configRequest()
+    <button
+        class="text-gray-100 bg-emerald-500 hover:bg-emerald-600 block rounded pointer py-2 px-4 mx-auto mt-4 mb-0"
+        hx-get={path}
+        hx-swap={f.Swap.String()}
+        hx-target={f.Target}
+        hx-ext={f.Ext}
+        data-success-msg={f.SuccessMsg}
+        data-error-msg={f.ErrorMsg} hx-on::config-request="ConfigReqForm(this, event)"
+        data-index-target={f.IndexCounter}
+        hx-on::after-request="performAnimation(this, event)">
+        { children...}
+    </button>
 }

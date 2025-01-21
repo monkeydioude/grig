@@ -10,17 +10,26 @@ import (
 
 templ (page Services) Content() {
     <div class="pb-3">
-        {{ factory := page.HtmxFactory.WithSwapTarget(htmx.BeforeEnd, "next .services-container")}}
+        {{ factory := htmx.NewJsonFactory().WithSwapTarget(htmx.BeforeEnd, "next .services-container")}}
         @factory.Form("/services/by_filepath") {
             <div class="flex flex-col">
                 @hx.H3("Add a service by filepath")
                 @input.Text("filepath", "Path to the service file")
             </div>
         }
+        {{ factory = htmx.NewFactory().
+            WithSwapTarget(htmx.BeforeBegin, "next .services-container").
+            WithMessages("", "huho").
+            WithIndexCounter(".services-service-block")}}
+        <div class="flex flex-col">
+            @hx.H3("Add a blank service")
+            @factory.Button("/services/service/block") { Add a blank service }
+        </div>
+
         @form.JsonPostForm("/api/v1/services") {
             <div class="services-container">
-                for _, srvc := range page.Data {
-                    @blocks.ServicesService(srvc)
+                for it, srvc := range page.Data {
+                    @blocks.ServicesService(it, srvc)
                 }
             </div>
         }

@@ -10,7 +10,9 @@ templ performAnimationJsBlock() {
             }
             try {
                 if (event.detail.xhr.status === 200) {
-                    ToastSuccess(`SUCCESS: ${node.dataset.successMsg}`);
+                    if (node.dataset.successMsg !== "") {
+                        ToastSuccess(`SUCCESS: ${node.dataset.successMsg}`);
+                    }
                 } else {
                     const err = xhrIntoErr(event.detail.xhr);
                     ToastError(`FAILURE (${err.status}): ${err.error}`);

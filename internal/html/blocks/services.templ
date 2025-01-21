@@ -10,28 +10,29 @@ import (
 	"monkeydioude/grig/pkg/html/elements/hx"
 	"monkeydioude/grig/pkg/html/elements/input"
 )
-templ ServicesEnvironmentBlock(it int, env string, service model.Service) {
+templ ServicesEnvironmentBlock(base string, it int, env string, service model.Service) {
     <div class="service-block env-element">
-        @form.DisplayFormGroup(form.StringFormGroup(service.EnvironmentIdGen(it), "Environment", env)) { }
+        @form.DisplayFormGroup(form.StringFormGroup(service.EnvironmentIdGen(base, it), "Environment", env)) { }
     </div>
 }
 
-templ ServicesService(service model.Service) {
-    <div>
+templ ServicesService(it int, service model.Service) {
+    <div class="services-service-block">
         @hx.H2(service.Name)
-        @input.Hidden(service.IdGen("", "og_path"), service.Path)
+        @input.Hidden(service.IdGen(it, "", "og_path"), service.Path)
         <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
             // @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("name"), "", service.Name)) { Name }
-            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("", "path"), "File path", service.Path)) { Path }
-            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("unit", "description"), "", service.Unit.Description)) { Description }
-            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("service", "exec_start"), "/home/mkd/go/bin/josuke -c /home/mkd/config/josuke.config.json", service.Service.ExecStart)) { Execution Command }
+            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen(it, "", "path"), "File path", service.Path)) { Path }
+            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen(it, "unit", "description"), "", service.Unit.Description)) { Description }
+            @form.DisplayFormGroup(form.StringFormGroup(service.IdGen(it, "service", "exec_start"), "/home/mkd/go/bin/josuke -c /home/mkd/config/josuke.config.json", service.Service.ExecStart)) { Execution Command }
             @span.Default() { Environment Variables }
             {{ envClass := fmt.Sprintf("%s-env-container", strings.Replace(service.Name, ".", "_", 1))}}
             {{ selector := "."+envClass }}
             {{ removeSelector := selector+ " .env-element" }}
-            <div class={envClass} data-parent-name={service.Name}>
-                for it, env := range service.Service.Environment {
-                    @ServicesEnvironmentBlock(it, env, service)
+            {{ base := fmt.Sprintf("services[%d][service]", it)}}
+            <div class={envClass} data-parent-name={base}>
+                for envIt, env := range service.Service.Environment {
+                    @ServicesEnvironmentBlock(base, envIt, env, service)
                 }
             </div>
             <div class="my-2">

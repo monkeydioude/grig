@@ -3,6 +3,6 @@ Description = salut
 After       = 
 
 [Service]
-ExecStart   = 
+ExecStart   = PWD=/home/mkd/work/logchestsssss
 Type        = 
 Environment = PWD=/home/mkd/work/logchestsss

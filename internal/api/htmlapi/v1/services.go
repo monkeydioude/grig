@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"log/slog"
 	cErrors "monkeydioude/grig/internal/errors"
 	"monkeydioude/grig/internal/html/blocks"
@@ -9,13 +10,12 @@ import (
 	"monkeydioude/grig/internal/model"
 	"monkeydioude/grig/internal/service/services"
 	"monkeydioude/grig/pkg/dt"
-	"monkeydioude/grig/pkg/errors"
 	pkgErrors "monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/html/elements"
 	"monkeydioude/grig/pkg/server/http_errors"
+	"monkeydioude/grig/pkg/trans_types"
 	"net/http"
 	"os"
-	"strconv"
 )
 
 func (h Handler) ServicesList(w http.ResponseWriter, r *http.Request, logger *slog.Logger, nav elements.Nav) error {
@@ -32,7 +32,10 @@ func (h Handler) AddServiceByFilepath(
 	if p == nil {
 		return http_errors.InternalServerError(pkgErrors.Wrap(cErrors.ErrNilPointer, "AddServiceByFilename: *services.ServiceFilename"))
 	}
-
+	index, err := trans_types.AtoiOr0(r.URL.Query().Get("index"))
+	if err != nil {
+		logger.Warn("ServicesEnvironmentBlock AtoiOr0", "error", err)
+	}
 	srv, err := p.TryLoadAndParse()
 	if err != nil {
 		logger.Error("AddServiceByFilename: *services.TryLoadAndParse", "error", err)
@@ -50,20 +53,24 @@ func (h Handler) AddServiceByFilepath(
 	if err := h.Layout.ServerConfig.Save(); err != nil {
 		return http_errors.InternalServerError(cErrors.ErrWritingFile)
 	}
-	return blocks.ServicesService(srv).Render(r.Context(), w)
+	return blocks.ServicesService(index, srv).Render(r.Context(), w)
 }
 
-func (h Handler) ServicesEnvironmentBlock(w http.ResponseWriter, r *http.Request, _ *slog.Logger) error {
-	indexStr := r.URL.Query().Get("index")
-	index := 0
-	if indexStr != "" {
-		it, err := strconv.Atoi(indexStr)
-		if err != nil {
-			return errors.Wrap(err, "JosukeBranchAction")
-		}
-		index = it
+func (h Handler) ServicesEnvironmentBlock(w http.ResponseWriter, r *http.Request, logger *slog.Logger) error {
+	index, err := trans_types.AtoiOr0(r.URL.Query().Get("index"))
+	if err != nil {
+		logger.Warn("ServicesEnvironmentBlock AtoiOr0", "error", err)
 	}
-	return blocks.ServicesEnvironmentBlock(index, "", model.Service{
+	return blocks.ServicesEnvironmentBlock(r.URL.Query().Get("parent_name"), index, "", model.Service{
 		Name: r.URL.Query().Get("parent_name"),
 	}).Render(r.Context(), w)
+}
+
+func (h Handler) ServicesServiceBlock(w http.ResponseWriter, r *http.Request, logger *slog.Logger) error {
+	index, err := trans_types.AtoiOr0(r.URL.Query().Get("index"))
+	if err != nil {
+		logger.Warn("ServicesEnvironmentBlock AtoiOr0", "error", err)
+	}
+	fmt.Println(index, r.URL.Query().Get("parent_name"))
+	return blocks.ServicesService(index, model.Service{}).Render(r.Context(), w)
 }

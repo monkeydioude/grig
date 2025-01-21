@@ -10,18 +10,22 @@ import (
 	"time"
 )
 
+type ServicesPayload struct {
+	Services []model.Service
+}
+
 func (h Handler) ServicesSave(
 	w http.ResponseWriter,
 	r *http.Request,
 	logger *slog.Logger,
-	srvcs *map[string]model.Service,
+	srvcs *ServicesPayload,
 ) error {
 	if r == nil || srvcs == nil {
 		logger.Error("api.ServicesSave", "error", customErrors.ErrNilPointer)
 		return customErrors.ErrInvalidProvidedParameters
 	}
 
-	appSrvcs, err := h.Layout.ServerConfig.AppsServicesPaths.WithUpdate(srvcs, logger)
+	appSrvcs, err := h.Layout.ServerConfig.AppsServicesPaths.WithUpdate((*srvcs).Services, logger)
 	if err != nil {
 		logger.Error("api.ServicesSave::WithUpdate", "error", err)
 		return customErrors.ErrServicesServicesUpdateFail
@@ -36,6 +40,5 @@ func (h Handler) ServicesSave(
 	ctx, cancelFn := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancelFn()
 	os.DaemonReload(ctx, logger)
-
 	return nil
 }

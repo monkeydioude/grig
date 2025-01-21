@@ -5,8 +5,9 @@ import "monkeydioude/grig/internal/consts"
 type Swap string
 
 const (
-	BeforeEnd Swap = "beforeend"
-	InnerHTML      = "innerHTML"
+	BeforeEnd   Swap = "beforeend"
+	BeforeBegin Swap = "beforebegin"
+	InnerHTML   Swap = "innerHTML"
 )
 
 func (s Swap) String() string {
@@ -20,11 +21,12 @@ const (
 )
 
 type Factory struct {
-	Swap       Swap
-	Target     string
-	Ext        string
-	SuccessMsg string
-	ErrorMsg   string
+	Swap         Swap
+	Target       string
+	Ext          string
+	SuccessMsg   string
+	ErrorMsg     string
+	IndexCounter string
 	Method
 }
 
@@ -40,12 +42,18 @@ func (f Factory) WithSwapTarget(swap Swap, target string) Factory {
 	return f
 }
 
+func (f Factory) WithIndexCounter(indexCounter string) Factory {
+	f.IndexCounter = indexCounter
+	return f
+}
+
 func NewFactory() Factory {
 	return Factory{
-		Swap:       InnerHTML,
-		Target:     "this",
-		SuccessMsg: consts.FORM_SUCCESS_MSG,
-		ErrorMsg:   consts.FORM_ERR_MSG,
+		Swap:         InnerHTML,
+		Target:       "this",
+		SuccessMsg:   consts.FORM_SUCCESS_MSG,
+		ErrorMsg:     consts.FORM_ERR_MSG,
+		IndexCounter: "service-block",
 	}
 }
 

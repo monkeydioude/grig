@@ -5,4 +5,4 @@ After       =
 [Service]
 ExecStart   = PWD=/home/mkd/work/logchest
 Type        = 
-Environment = PWD=/home/mkd/work/logchestsss
+Environment = 

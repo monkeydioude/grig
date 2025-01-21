@@ -26,15 +26,15 @@ func (s Service) Save() error {
 	return nil
 }
 
-func (s Service) IdGen(section, key string) string {
+func (s Service) IdGen(it int, section, key string) string {
 	if section != "" {
 		section = "[" + section + "]"
 	}
-	return fmt.Sprintf("%s%s[%s]", s.Name, section, key)
+	return fmt.Sprintf("services[%d]%s[%s]", it, section, key)
 }
 
-func (s Service) EnvironmentIdGen(it int) string {
-	return fmt.Sprintf("%s[%d]", s.IdGen("service", "environment"), it)
+func (s Service) EnvironmentIdGen(base string, it int) string {
+	return fmt.Sprintf("%s[environment][%d]", base, it)
 }
 
 func (s Service) hydrateIni(cfg *ini.File) error {

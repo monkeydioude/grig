@@ -74,4 +74,5 @@ func routing_blocks(
 
 	// sys services blocks
 	mux.HandleFunc("/services/environment/block", layout.Get(html.ServicesEnvironmentBlock))
+	mux.HandleFunc("/services/service/block", layout.Get(html.ServicesServiceBlock))
 }
