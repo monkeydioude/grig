@@ -9,6 +9,7 @@ import (
 	"strings"
 	"monkeydioude/grig/pkg/html/elements/hx"
 	"monkeydioude/grig/pkg/html/elements/input"
+	"monkeydioude/grig/internal/consts"
 )
 templ ServicesEnvironmentBlock(base string, it int, env string, service model.Service) {
     <div class="service-block env-element">
@@ -17,6 +18,9 @@ templ ServicesEnvironmentBlock(base string, it int, env string, service model.Se
 }
 
 templ ServicesService(it int, service model.Service) {
+    {{ restartServiceCmdUrl := "/cmd/services/restart/"+ service.Name }}
+    {{ successMsg := fmt.Sprintf(consts.SERVICE_RESTARTED_SUCCESS_MSG, service.Name) }}
+    {{ errMsg := fmt.Sprintf(consts.SERVICE_RESTARTED_ERR_MSG, service.Name) }}
     <div class="services-service-block">
         @hx.H2(service.Name)
         @input.Hidden(service.IdGen(it, "", "og_path"), service.Path)
@@ -41,5 +45,6 @@ templ ServicesService(it int, service model.Service) {
             </div>
         </div>
         @button.RemoveParentButton() { Delete }
+        @button.AjaxSimplePostUrl(restartServiceCmdUrl, successMsg, errMsg,  "mx-2") { Restart service }
     </div>
 }

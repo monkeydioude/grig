@@ -2,6 +2,7 @@ package main
 
 import (
 	"monkeydioude/grig/internal/api"
+	cmdApi "monkeydioude/grig/internal/api/cmdapi/v1"
 	htmlApi "monkeydioude/grig/internal/api/htmlapi/v1"
 	jsonApi "monkeydioude/grig/internal/api/jsonapi/v1"
 	"monkeydioude/grig/internal/service/server/config"
@@ -21,7 +22,7 @@ func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
 	mux.HandleFunc("/healthcheck", layout.Get(api.Healthcheck))
 	routing_json(layout, mux)
 	routing_html(layout, mux)
-	routing_blocks(layout, mux)
+	routing_command(layout, mux)
 
 	// Apply middlewares to server
 	app := middleware.Mux(mux)
@@ -55,9 +56,10 @@ func routing_html(
 	mux.HandleFunc("/josuke", layout.Get(nw.WithNav(html.JosukeList, element.Link{Href: "/josuke"})))
 	mux.HandleFunc("/services", layout.Get(nw.WithNav(html.ServicesList, element.Link{Href: "/services"})))
 	mux.HandleFunc("/services/by_filepath", layout.Post(with.JsonPayload(html.AddServiceByFilepath)))
+	routing_html_blocks(layout, mux)
 }
 
-func routing_blocks(
+func routing_html_blocks(
 	layout *server.Layout[config.ServerConfig],
 	mux *http.ServeMux,
 ) {
@@ -75,4 +77,13 @@ func routing_blocks(
 	// sys services blocks
 	mux.HandleFunc("/services/environment/block", layout.Get(html.ServicesEnvironmentBlock))
 	mux.HandleFunc("/services/service/block", layout.Get(html.ServicesServiceBlock))
+}
+
+func routing_command(
+	layout *server.Layout[config.ServerConfig],
+	mux *http.ServeMux,
+) {
+	cmd := cmdApi.New(layout)
+	mux.HandleFunc("/cmd/services/restart/{service}", layout.Post(cmd.CmdServiceRestart))
+	mux.HandleFunc("/cmd/services/restart", layout.Post(cmd.CmdServiceRestartAll))
 }

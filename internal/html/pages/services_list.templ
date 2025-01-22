@@ -6,6 +6,8 @@ import (
     "monkeydioude/grig/pkg/html/elements/input"
     "monkeydioude/grig/internal/html/blocks"
     "monkeydioude/grig/pkg/html/elements/htmx"
+	"monkeydioude/grig/pkg/html/elements/button"
+	"monkeydioude/grig/internal/consts"
 )
 
 templ (page Services) Content() {
@@ -22,8 +24,8 @@ templ (page Services) Content() {
             WithMessages("", "huho").
             WithIndexCounter(".services-service-block")}}
         <div class="flex flex-col">
-            @hx.H3("Add a blank service")
-            @factory.Button("/services/service/block") { Add a blank service }
+            @hx.H3("New blank service")
+            @factory.Button("/services/service/block") { New blank service }
         </div>
 
         @form.JsonPostForm("/api/v1/services") {
@@ -33,5 +35,11 @@ templ (page Services) Content() {
                 }
             </div>
         }
+        @button.AjaxSimplePostUrl(
+            "/cmd/services/restart",
+            consts.ALL_SERVICES_RESTARTED_SUCCESS_MSG,
+            consts.ALL_SERVICES_RESTARTED_ERR_MSG,
+            "block my-0 mt-2 mx-auto bg-red-500 hover:bg-red-600 w-1/2",
+        ) { Restart all services }
     </div>
 }

@@ -1,35 +1,9 @@
 package layouts
 
-var performAnimHandle = templ.NewOnceHandle()
-templ performAnimationJsBlock() {
-    @performAnimHandle.Once() {
-    <script type="text/javascript">
-        function performAnimation(node, event) {
-            if (node !== event.target) {
-                return;
-            }
-            try {
-                if (event.detail.xhr.status === 200) {
-                    if (node.dataset.successMsg !== "") {
-                        ToastSuccess(`SUCCESS: ${node.dataset.successMsg}`);
-                    }
-                } else {
-                    const err = xhrIntoErr(event.detail.xhr);
-                    ToastError(`FAILURE (${err.status}): ${err.error}`);
-                }
-            } catch (err) {
-                ToastError("ERROR: " + err);
-            }
-        }
-    </script>
-    }
-}
-
 templ MainJS() {
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     <script src="https://cdn.jsdelivr.net/gh/Emtyloc/json-enc-custom@main/json-enc-custom.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="/static/js/forms.js"></script>
     <script src="/static/js/main.js"></script>
-    @performAnimationJsBlock()
 }

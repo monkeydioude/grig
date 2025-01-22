@@ -103,3 +103,21 @@ function ToastError(text) {
         background: "linear-gradient(to right, #ff6347, #cc0000)",
     });
 }
+
+function performAnimation(node, event) {
+    if (node !== event.target) {
+        return;
+    }
+    try {
+        if (event.detail.xhr.status === 200) {
+            if (node.dataset.successMsg !== "") {
+                ToastSuccess(`SUCCESS: ${node.dataset.successMsg}`);
+            }
+        } else {
+            const err = xhrIntoErr(event.detail.xhr);
+            ToastError(`FAILURE (${err.status}): ${err.error}`);
+        }
+    } catch (err) {
+        ToastError("ERROR: " + err);
+    }
+}

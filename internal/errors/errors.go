@@ -14,6 +14,7 @@ var ErrServicesFilepathExists = errors.New("Provided filepath already exists")
 var ErrServicesInvalidFilepath = errors.New("Provided filepath does not exist")
 var ErrServicesUnableFileParsing = errors.New("Unable to read the provided filepath")
 var ErrServicesServicesUpdateFail = errors.New("Could not update services")
+var ErrServicesServicesRestartFail = errors.New("Could not restart service")
 
 // model
 var ErrModelVerifyInvalidValue = errors.New("invalid value during verification")

@@ -2,36 +2,32 @@ package button
 
 import "strings"
 
-templ AddButton(id string, class ...string) {
-    <button type="button"
-        onclick=""
-        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none mt-2.5 py-2.5 px-4", strings.Join(class, " ")}
-        id={id}>{children...}</button>
-}
-
 var ajaxBlockButtonHandle = templ.NewOnceHandle()
 
-templ AjaxBlockButton(path, target string, class ...string) {
+templ editReqJsBlock() {
     @ajaxBlockButtonHandle.Once() {
-        <script>
-            function EditReq(event) {
-                try {
-                    const length = $_(event.detail.target, "service-block").length;
-                    const parentName = event.detail.target.getAttribute('data-parent-name');
-                    
-                    event.detail.parameters = {
-                        ...event.detail.parameters,
-                        index: length,
-                        parent_name: parentName,
-                    }
-                } catch (err) {
-                    console.error(err);
-                    ToastError("ERROR: Could not display a new block")
-                }
-            }
-        </script>
-    }
+    <script>
+        function EditReq(event) {
+            try {
+                const length = $_(event.detail.target, "service-block").length;
+                const parentName = event.detail.target.getAttribute('data-parent-name');
 
+                event.detail.parameters = {
+                    ...event.detail.parameters,
+                    index: length,
+                    parent_name: parentName,
+                }
+            } catch (err) {
+                console.error(err);
+                ToastError("ERROR: Could not display a new block")
+            }
+        }
+    </script>
+    }
+}
+
+templ AjaxBlockButton(path, target string, class ...string) {
+    @editReqJsBlock()
     <button
         type="button"
         hx-get={path}
@@ -43,7 +39,20 @@ templ AjaxBlockButton(path, target string, class ...string) {
         class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none py-2.5 px-4 relative", strings.Join(class, " ")}>
         {children...}
     </button>
-}   
+}
+
+templ AjaxSimplePostUrl(path, successMsg, errMsg string, class ...string) {
+    <button
+        type="button"
+        hx-post={path}
+        hx-on::after-request="event.stopPropagation();performAnimation(this, event)"
+        style="top: -0.5px;"
+        data-success-msg={successMsg}
+        data-error-msg={errMsg}
+        class={"add-service-btn text-center text-gray-100 pointer rounded border-none py-2.5 px-4 relative", strings.Join(class, " " )}>
+        {children...}
+    </button>
+}
 
 templ RemoveParentButton(class ...string) {
     <button type="button" class={"remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4", strings.Join(class, " ")}
