@@ -20,8 +20,7 @@ func (h *Handler) CmdServiceRestart(w http.ResponseWriter, r *http.Request, logg
 func (h *Handler) CmdServiceRestartAll(w http.ResponseWriter, r *http.Request, logger *slog.Logger) error {
 	services, err := parser.IniServicesParser(h.Layout.ServerConfig.AppsServicesPaths)
 	if err != nil {
-		logger.Error("CmdServiceRestart", "error", err, slog.String("func", "monkeydioude/grig/internal/service/parser.IniServicesParser"))
-		logger.Error("CmdServiceRestartAll: parser.IniServicesParser", "error", err)
+		logger.Error("CmdServiceRestartAll", "error", err, slog.String("func", "monkeydioude/grig/internal/service/parser.IniServicesParser"))
 		return http_errors.InternalServerError(errors.ErrServicesUnableFileParsing)
 	}
 	for _, s := range services {
