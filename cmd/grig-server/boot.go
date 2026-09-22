@@ -15,7 +15,7 @@ import (
 )
 
 func parseFlags() string {
-	mainConfigPath := flag.String("c", "grig_server.config.json", "-c <path to config>")
+	mainConfigPath := flag.String("c", "grig_server.config.yaml", "-c <path to config>")
 	flag.Parse()
 
 	return *mainConfigPath
@@ -31,9 +31,12 @@ func boot() *server.Layout[config.ServerConfig] {
 	setLogger()
 	mainConfigPath := parseFlags()
 	conf := config.NewServerConfigFromPath(mainConfigPath)
-	if conf.CapybaraConfigPath == "" {
-		conf.CapybaraConfigPath = file.AppendToThisFileDirectory(consts.DEFAULT_CAPYBARA_FILENAME, conf.ServerConfigPath)
-		assert.NoError(file.CreateAndWriteFile(conf.CapybaraConfigPath, []byte("{}"), nativeOs.ModePerm))
+	if len(conf.CapybaraConfigPaths) == 0 {
+		conf.CapybaraConfigPaths = []string{file.AppendToThisFileDirectory(consts.DEFAULT_CAPYBARA_FILENAME, conf.ServerConfigPath)}
+		assert.NoError(file.CreateAndWriteFile(conf.CapybaraConfigPaths[0], []byte("{}"), nativeOs.ModePerm))
+	}
+	if conf.BasePath == "" {
+		conf.BasePath = consts.DEFAULT_BASE_PATH
 	}
 	if conf.JosukeConfigPath == "" {
 		conf.JosukeConfigPath = file.AppendToThisFileDirectory(consts.DEFAULT_JOSUKE_FILENAME, conf.ServerConfigPath)

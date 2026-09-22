@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"monkeydioude/grig/internal/service/file"
@@ -9,20 +8,28 @@ import (
 	"monkeydioude/grig/pkg/tiger/assert"
 	"os"
 	"path/filepath"
+
+	"monkeydioude/grig/pkg/urls"
+
+	"gopkg.in/yaml.v3"
 )
 
 // ServerConfig holds the app config and is also
 // a factory for generating some model's entities
 type ServerConfig struct {
-	ServerConfigPath   string                   `json:"-"`
-	AppsServicesPaths  services.AppServicePaths `json:"services_paths"`
-	JosukeConfigPath   string                   `json:"josuke_config_path"`
-	CapybaraConfigPath string                   `json:"capybara_config_path"`
+	ServerConfigPath string `json:"-" yaml:"-"`
+	// BasePath is the sub-path the app is served under, e.g. "/grig" when
+	// a reverse proxy forwards :80/grig to :6969/grig without stripping
+	// the prefix. Empty serves the app at the root.
+	BasePath            string                   `json:"base_path" yaml:"base_path"`
+	AppsServicesPaths   services.AppServicePaths `json:"services_paths" yaml:"services_paths"`
+	JosukeConfigPath    string                   `json:"josuke_config_path" yaml:"josuke_config_path"`
+	CapybaraConfigPaths []string                 `json:"capybara_config_paths" yaml:"capybara_config_paths"`
 }
 
 func unmarshalConfig(configRaw []byte) ServerConfig {
 	config := ServerConfig{}
-	err := json.Unmarshal(configRaw, &config)
+	err := yaml.Unmarshal(configRaw, &config)
 	assert.NoError(err)
 	return config
 }
@@ -45,8 +52,13 @@ func readConfigFile(appConfigPath string) []byte {
 	return configRaw
 }
 
+// Prefixer builds links for the sub-path this app is served under.
+func (sc ServerConfig) Prefixer() urls.Prefixer {
+	return urls.New(sc.BasePath)
+}
+
 func (sc ServerConfig) Save() error {
-	data, err := json.Marshal(&sc)
+	data, err := yaml.Marshal(&sc)
 	if err != nil {
 		return fmt.Errorf("ServerConfig.Save(): %w", err)
 	}

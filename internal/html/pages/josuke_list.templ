@@ -1,6 +1,7 @@
 package pages
 
 import (
+    "monkeydioude/grig/pkg/html/elements/card"
     "monkeydioude/grig/pkg/html/elements/hx"
     "monkeydioude/grig/pkg/html/elements/form"
     "monkeydioude/grig/pkg/html/elements/button"
@@ -14,7 +15,7 @@ templ (page Josuke) Content() {
     {{ depSelector := ".deployments-list" }}
     {{ removeDepSelector := ".deployments-list .deployment-element" }}
     <div id="josuke" class="pb-3">
-        @hx.H1("Josuke")
+        @card.Header(page.Titl, page.FilePath)
         @form.JsonPostForm("/api/v1/josuke") {
             @hx.H2("Base settings")
             @form.DisplayFormGroup(form.StringFormGroup("logLevel", "DEBUG, INFO, WARN, ERROR", page.Data.LogLevel)) {
@@ -37,6 +38,7 @@ templ (page Josuke) Content() {
             // Hooks 
             <div class="hooks-list">
                 @hx.H2("Hooks")
+                @blocks.JosukeHookHeader()
                 for it, hook := range page.Data.Hook {
                     @blocks.JosukeHook(it, GetHookInputName, hook)
                 }

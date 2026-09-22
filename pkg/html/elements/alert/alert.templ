@@ -1,0 +1,36 @@
+package alert
+
+import "strings"
+
+// lines splits a joined error (errors.Join separates with newlines)
+// into one entry per underlying cause.
+func lines(text string) []string {
+    var out []string
+    for _, line := range strings.Split(text, "\n") {
+        if trimmed := strings.TrimSpace(line); trimmed != "" {
+            out = append(out, trimmed)
+        }
+    }
+    return out
+}
+
+// Error reports config problems the user has to act on, such as a
+// config file that could not be read or parsed.
+templ Error(title string, err error) {
+    {{ causes := lines(err.Error()) }}
+    <div class="error-block rounded-lg border border-red-500/40 bg-red-950/40 p-4 mb-4">
+        <p class="text-red-300 font-semibold mb-1">{title}</p>
+        <ul class="text-red-200/80 text-sm font-mono break-all list-disc ml-5">
+            for _, cause := range causes {
+                <li class="py-0.5">{cause}</li>
+            }
+        </ul>
+    </div>
+}
+
+// Empty is the muted placeholder shown where a list has no entries.
+templ Empty() {
+    <div class="rounded-lg border border-dashed border-slate-700 p-6 mb-4 text-center text-slate-500">
+        {children...}
+    </div>
+}

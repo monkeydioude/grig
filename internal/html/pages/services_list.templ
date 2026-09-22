@@ -3,6 +3,7 @@ package pages
 import (
     "monkeydioude/grig/pkg/html/elements/form"
     "monkeydioude/grig/pkg/html/elements/hx"
+    "monkeydioude/grig/pkg/html/elements/card"
     "monkeydioude/grig/pkg/html/elements/input"
     "monkeydioude/grig/internal/html/blocks"
     "monkeydioude/grig/pkg/html/elements/htmx"
@@ -12,21 +13,32 @@ import (
 
 templ (page Services) Content() {
     <div class="pb-3">
+        <div class="flex items-center justify-between gap-4">
+            @card.Header("Services", "")
+            @button.AjaxSimplePostUrl(
+                "/cmd/services/restart",
+                consts.ALL_SERVICES_RESTARTED_SUCCESS_MSG,
+                consts.ALL_SERVICES_RESTARTED_ERR_MSG,
+                button.Warning,
+            ) { Restart all services }
+        </div>
         {{ factory := htmx.NewJsonFactory().WithSwapTarget(htmx.BeforeEnd, "next .services-container")}}
-        @factory.Form("/services/by_filepath") {
-            <div class="flex flex-col">
-                @hx.H3("Add a service by filepath")
-                @input.Text("filepath", "Path to the service file")
+        @card.Panel() {
+            @hx.H3("Add a service")
+            <div class="flex flex-wrap items-end gap-3">
+                @factory.Form("/services/by_filepath") {
+                    <div class="flex flex-col">
+                        <label class={form.Label} for="filepath">By file path</label>
+                        @input.Text("filepath", "Path to the service file")
+                    </div>
+                }
+                {{ factory = htmx.NewFactory().
+                    WithSwapTarget(htmx.BeforeBegin, "next .services-container").
+                    WithMessages("", "huho").
+                    WithIndexCounter(".services-service-block")}}
+                @factory.Button("/services/service/block") { New blank service }
             </div>
         }
-        {{ factory = htmx.NewFactory().
-            WithSwapTarget(htmx.BeforeBegin, "next .services-container").
-            WithMessages("", "huho").
-            WithIndexCounter(".services-service-block")}}
-        <div class="flex flex-col">
-            @hx.H3("New blank service")
-            @factory.Button("/services/service/block") { New blank service }
-        </div>
 
         @form.JsonPostForm("/api/v1/services") {
             <div class="services-container">
@@ -35,11 +47,5 @@ templ (page Services) Content() {
                 }
             </div>
         }
-        @button.AjaxSimplePostUrl(
-            "/cmd/services/restart",
-            consts.ALL_SERVICES_RESTARTED_SUCCESS_MSG,
-            consts.ALL_SERVICES_RESTARTED_ERR_MSG,
-            "block my-0 mt-2 mx-auto bg-red-500 hover:bg-red-600 w-1/2",
-        ) { Restart all services }
     </div>
 }

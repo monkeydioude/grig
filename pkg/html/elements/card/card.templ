@@ -1,0 +1,20 @@
+package card
+
+import "strings"
+
+// Panel is the standard bordered container grouping related config content.
+templ Panel(class ...string) {
+    <div class={"rounded-lg border border-slate-800 bg-slate-900/50 p-5 mb-4", strings.Join(class, " ")}>
+        {children...}
+    </div>
+}
+
+// Header titles a Panel, with an optional muted subtitle below it.
+templ Header(title, subtitle string) {
+    <div class="mb-3">
+        <h2 class="text-sky-300 text-2xl font-semibold tracking-tight">{title}</h2>
+        if subtitle != "" {
+            <p class="text-slate-500 text-sm font-mono break-all mt-1">{subtitle}</p>
+        }
+    </div>
+}

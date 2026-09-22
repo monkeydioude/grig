@@ -3,13 +3,167 @@ package blocks
 import "monkeydioude/grig/pkg/html/elements/form"
 import "monkeydioude/grig/internal/model"
 import "monkeydioude/grig/pkg/html/elements/button"
+import "monkeydioude/grig/pkg/html/elements/modal"
+import "fmt"
+import "github.com/google/uuid"
 
-templ CapybaraService(idGen func (it int, key string) string, it int, service model.ServiceDefinition) {
-    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
-        @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "id"), "Service name", service.ID)) { Name }
-        @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "method"), "string, regex etc...", service.Method)) { Method }
-        @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "pattern"), "/api/vault_hunter", service.Pattern)) { Pattern }
-        @form.DisplayFormGroup(form.NumberFormGroup(idGen(it, "port"), "Port of the service", service.Port)) { Port }
-        @button.RemoveParentButton() { Delete }
+// ServiceGrid is the column layout shared by the services header row and
+// every summary row, so the two cannot drift apart.
+const ServiceGrid = "grid grid-cols-[1.2fr_0.8fr_1.5fr_1.3fr_5rem] gap-x-3 items-center text-left"
+
+// TLSHostIdGen names one entry of the proxy's TLS host list, matching the
+// nested-array convention the rest of the forms use.
+func TLSHostIdGen(base string, it int) string {
+    return fmt.Sprintf("%s[tls_hosts][%d]", base, it)
+}
+
+// CapybaraTLSHost is one editable domain in the proxy's TLS host list.
+// Blank entries are dropped when the config is saved.
+templ CapybaraTLSHost(base string, it int, host string) {
+    <div class="service-block tls-host-element">
+        @form.CompactFormGroup(form.StringFormGroup(TLSHostIdGen(base, it), "example.com", host).NotRequired()) { TLS host }
     </div>
+}
+
+// CapybaraServiceHeader names the summary columns once, above the rows.
+templ CapybaraServiceHeader() {
+    <div class={ServiceGrid, "hidden md:grid px-4 pb-1"}>
+        <span class={form.Label}>Name</span>
+        <span class={form.Label}>Method</span>
+        <span class={form.Label}>Pattern</span>
+        <span class={form.Label}>Host</span>
+        <span class={form.Label}>Port</span>
+    </div>
+}
+
+templ summaryCell(value, empty string) {
+    if value != "" {
+        <span class="truncate text-slate-200">{value}</span>
+    } else {
+        <span class="truncate text-slate-600">{empty}</span>
+    }
+}
+
+// CapybaraService is one service: a summary row that opens a modal
+// holding every key the service has, modelled or not.
+templ CapybaraService(idGen func (it int, key string) string, it int, service model.ServiceDefinition) {
+    {{ dialogID := "service-" + uuid.NewString() }}
+    {{ label := service.ID }}
+    {{ if label == "" { label = "New service" } }}
+    {{ scalars := ScalarExtras(service.Extra) }}
+    {{ complex := ComplexExtras(service.Extra) }}
+    <div class="service-block rounded-lg border border-slate-800 bg-slate-900/50 mb-1.5 hover:border-slate-600 hover:bg-slate-900">
+        <button type="button" data-dialog={dialogID}
+            class={ServiceGrid, "w-full px-4 py-2.5 font-mono text-sm bg-transparent border-none cursor-pointer"}
+            onclick="openDialog(this)">
+            @summaryCell(service.ID, "unnamed")
+            @summaryCell(service.Method, "—")
+            @summaryCell(service.Pattern, "—")
+            @summaryCell(service.Host, "—")
+            @summaryCell(service.Port.String(), "—")
+        </button>
+        @modal.Dialog(dialogID, label) {
+            @modal.Body() {
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                    @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "id"), "Service name", service.ID).NotRequired()) { Name }
+                    @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "method"), "string, regex...", service.Method).NotRequired()) { Method }
+                    @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "pattern"), "/api/vault_hunter", service.Pattern).NotRequired()) { Pattern }
+                    @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "host"), "app.example.com", service.Host).NotRequired()) { Host }
+                    @form.DisplayFormGroup(form.NumberFormGroup(idGen(it, "port"), "8080", service.Port).NotRequired()) { Port }
+                    @form.DisplayFormGroup(form.StringFormGroup(idGen(it, "protocol"), "rpc", service.Protocol).NotRequired()) { Protocol }
+                </div>
+                <p class="text-sm text-slate-400 mt-2 mb-2">Other keys in this config</p>
+                <div id={dialogID + "-extras"}>
+                    for _, field := range scalars {
+                        @CapybaraExtraField(idGen(it, field.Key), field.Key, field.Value, field.Type)
+                    }
+                </div>
+                @button.AjaxBlockButton("/capybara/extra/block", "#" + dialogID + "-extras", "mb-2") { + Add key }
+                if len(complex) > 0 {
+                    <p class="text-sm text-slate-400 mt-2 mb-2">Kept as-is (not editable here)</p>
+                    <dl class="text-sm font-mono">
+                        for _, field := range complex {
+                            <div class="grid grid-cols-[9rem_1fr] gap-x-4 py-1 border-b border-slate-800 last:border-0">
+                                <dt class="text-sky-500">{field.Key}</dt>
+                                <dd class="text-slate-300 break-all">{field.Value}</dd>
+                            </div>
+                        }
+                    </dl>
+                }
+            }
+            @modal.Footer() {
+                <button type="button" class={button.Base, button.Danger, "mr-auto"} onclick="askDeleteService(this)">Delete</button>
+                <button type="button" class={button.Base, button.Secondary} onclick="closeDialog(this)">Cancel</button>
+                <button type="submit" class={button.Base, button.Success}>Update</button>
+            }
+        }
+    </div>
+}
+
+// CapybaraExtraField is a key this config carries that grig does not
+// model. The key itself is fixed: renaming one would leave the old key
+// behind in the file, so a rename is a remove plus an add.
+// valueType is "string", "number" or "bool" so the right widget is used.
+templ CapybaraExtraField(name, key, value, valueType string) {
+    <div class="extra-field grid grid-cols-[1fr_auto] gap-x-2 items-end mb-3">
+        <div class="flex flex-col">
+            <label class={form.Label} for={name}>{key}</label>
+            if valueType == "bool" {
+                <select id={name} name={name} class={form.Input, "extra-value"} autocomplete="off">
+                    <option value="true" selected?={ value == "true" }>true</option>
+                    <option value="false" selected?={ value == "false" }>false</option>
+                </select>
+            } else if valueType == "number" {
+                <input id={name} name={name} value={value} type="number" class={form.Input, "extra-value"} autocomplete="off">
+            } else {
+                <input id={name} name={name} value={value} type="text" class={form.Input, "extra-value"} autocomplete="off">
+            }
+        </div>
+        <button type="button" class={button.Base, button.Secondary} onclick="removeExtraField(this)">Remove</button>
+    </div>
+}
+
+// CapybaraNewExtraField is an empty key/value pair. The value input gets
+// its form name only once a valid key is typed, so a half-filled row is
+// simply not submitted. A type selector lets the user pick string,
+// number or bool so the value is saved with the right YAML type.
+templ CapybaraNewExtraField() {
+    <div class="extra-field grid grid-cols-[1fr_6rem_1.5fr_auto] gap-x-2 items-end mb-3">
+        <div class="flex flex-col">
+            <label class={form.Label}>Key</label>
+            <input type="text" placeholder="redirect" class={form.Input} oninput="bindExtraKey(this)">
+            <span class="extra-error text-xs text-red-400 mt-1"></span>
+        </div>
+        <div class="flex flex-col">
+            <label class={form.Label}>Type</label>
+            <select class={form.Input, "extra-type-select"} onchange="changeExtraType(this)">
+                <option value="string" selected>string</option>
+                <option value="number">number</option>
+                <option value="bool">bool</option>
+            </select>
+        </div>
+        <div class="flex flex-col extra-value-container">
+            <label class={form.Label}>Value</label>
+            <input type="text" placeholder="/somewhere" class={form.Input, "extra-value"}>
+        </div>
+        <button type="button" class={button.Base, button.Secondary} onclick="removeExtraField(this)">Remove</button>
+    </div>
+}
+
+// ConfirmDeleteServiceDialog is shared by every service row. It lives
+// outside the rows so that removing a row does not remove the dialog
+// that is driving the removal.
+templ ConfirmDeleteServiceDialog() {
+    @modal.Dialog("confirm-delete-service", "Delete service") {
+        @modal.Body() {
+            <p class="text-slate-300">
+                Delete <span id="confirm-delete-name" class="font-mono text-sky-300"></span> from this config?
+            </p>
+            <p class="text-slate-500 text-sm mt-2">This saves the config immediately and cannot be undone.</p>
+        }
+        @modal.Footer() {
+            <button type="button" class={button.Base, button.Secondary} onclick="closeDialog(this)">Cancel</button>
+            <button type="button" class={button.Base, button.Danger} onclick="confirmDeleteService()">Delete service</button>
+        }
+    }
 }

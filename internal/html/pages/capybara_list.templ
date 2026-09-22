@@ -1,31 +1,53 @@
 package pages
 
 import (
-    "monkeydioude/grig/pkg/html/elements/hx"
-    "monkeydioude/grig/pkg/html/elements/form"
+    "fmt"
+    "monkeydioude/grig/internal/html/blocks"
+    "monkeydioude/grig/pkg/html/elements/alert"
     "monkeydioude/grig/pkg/html/elements/button"
-	"monkeydioude/grig/internal/html/blocks"
+    "monkeydioude/grig/pkg/html/elements/card"
+    "monkeydioude/grig/pkg/html/elements/form"
+    "monkeydioude/grig/pkg/html/elements/hx"
+    "monkeydioude/grig/pkg/html/elements/span"
 )
 
 templ (page Capybara) Content() {
     <div id="capybara" class="pb-3">
-        @hx.H1("Capybara")
-        @form.JsonPostForm("/api/v1/capybara") {
-            <!-- Proxy Configuration -->
+        @card.Header(page.Ref.Name, page.Ref.Path)
+        if page.Err != nil {
+            @alert.Error("Could not read this config file", page.Err)
+        }
+        @form.JsonPostForm(page.Ref.APIURL()) {
             @hx.H2("Proxy")
-            @form.DisplayFormGroup(form.NumberFormGroup("proxy[port]", "80 or 443 for example", page.Data.Proxy.Port)) { Reverse-Proxy Port }
-            @form.DisplayFormGroup(form.StringFormGroup("proxy[tls_host]", "TLS Host", page.Data.Proxy.TLSHost)) { TLS Host }
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                @form.DisplayFormGroup(form.NumberFormGroup("proxy[port]", "80 or 443 for example", page.Data.Proxy.Port)) { Reverse-Proxy Port }
+                @form.DisplayFormGroup(form.StringFormGroup("proxy[email]", "you@example.com", page.Data.Proxy.Email).NotRequired()) {
+                    { "Contact email " }
+                    @span.Optional() { (optional) }
+                }
+            </div>
+            @hx.H3("TLS hosts")
+            <div class="tls-hosts-container" data-parent-name="proxy">
+                for it, host := range page.Data.Proxy.TLSHosts {
+                    @blocks.CapybaraTLSHost("proxy", it, host)
+                }
+            </div>
+            <div class="mb-2">
+                @button.AjaxBlockButton("/capybara/tls_host/block", ".tls-hosts-container", "rounded-none rounded-s mr-0") { + TLS host }
+                @button.RemoveLastOf(".tls-hosts-container .tls-host-element", "rounded-none rounded-e") { - TLS host }
+            </div>
 
-            <!-- Services Configuration -->
-            <div class="services-container" id="servicesContainer">
-                @hx.H2("Services")
+            @hx.H2(fmt.Sprintf("Services (%d)", len(page.Data.Services)))
+            @blocks.CapybaraServiceHeader()
+            <div class="services-container" id="servicesContainer"
+                hx-on::after-swap="onServicesSwap(event, this)">
                 for it, service := range page.Data.Services {
                     @blocks.CapybaraService(GetServiceInputName, it, service)
                 }
             </div>
-            
-            <!-- Add Service Button -->
-            @button.AjaxBlockButton("/blocks/capybara/service/block", "#servicesContainer"){ + Service }
+
+            @button.AjaxBlockButton("/capybara/service/block", "#servicesContainer"){ + Service }
         }
+        @blocks.ConfirmDeleteServiceDialog()
     </div>
 }

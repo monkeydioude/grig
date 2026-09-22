@@ -1,6 +1,10 @@
 package consts
 
 const DEFAULT_GRIG_SERVER_PORT = "6969"
+
+// DEFAULT_BASE_PATH is the sub-path the app is served under when the
+// config does not say otherwise. Set base_path to "/" to serve at the root.
+const DEFAULT_BASE_PATH = "/grig"
 const DEFAULT_CAPYBARA_FILENAME = "capybara.config.json"
 const DEFAULT_JOSUKE_FILENAME = "josuke.config.json"
 

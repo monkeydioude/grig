@@ -1,13 +1,21 @@
 package hx
 
+// Headings follow a single type scale: H1 titles a page, H2 opens a
+// major section, H3 a group inside it.
+
 templ H1(text string) {
-    <h1 class="text-sky-300 text-4xl m-5">{text}</h1>
+    <h1 class="text-sky-300 text-3xl font-semibold tracking-tight">{text}</h1>
 }
 
 templ H2(text string) {
-    <h2 class="text-emerald-500 border-emerald-500 border-b my-2.5 pb-1 text-3xl">{text}</h2>
+    <h2 class="text-emerald-400 text-xl font-semibold border-b border-slate-700 pb-1.5 mt-6 mb-3">{text}</h2>
 }
 
 templ H3(text string) {
-    <h2 class="text-sky-400 border-sky-400 border-b my-2.5 pb-1 text-3xl">{text}</h2>
+    <h3 class="text-sky-400 text-base font-semibold mt-4 mb-2">{text}</h3>
+}
+
+// Subtitle is the muted line under a title, used for config file paths.
+templ Subtitle(text string) {
+    <p class="text-slate-500 text-sm font-mono break-all mt-1">{text}</p>
 }

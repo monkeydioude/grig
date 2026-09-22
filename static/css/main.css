@@ -1,7 +1,6 @@
 /* General Reset */
 * {
     margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
@@ -10,60 +9,38 @@ html, body {
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
-.sidebar {
-    min-width: 250px;
-    /* Slightly lighter than main background */
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+/* Page width, shared by the nav bar and the content below it. */
+.container {
+    width: 100%;
+    max-width: 68rem;
+    margin: 0 auto;
+    padding: 0 1rem;
 }
 
-.side-title {
-    font-size: 1.5rem;
-    color: #90caf9;
-    /* Soft blue */
-    margin-bottom: 20px;
+.topbar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-.sidebar ul {
+.topbar ul {
     list-style: none;
 }
 
-.sidebar li, .button {
-    /* Dark gray for menu items */
-    border-radius: 4px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
+/* Links inherit the colour of whatever styles them (nav item, button). */
 a, a:visited {
-    color: #e0e0e0;
+    color: inherit;
+    text-decoration: none;
 }
 
-h1, .side-title {
-    text-align: center;
-    text-transform: uppercase;
-  }
-  
-  /* Section headers (h2) */
-  h2 {
-    font-size: 1.8rem;
-  }
-  
-  /* Parameter containers (divs) */
-  div.config-content {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Highlighted parameter divs */
-  div.config-content .highlighted {
-    min-width: 100px
-  }
-  
-  hr {
+hr {
     border-color: #2a2a2a;
-  }
+}
 
-  .container {
-    margin: 0 auto;
-  }
+/* The reset above zeroes every margin, which also removes the automatic
+   centering a native <dialog> relies on. */
+dialog {
+    margin: auto;
+}

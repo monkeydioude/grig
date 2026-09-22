@@ -10,10 +10,27 @@ import (
 	"monkeydioude/grig/internal/service/server/config"
 )
 
+// CapybaraCard is one capybara config as shown on the index: the ref
+// identifying it, plus either its parsed content or the load error.
+type CapybaraCard struct {
+	Ref  config.CapybaraRef
+	Data *model.Capybara
+	Err  error
+}
+
 type IndexPage struct {
-	Capybara *model.Capybara
-	Josuke   *model.Josuke
-	Err      error
+	Capybaras []CapybaraCard
+	Josuke    *model.Josuke
+	Err       error
+}
+
+func loadCapybaraCard(ref config.CapybaraRef) CapybaraCard {
+	cp, err := file.UnmarshalFromPath[model.Capybara](ref.Path)
+	if err != nil {
+		slog.Error("pages.Index", "error", err, "path", ref.Path)
+		return CapybaraCard{Ref: ref, Err: err}
+	}
+	return CapybaraCard{Ref: ref, Data: &cp}
 }
 
 func Index(
@@ -24,13 +41,10 @@ func Index(
 		p.Err = errors.Join(p.Err, fmt.Errorf("pages.Index: config: %w", customErrors.ErrNilPointer))
 		return p
 	}
-	// capybara
-	cp, err := file.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
-	if err != nil {
-		slog.Error("pages.Index", "error", err)
-		p.Err = errors.Join(p.Err, err)
-	} else {
-		p.Capybara = &cp
+	// capybara: a broken config is reported on its own card, so the
+	// other configs still render
+	for _, ref := range config.CapybaraRefs() {
+		p.Capybaras = append(p.Capybaras, loadCapybaraCard(ref))
 	}
 
 	// josuke
@@ -45,5 +59,5 @@ func Index(
 }
 
 func (IndexPage) Title() string {
-	return "Blitz Grig"
+	return "Grig"
 }

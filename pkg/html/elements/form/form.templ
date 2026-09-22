@@ -1,35 +1,51 @@
 package form
 
 import "monkeydioude/grig/internal/consts"
+import "monkeydioude/grig/pkg/html/elements/button"
+import "monkeydioude/grig/pkg/urls"
+
+// Input is the shared field treatment, so every input in the app
+// has the same height, radius and focus ring.
+const Input = "text-gray-200 placeholder:text-gray-500 bg-slate-950 rounded border border-slate-700 px-3 py-2 text-sm hover:border-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+
+const Label = "text-sm font-medium text-sky-500 block mb-1.5"
+
+templ field(fgroup FormGroup) {
+    if fgroup.Required() {
+        <input id={fgroup.ID()} class={Input}
+            type={fgroup.Type().String()} name={fgroup.ID()} value={fgroup.Value()} placeholder={fgroup.Placeholder()} required>
+    } else {
+        <input id={fgroup.ID()} class={Input}
+            type={fgroup.Type().String()} name={fgroup.ID()} value={fgroup.Value()} placeholder={fgroup.Placeholder()}>
+    }
+}
 
 templ DisplayFormGroup(fgroup FormGroup) {
     <div class="form-group mb-3 flex flex-col">
-        <label class="text-lg text-sky-500 block mb-1.5" for={fgroup.ID()}>{children...}</label>
-        if fgroup.Required() {
-            <input id={fgroup.ID()} class="text-gray-200 placeholder:text-gray-400 bg-slate-900 rounded border border-sky-500 p-2"
-                type={fgroup.Type().String()} name={fgroup.ID()} value={fgroup.Value()} placeholder={fgroup.Placeholder()} required>
-        }
-        if !fgroup.Required() {
-            <input id={fgroup.ID()} class="text-gray-200 placeholder:text-gray-400 bg-slate-900 rounded border border-sky-500 p-2"
-                type={fgroup.Type().String()} name={fgroup.ID()} value={fgroup.Value()} placeholder={fgroup.Placeholder()}>
-        }
+        <label class={Label} for={fgroup.ID()}>{children...}</label>
+        @field(fgroup)
+    </div>
+}
 
+// CompactFormGroup keeps the label for screen readers but hides it, for
+// rows laid out under a shared column header.
+templ CompactFormGroup(fgroup FormGroup) {
+    <div class="form-group mb-3 flex flex-col">
+        <label class="sr-only" for={fgroup.ID()}>{children...}</label>
+        @field(fgroup)
     </div>
 }
 
 templ EmptyFormGroup() {
     <div class="form-group mb-3 flex flex-col">
-        <label class="text-lg text-sky-500 block mb-1.5" for="">{children...}</label>
-        <input id=""
-            class="text-gray-200 placeholder:text-gray-400 bg-slate-900 rounded border border-sky-500 p-2"
-            type="" name="" value="" placeholder=""
-            required>
+        <label class={Label} for="">{children...}</label>
+        <input id="" class={Input} type="" name="" value="" placeholder="" required>
     </div>
 }
 
 templ JsonPostForm(path string) {
     <form
-        hx-post={path}
+        hx-post={urls.Path(ctx, path)}
         hx-swap="none"
         hx-ext="json-enc-custom"
         data-success-msg={consts.FORM_SUCCESS_MSG}
@@ -37,6 +53,8 @@ templ JsonPostForm(path string) {
         hx-on::after-request="performAnimation(this, event)"
     >
     { children...}
-        <button type="submit" class="text-gray-100 bg-emerald-500 hover:bg-emerald-600 block rounded pointer py-2 px-4 mx-auto mt-4 mb-0">Submit</button>
+        <div class="sticky bottom-0 mt-6 -mx-1 px-1 py-3 bg-gray-950/90 backdrop-blur border-t border-slate-800 flex justify-end">
+            <button type="submit" class={button.Base, "bg-emerald-500 hover:bg-emerald-600"}>Save changes</button>
+        </div>
     </form>
 }

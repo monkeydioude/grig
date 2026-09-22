@@ -9,25 +9,26 @@ import (
 )
 
 type Capybara struct {
-	Titl     string
-	Data     *model.Capybara
-	FilePath string
+	Data *model.Capybara
+	Ref  config.CapybaraRef
+	Err  error
 }
 
-func CapybaraList(config *config.ServerConfig) Capybara {
+func CapybaraList(ref config.CapybaraRef) Capybara {
 	p := Capybara{
-		Titl: "Create a Capybara config",
 		Data: &model.Capybara{
 			Services: make([]model.ServiceDefinition, 1),
 		},
+		Ref: ref,
 	}
 
-	if config == nil || config.CapybaraConfigPath == "" {
+	if ref.Path == "" {
 		return p
 	}
-	cp, err := file.UnmarshalFromPath[model.Capybara](config.CapybaraConfigPath)
+	cp, err := file.UnmarshalFromPath[model.Capybara](ref.Path)
 	if err != nil {
-		slog.Error("pages.Capybaralist", "error", err)
+		slog.Error("pages.CapybaraList", "error", err, "path", ref.Path)
+		p.Err = err
 		return p
 	}
 	p.Data = &cp
@@ -35,7 +36,7 @@ func CapybaraList(config *config.ServerConfig) Capybara {
 }
 
 func (c Capybara) Title() string {
-	return c.Titl
+	return c.Ref.Name
 }
 
 func GetServiceInputName(it int, key string) string {

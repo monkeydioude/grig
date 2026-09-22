@@ -3,6 +3,8 @@ package trans_types
 import (
 	"fmt"
 	"strconv"
+
+	"gopkg.in/yaml.v3"
 )
 
 type StringInt int
@@ -17,6 +19,17 @@ func (p *StringInt) UnmarshalJSON(data []byte) error {
 	}
 	// Convert the string to an int
 	port, err := strconv.Atoi(str)
+	if err != nil {
+		return fmt.Errorf("invalid port: %w", err)
+	}
+	*p = StringInt(port)
+	return nil
+}
+
+// UnmarshalYAML implements `yaml.Unmarshaler` so a port written
+// either as an int or as a quoted string decodes into an int.
+func (p *StringInt) UnmarshalYAML(node *yaml.Node) error {
+	port, err := strconv.Atoi(node.Value)
 	if err != nil {
 		return fmt.Errorf("invalid port: %w", err)
 	}

@@ -9,14 +9,34 @@ import (
 	"monkeydioude/grig/internal/service/payload"
 	"monkeydioude/grig/pkg/server/http_errors"
 	"net/http"
+	"strconv"
 )
 
-func (h Handler) CapybaraSave(w http.ResponseWriter, r *http.Request, _ *slog.Logger, cp *model.Capybara) error {
+func (h Handler) CapybaraSave(w http.ResponseWriter, r *http.Request, logger *slog.Logger, cp *model.Capybara) error {
 	if r == nil || cp == nil {
 		return fmt.Errorf("api.CapybaraSave: %w", errors.ErrNilPointer)
 	}
-	cp.Path = h.Layout.ServerConfig.CapybaraConfigPath
+
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return http_errors.BadRequest(fmt.Errorf("api.CapybaraSave(): invalid id: %w", err))
+	}
+	ref, ok := h.Layout.ServerConfig.CapybaraRefByID(id)
+	if !ok {
+		return http_errors.BadRequest(fmt.Errorf("api.CapybaraSave(): ID out of bounds"))
+	}
+
+	cp.Path = ref.Path
 	cp.FileWriter = file.CreateAndWriteFile
+	// the form posts only the fields grig displays, so carry over
+	// everything else the file already holds
+	if existing, err := file.UnmarshalFromPath[model.Capybara](ref.Path); err != nil {
+		logger.Warn("api.CapybaraSave(): could not read existing config, keys it holds may be lost",
+			"error", err, "path", ref.Path)
+	} else {
+		cp.MergeExtrasFrom(existing)
+	}
 	if err := payload.VerifyAndSanitizeCapybara(cp); err != nil {
 		return http_errors.BadRequest(fmt.Errorf("api.CapybaraSave(): %w", err))
 	}

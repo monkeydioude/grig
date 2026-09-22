@@ -10,7 +10,7 @@ import (
 
 func TestICanVerifyAndSanitizeCapybara(t *testing.T) {
 	cp := model.Capybara{
-		Proxy: model.Proxy{Port: 80, TLSHost: "test.aye"},
+		Proxy: model.Proxy{Port: 80, TLSHosts: []string{"test.aye"}},
 		Services: []model.ServiceDefinition{
 			{
 				ID:      "1",
@@ -28,7 +28,7 @@ func TestICanVerifyAndSanitizeCapybara(t *testing.T) {
 	}
 
 	goal := model.Capybara{
-		Proxy: model.Proxy{Port: 80, TLSHost: "test.aye"},
+		Proxy: model.Proxy{Port: 80, TLSHosts: []string{"test.aye"}},
 		Services: []model.ServiceDefinition{
 			{
 				ID:      "1",

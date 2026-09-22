@@ -1,0 +1,25 @@
+proxy:
+  port: 8082
+  email: "monkeydioude@gmail.com"
+
+services:
+  - id: logchest
+    method: string
+    pattern: /logchest
+    port: 8081
+
+  - id: GOAuTh
+    method: string
+    pattern: /goauth
+    port: 9100
+
+  - id: heyo
+    method: string
+    pattern: /rpc.Broker
+    port: 9393
+    protocol: rpc
+
+  - id: "sb_front_home"
+    method: "string"
+    pattern: "/"
+    port: 4057

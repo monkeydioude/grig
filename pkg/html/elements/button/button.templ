@@ -1,6 +1,22 @@
 package button
 
 import "strings"
+import "monkeydioude/grig/pkg/urls"
+
+// Base is the sizing, shape and focus treatment shared by every button,
+// so only the colour varies between variants.
+const Base = "inline-block rounded px-4 py-2 text-sm font-medium text-gray-100 cursor-pointer border-none transition-colors focus:outline-none focus:ring-2 focus:ring-sky-400/60"
+
+// Colour variants. Callers pick one rather than passing raw colour
+// classes, which Tailwind resolves by stylesheet order, not by the order
+// they appear in the class attribute.
+const (
+	Primary   = "bg-sky-500 hover:bg-sky-400"
+	Secondary = "bg-slate-700 hover:bg-slate-600"
+	Success   = "bg-emerald-500 hover:bg-emerald-600"
+	Danger    = "bg-red-500 hover:bg-red-600"
+	Warning   = "bg-amber-600 hover:bg-amber-500"
+)
 
 var ajaxBlockButtonHandle = templ.NewOnceHandle()
 
@@ -30,13 +46,12 @@ templ AjaxBlockButton(path, target string, class ...string) {
     @editReqJsBlock()
     <button
         type="button"
-        hx-get={path}
+        hx-get={urls.Path(ctx, path)}
         hx-target={target}
         hx-swap="beforeend"
         hx-on::config-request="EditReq(event)"
         hx-on::after-request="event.stopPropagation()"
-        style="top: -0.5px;"
-        class={"add-service-btn bg-sky-500 hover:bg-sky-400 text-center text-gray-100 pointer rounded border-none py-2.5 px-4 relative", strings.Join(class, " ")}>
+        class={Base, Primary, strings.Join(class, " ")}>
         {children...}
     </button>
 }
@@ -44,27 +59,26 @@ templ AjaxBlockButton(path, target string, class ...string) {
 templ AjaxSimplePostUrl(path, successMsg, errMsg string, class ...string) {
     <button
         type="button"
-        hx-post={path}
+        hx-post={urls.Path(ctx, path)}
         hx-on::after-request="event.stopPropagation();performAnimation(this, event)"
-        style="top: -0.5px;"
         data-success-msg={successMsg}
         data-error-msg={errMsg}
-        class={"add-service-btn text-center text-gray-100 pointer rounded border-none py-2.5 px-4 relative", strings.Join(class, " " )}>
+        class={Base, strings.Join(class, " " )}>
         {children...}
     </button>
 }
 
 templ RemoveParentButton(class ...string) {
-    <button type="button" class={"remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4", strings.Join(class, " ")}
+    <button type="button" class={Base, Danger, strings.Join(class, " ")}
         onclick="removeParent(this)">{children...}</button>
 }
 
 templ Remove(target string, class ...string) {
-    <button type="button" data-target={target} class={"remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4", strings.Join(class, " ")}
+    <button type="button" data-target={target} class={Base, Danger, strings.Join(class, " ")}
         onclick="removeTarget(this)">{children...}</button>
 }
 
 templ RemoveLastOf(target string, class ...string) {
-    <button type="button" data-target={target} class={"remove-button bg-red-500 hover:bg-red-600 text-gray-100 rounded pointer py-2.5 px-4", strings.Join(class, " ")}
+    <button type="button" data-target={target} class={Base, Danger, strings.Join(class, " ")}
         onclick="removeLastOf(this)">{children...}</button>
 }

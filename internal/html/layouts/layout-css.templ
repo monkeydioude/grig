@@ -1,7 +1,9 @@
 package layouts
 
+import "monkeydioude/grig/pkg/urls"
+
 templ MainCSS() {
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/output.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+    <link rel="stylesheet" type="text/css" href={urls.Path(ctx, "/static/css/main.css")}>
+    <link rel="stylesheet" type="text/css" href={urls.Path(ctx, "/static/css/output.css")}>
 }

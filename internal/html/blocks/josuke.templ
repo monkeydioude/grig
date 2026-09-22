@@ -75,7 +75,7 @@ templ JosukeDeployment(
     {{ branchClass := fmt.Sprintf("branches-list-%d", dep.GetIndex()) }}
     {{ selector := "."+branchClass }}
     {{ removeSelector := fmt.Sprintf("%s .branch-item", selector)}}
-    <div class="deployment-element service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+    <div class="deployment-element service-block rounded-lg border border-slate-800 bg-slate-900/50 p-4 mb-2.5">
         @form.DisplayFormGroup(form.StringFormGroup(depIdGenFunc(&dep, "repo"), "<username>/<project>", dep.Repo)) {
                 Repo name
         }
@@ -102,17 +102,32 @@ templ JosukeDeployment(
     </div>
 }
 
+// HookGrid is the column layout shared by the hooks header row and every
+// hook row. Like ServiceGrid, the last column is a fixed width so the
+// header (empty there, a button in the rows) stays in line.
+const HookGrid = "grid grid-cols-1 md:grid-cols-[1fr_1fr_1.5fr_1.5fr_5.5rem] gap-x-3 items-end"
+
+// JosukeHookHeader names the hook columns once, above the rows.
+templ JosukeHookHeader() {
+    <div class={HookGrid, "hidden md:grid px-4 pb-1"}>
+        <span class={form.Label}>Name</span>
+        <span class={form.Label}>Type</span>
+        <span class={form.Label}>Path</span>
+        <span class={form.Label}>Secret</span>
+        <span></span>
+    </div>
+}
+
+// JosukeHook lays one hook out as a single row, matching the capybara
+// services list.
 templ JosukeHook(it int, idGeneratorFunc func (it int, key string) string, hook model.Hook) {
-    <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
-        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(it, "name"), "", hook.Name)) { Name }
-        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(it, "type"), "github, bitbucket, gogs, bitbucket",
-        hook.Type)) { Type }
-        @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(it, "path"), "/josuke/<type>", hook.Path)) {
-            { "Path "}
-            @span.Advice() { Will most likely match the Type of hook above } }
-            @form.DisplayFormGroup(form.StringFormGroup(idGeneratorFunc(it, "secret"), "<secret>", hook.Secret)) {
-                Secret, should match the one in github
-            }
-            @button.RemoveParentButton() { Delete }
+    <div class="service-block rounded-lg border border-slate-800 bg-slate-900/50 px-4 pt-3 mb-2">
+        <div class={HookGrid}>
+            @form.CompactFormGroup(form.StringFormGroup(idGeneratorFunc(it, "name"), "Hook name", hook.Name)) { Name }
+            @form.CompactFormGroup(form.StringFormGroup(idGeneratorFunc(it, "type"), "github, gogs...", hook.Type)) { Type }
+            @form.CompactFormGroup(form.StringFormGroup(idGeneratorFunc(it, "path"), "/josuke/<type>", hook.Path)) { Path }
+            @form.CompactFormGroup(form.StringFormGroup(idGeneratorFunc(it, "secret"), "<secret>", hook.Secret)) { Secret }
+            @button.RemoveParentButton("mb-3 w-full px-0") { Delete }
+        </div>
     </div>
 }

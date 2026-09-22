@@ -1,116 +1,162 @@
 package pages
 
 import (
+    "fmt"
     "monkeydioude/grig/internal/model"
-	"monkeydioude/grig/pkg/html/elements/hr"
-    "monkeydioude/grig/pkg/html/elements/hx"
     "monkeydioude/grig/pkg/html/elements/a"
-	"strings"
+    "monkeydioude/grig/pkg/html/elements/alert"
+    "monkeydioude/grig/pkg/html/elements/card"
+    "monkeydioude/grig/pkg/html/elements/hx"
+    "monkeydioude/grig/pkg/html/elements/kv"
+    "strings"
 )
 
-templ configContentBlock(title, value string) {
-    <div class="flex flex-row">
-        <div class="highlighted p-1 text-lg text-sky-500">{title}</div>
-        <div class="content p-1 text-lg">{value}</div>
+// servicesTable keeps a long service list scannable: one row each,
+// rather than a stack of label/value blocks per service.
+templ servicesTable(services []model.ServiceDefinition) {
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="text-sky-500 border-b border-slate-700">
+                <tr>
+                    <th class="font-medium py-1.5 pr-4">Name</th>
+                    <th class="font-medium py-1.5 pr-4">Method</th>
+                    <th class="font-medium py-1.5 pr-4">Pattern</th>
+                    <th class="font-medium py-1.5 pr-4">Host</th>
+                    <th class="font-medium py-1.5 pr-4">Port</th>
+                    <th class="font-medium py-1.5">Protocol</th>
+                </tr>
+            </thead>
+            <tbody class="font-mono text-slate-200">
+                for _, service := range services {
+                    <tr class="border-b border-slate-800 last:border-0">
+                        <td class="py-1.5 pr-4">{service.ID}</td>
+                        <td class="py-1.5 pr-4 text-slate-400">{service.Method}</td>
+                        <td class="py-1.5 pr-4">{service.Pattern}</td>
+                        <td class="py-1.5 pr-4">{service.Host}</td>
+                        <td class="py-1.5 pr-4">{service.Port.String()}</td>
+                        <td class="py-1.5 text-slate-400">{service.Protocol}</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 }
 
-templ capybaraConfigBlock(capy *model.Capybara) {
-    <div class="capy-config">
-        {{ servicesLen := len(capy.Services)}}
-        <div class="config-content">
-            @hx.H1("Capybara")
-            <div>
-                @hx.H2("Proxy")
-                @configContentBlock("Port", capy.Proxy.Port.String())
-                @configContentBlock("Host", capy.Proxy.TLSHost)
-                @hx.H2("Services")
-                for it, service := range capy.Services {
-                    <div class="pb-5">
-                        @configContentBlock("Name", service.ID)
-                        @configContentBlock("Method", service.Method)
-                        @configContentBlock("Pattern", service.Pattern)
-                        @configContentBlock("Port", service.Port.String())
-                    </div>
-                    @hr.Default(it < servicesLen -1)
+templ capybaraConfigBlock(cardData CapybaraCard) {
+    @card.Panel("capy-config") {
+        @card.Header(cardData.Ref.Name, cardData.Ref.Path)
+        if cardData.Err != nil {
+            @alert.Error("Could not read this config file", cardData.Err)
+        } else {
+            @hx.H3("Proxy")
+            @kv.List() {
+                @kv.Row("Port", cardData.Data.Proxy.Port.String())
+                @kv.RowIfSet("TLS hosts", strings.Join(cardData.Data.Proxy.TLSHosts, ", "))
+                @kv.RowIfSet("Contact email", cardData.Data.Proxy.Email)
+            }
+            @hx.H3(fmt.Sprintf("Services (%d)", len(cardData.Data.Services)))
+            if len(cardData.Data.Services) > 0 {
+                @servicesTable(cardData.Data.Services)
+            } else {
+                <p class="text-slate-500 text-sm">No services defined.</p>
+            }
+        }
+        <div class="mt-4">
+            @a.Internal(cardData.Ref.URL()) { Edit config }
+        </div>
+    }
+}
+
+templ josukeHooks(josuke *model.Josuke) {
+    @hx.H3(fmt.Sprintf("Hooks (%d)", len(josuke.Hook)))
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead class="text-sky-500 border-b border-slate-700">
+                <tr>
+                    <th class="font-medium py-1.5 pr-4">Name</th>
+                    <th class="font-medium py-1.5 pr-4">Type</th>
+                    <th class="font-medium py-1.5">Path</th>
+                </tr>
+            </thead>
+            <tbody class="font-mono text-slate-200">
+                for _, hook := range josuke.Hook {
+                    <tr class="border-b border-slate-800 last:border-0">
+                        <td class="py-1.5 pr-4">{hook.Name}</td>
+                        <td class="py-1.5 pr-4 text-slate-400">{hook.Type}</td>
+                        <td class="py-1.5">{hook.Path}</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+templ josukeDeployment(dep model.Deployment) {
+    <div class="rounded border border-slate-800 p-3 mb-2">
+        @kv.List() {
+            @kv.Row("Repo", dep.Repo)
+            @kv.RowIfSet("Project dir", dep.ProjDir)
+            @kv.RowIfSet("Base dir", dep.BaseDir)
+        }
+        for _, branch := range dep.Branches {
+            <div class="mt-3 pl-3 border-l-2 border-slate-700">
+                <p class="text-sky-400 text-sm font-semibold mb-1">{branch.Branch}</p>
+                for _, action := range branch.Actions {
+                    <p class="text-slate-400 text-xs uppercase tracking-wide mt-2">{action.Action}</p>
+                    <ul class="list-disc ml-5 text-sm font-mono text-emerald-500/90">
+                        for _, cmd := range action.Commands {
+                            <li class="py-0.5">{strings.Join(cmd.Parts, " ")}</li>
+                        }
+                    </ul>
                 }
             </div>
-            @a.Internal("/capybara") { Edit Capybara Config }
-        </div>
+        }
     </div>
 }
 
 templ josukeConfigBlock(josuke *model.Josuke) {
-    {{ depLen := len(josuke.Deployment)}}
-    <div class="josuke-config">
-        <div class="config-content">
-            @hx.H1("Josuke")
-            <div>
-                @hx.H2("Base settings")
-                @configContentBlock("Log level", josuke.LogLevel)
-                @configContentBlock("Host", josuke.Host)
-                @configContentBlock("Port", josuke.Port.String())
-                @configContentBlock("Payloads store", josuke.Store)
-                @configContentBlock("Healthcheck", josuke.HealthcheckRoute)
-                @hx.H2("Hooks")
-                for _, hook := range josuke.Hook {
-                    <div class="pb-5">
-                        @configContentBlock("Name", hook.Name)
-                        @configContentBlock("Type", hook.Type)
-                        @configContentBlock("Path", hook.Path)
-                        @configContentBlock("Secret", hook.Secret)
-                    </div>
-                }
-                @hx.H2("Deployments")
-                for it, dep := range josuke.Deployment {
-                    <div class="pb-5">
-                        @configContentBlock("Repo", dep.Repo)
-                        @configContentBlock("Project dir", dep.ProjDir)
-                        @configContentBlock("Base dir", dep.BaseDir)
-                        @hx.H3("Branches")
-                        for _, branch := range dep.Branches {
-                            <div class="pb-5">
-                                @configContentBlock("Branch", branch.Branch)
-                                @configContentBlock("Project dir", dep.ProjDir)
-                                @configContentBlock("Base dir", dep.BaseDir)
-                                for _, action := range branch.Actions {
-                                    <div>
-                                        @configContentBlock("Action", action.Action)
-                                        <div class="highlighted p-1 text-lg text-sky-500">Commands</div>
-                                        <ul class="list-disc ml-2.5 pl-3">
-                                            for _, cmd := range action.Commands {
-                                                <li class="text-lg text-emerald-600">
-                                                    {strings.Join(cmd.Parts, " ")}
-                                                </li>
-                                            }
-                                        </ul>
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </div>
-                    @hr.Default(it < depLen -1)
-                }
-                @a.Internal("/josuke") { Edit Josuke Config }
-            </div>
+    @card.Panel("josuke-config") {
+        @card.Header("Josuke", "")
+        @hx.H3("Base settings")
+        @kv.List() {
+            @kv.RowIfSet("Log level", josuke.LogLevel)
+            @kv.RowIfSet("Host", josuke.Host)
+            @kv.Row("Port", josuke.Port.String())
+            @kv.RowIfSet("Payloads store", josuke.Store)
+            @kv.RowIfSet("Healthcheck", josuke.HealthcheckRoute)
+        }
+        @josukeHooks(josuke)
+        @hx.H3(fmt.Sprintf("Deployments (%d)", len(josuke.Deployment)))
+        for _, dep := range josuke.Deployment {
+            @josukeDeployment(dep)
+        }
+        <div class="mt-4">
+            @a.Internal("/josuke") { Edit config }
         </div>
-    </div>
+    }
 }
 
 templ (page IndexPage) Content() {
     <div id="index" class="pb-4">
-        if page.Err != nil {
-            <div class="error-block">{page.Err.Error()}</div>
-        }
-        if page.Capybara != nil {
-            @capybaraConfigBlock(page.Capybara)
-        } else {
-            <div>Error loading capybara config</div>
-        }
-        if page.Josuke != nil {
-            @josukeConfigBlock(page.Josuke)
-        } else {
-            <div>Error loading josuke config</div>
-        }
+        @hx.H1("Configuration")
+        <div class="mt-5">
+            if page.Err != nil {
+                @alert.Error("Some configuration could not be loaded", page.Err)
+            }
+            if len(page.Capybaras) > 0 {
+                for _, capy := range page.Capybaras {
+                    @capybaraConfigBlock(capy)
+                }
+            } else {
+                @alert.Empty() {
+                    No Capybara config is registered. Add one under
+                    <span class="font-mono text-slate-400">capybara_config_paths</span>
+                    in the server config file.
+                }
+            }
+            if page.Josuke != nil {
+                @josukeConfigBlock(page.Josuke)
+            }
+        </div>
     </div>
 }

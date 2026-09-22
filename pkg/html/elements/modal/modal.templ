@@ -1,0 +1,32 @@
+package modal
+
+// Dialog is a native <dialog>, so the browser provides the backdrop,
+// focus trap and Escape-to-close. Its contents stay part of the
+// surrounding form even while closed, so the fields inside still submit.
+templ Dialog(id, title string) {
+    <dialog id={id} class="modal bg-transparent p-0 w-[92vw] max-w-3xl backdrop:bg-black/70">
+        <div class="rounded-lg border border-slate-700 bg-slate-900 text-slate-100 shadow-xl">
+            <div class="flex items-center justify-between gap-4 border-b border-slate-800 px-5 py-3">
+                <h2 class="text-lg font-semibold text-sky-300 truncate">{title}</h2>
+                <button type="button" aria-label="Close"
+                    class="text-slate-400 hover:text-slate-100 text-xl leading-none px-2 cursor-pointer bg-transparent border-none"
+                    onclick="closeDialog(this)">&times;</button>
+            </div>
+            {children...}
+        </div>
+    </dialog>
+}
+
+// Body is the scrollable content area of a Dialog.
+templ Body() {
+    <div class="px-5 py-4 max-h-[65vh] overflow-y-auto">
+        {children...}
+    </div>
+}
+
+// Footer holds a Dialog's actions, right aligned.
+templ Footer() {
+    <div class="flex items-center justify-end gap-2 border-t border-slate-800 px-5 py-3">
+        {children...}
+    </div>
+}

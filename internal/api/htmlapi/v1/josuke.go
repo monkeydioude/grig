@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"context"
 	"log/slog"
 	"monkeydioude/grig/internal/html/blocks"
 	"monkeydioude/grig/internal/html/layouts"
@@ -18,7 +17,7 @@ import (
 
 func (h Handler) JosukeList(w http.ResponseWriter, r *http.Request, _ *slog.Logger, nav elements.Nav) error {
 	layout := layouts.Main(nav, pages.JosukeList(&h.Layout.ServerConfig))
-	return layout.Render(context.Background(), w)
+	return layout.Render(r.Context(), w)
 }
 
 func (h Handler) JosukeHookBlock(w http.ResponseWriter, r *http.Request, _ *slog.Logger) error {
@@ -32,7 +31,7 @@ func (h Handler) JosukeHookBlock(w http.ResponseWriter, r *http.Request, _ *slog
 		index = it
 	}
 
-	return blocks.JosukeHook(index, pages.GetHookInputName, model.Hook{}).Render(context.Background(), w)
+	return blocks.JosukeHook(index, pages.GetHookInputName, model.Hook{}).Render(r.Context(), w)
 }
 
 func (h Handler) JosukeDeploymentBlock(w http.ResponseWriter, r *http.Request, _ *slog.Logger) error {
@@ -51,7 +50,7 @@ func (h Handler) JosukeDeploymentBlock(w http.ResponseWriter, r *http.Request, _
 	}
 
 	dep.FillBaseData()
-	return blocks.JosukeDeployment(pages.GetInputNameWithKey, utils.GetInputName, dep).Render(context.Background(), w)
+	return blocks.JosukeDeployment(pages.GetInputNameWithKey, utils.GetInputName, dep).Render(r.Context(), w)
 }
 
 func (h Handler) JosukeBranchBlock(w http.ResponseWriter, r *http.Request, _ *slog.Logger) error {
@@ -61,7 +60,7 @@ func (h Handler) JosukeBranchBlock(w http.ResponseWriter, r *http.Request, _ *sl
 	branch := model.NewBranch(0)
 	josukeTree(branch, indexStr, parentNameStr)
 	htmlinput.FillIndexesFromHTMLInput(branch.GetParent(), parentNameStr)
-	return blocks.JosukeBranch(utils.GetInputName, *branch).Render(context.Background(), w)
+	return blocks.JosukeBranch(utils.GetInputName, *branch).Render(r.Context(), w)
 }
 
 func (h Handler) JosukeActionBlock(w http.ResponseWriter, r *http.Request, _ *slog.Logger) error {
@@ -70,7 +69,7 @@ func (h Handler) JosukeActionBlock(w http.ResponseWriter, r *http.Request, _ *sl
 	action := model.NewAction(0)
 	josukeTree(action, indexStr, parentNameStr)
 	htmlinput.FillIndexesFromHTMLInput(action.GetParent(), parentNameStr)
-	return blocks.JosukeAction(utils.GetInputName, *action).Render(context.Background(), w)
+	return blocks.JosukeAction(utils.GetInputName, *action).Render(r.Context(), w)
 }
 
 func (h Handler) JosukeCommandBlock(w http.ResponseWriter, r *http.Request, _ *slog.Logger) error {
@@ -79,7 +78,7 @@ func (h Handler) JosukeCommandBlock(w http.ResponseWriter, r *http.Request, _ *s
 	cmd := model.NewCommand(0)
 	josukeTree(cmd, indexStr, parentNameStr)
 	htmlinput.FillIndexesFromHTMLInput(cmd.GetParent(), parentNameStr)
-	return blocks.JosukeCmd(utils.GetInputName, *cmd).Render(context.Background(), w)
+	return blocks.JosukeCmd(utils.GetInputName, *cmd).Render(r.Context(), w)
 }
 
 func josukeTree(hp pkgModel.IndexBuilder, indexStr string, parentNameStr string) error {

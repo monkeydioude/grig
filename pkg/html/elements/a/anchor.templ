@@ -1,5 +1,9 @@
 package a
 
+import "monkeydioude/grig/pkg/html/elements/button"
+import "monkeydioude/grig/pkg/urls"
+
+// Internal links to another page in the app, styled as a secondary button.
 templ Internal(link string) {
-    <a href={templ.SafeURL(link)} class="p-2 my-1 button block w-fit bg-slate-700 hover:bg-slate-600">{children...}</a>
+    <a href={templ.SafeURL(urls.Path(ctx, link))} class={button.Base, "bg-slate-700 hover:bg-slate-600 no-underline"}>{children...}</a>
 }

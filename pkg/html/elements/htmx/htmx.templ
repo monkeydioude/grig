@@ -1,5 +1,8 @@
 package htmx
 
+import "monkeydioude/grig/pkg/html/elements/button"
+import "monkeydioude/grig/pkg/urls"
+
 var configReqFormHandle = templ.NewOnceHandle()
 
 templ configRequest() {
@@ -26,7 +29,7 @@ templ configRequest() {
 templ (f Factory) Form(path string) {
     @configRequest()
         <form
-            hx-post={path}
+            hx-post={urls.Path(ctx, path)}
             hx-swap={f.Swap.String()}
             hx-target={f.Target}
             hx-ext={f.Ext}
@@ -36,16 +39,16 @@ templ (f Factory) Form(path string) {
             hx-on::config-request="ConfigReqForm(this, event)"
             hx-on::after-request="performAnimation(this, event)">
             { children...}
-            <button type="submit"
-                class="text-gray-100 bg-emerald-500 hover:bg-emerald-600 block rounded pointer py-2 px-4 mx-auto mt-4 mb-0">Submit</button>
+            <button type="submit" class={button.Base, button.Success}>Add</button>
         </form>
 }
 
 templ (f Factory) Button(path string) {
     @configRequest()
     <button
-        class="text-gray-100 bg-emerald-500 hover:bg-emerald-600 block rounded pointer py-2 px-4 mx-auto mt-4 mb-0"
-        hx-get={path}
+        type="button"
+        class={button.Base, button.Secondary}
+        hx-get={urls.Path(ctx, path)}
         hx-swap={f.Swap.String()}
         hx-target={f.Target}
         hx-ext={f.Ext}

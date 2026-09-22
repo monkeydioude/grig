@@ -5,7 +5,7 @@ go 1.23.3
 toolchain go1.23.4
 
 require (
-	github.com/a-h/templ v0.2.793
+	github.com/a-h/templ v0.3.865
 	github.com/google/uuid v1.6.0
 	github.com/oklog/run v1.1.0
 	github.com/stretchr/testify v1.10.0

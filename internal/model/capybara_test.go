@@ -11,8 +11,8 @@ import (
 func TestICanSaveACapybaraFile(t *testing.T) {
 	cap := Capybara{
 		Proxy: Proxy{
-			Port:    12,
-			TLSHost: "cabane123.com",
+			Port:     12,
+			TLSHosts: []string{"cabane123.com"},
 		},
 		Services: []ServiceDefinition{
 			{

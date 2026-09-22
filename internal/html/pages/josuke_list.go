@@ -18,13 +18,14 @@ type Josuke struct {
 
 func JosukeList(config *config.ServerConfig) Josuke {
 	p := Josuke{
-		Titl: "Create a Josuke config",
+		Titl: "Josuke",
 		Data: &model.Josuke{},
 	}
 
 	if config == nil || config.JosukeConfigPath == "" {
 		return p
 	}
+	p.FilePath = config.JosukeConfigPath
 	jk, err := file.UnmarshalFromPath[model.Josuke](config.JosukeConfigPath)
 	if err != nil {
 		slog.Error("pages.JosukeList", "error", err)

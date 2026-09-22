@@ -24,7 +24,7 @@ templ ServicesService(it int, service model.Service) {
     <div class="services-service-block">
         @hx.H2(service.Name)
         @input.Hidden(service.IdGen(it, "", "og_path"), service.Path)
-        <div class="service-block bg-slate-800 border-gray-900 border-1 rounded p-4 mb-2.5">
+        <div class="service-block rounded-lg border border-slate-800 bg-slate-900/50 p-4 mb-2.5">
             // @form.DisplayFormGroup(form.StringFormGroup(service.IdGen("name"), "", service.Name)) { Name }
             @form.DisplayFormGroup(form.StringFormGroup(service.IdGen(it, "", "path"), "File path", service.Path)) { Path }
             @form.DisplayFormGroup(form.StringFormGroup(service.IdGen(it, "unit", "description"), "", service.Unit.Description)) { Description }
@@ -44,7 +44,7 @@ templ ServicesService(it int, service model.Service) {
                 @button.RemoveLastOf(removeSelector, "rounded-none rounded-e", "bg-red-700 hover:bg-red-800") { - Env }
             </div>
         </div>
-        @button.RemoveParentButton() { Delete }
-        @button.AjaxSimplePostUrl(restartServiceCmdUrl, successMsg, errMsg,  "mx-2") { Restart service }
+        @button.RemoveParentButton("mr-2") { Delete }
+        @button.AjaxSimplePostUrl(restartServiceCmdUrl, successMsg, errMsg, button.Warning) { Restart service }
     </div>
 }

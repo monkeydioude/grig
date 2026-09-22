@@ -1,5 +1,7 @@
 package layouts
 
+import "monkeydioude/grig/pkg/urls"
+
 templ domInitializer(jsDefinitions templ.Component, cssDefinitions templ.Component, pageTitle string) {
     <!DOCTYPE html>
     <html lang="en" class="h-full">
@@ -9,7 +11,7 @@ templ domInitializer(jsDefinitions templ.Component, cssDefinitions templ.Compone
             <title> { pageTitle }</title>
             @cssDefinitions
 
-            <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+            <link rel="icon" type="image/x-icon" href={urls.Path(ctx, "/static/favicon.ico")}>
             @jsDefinitions
         </head>
 
