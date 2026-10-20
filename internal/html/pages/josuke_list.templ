@@ -16,7 +16,7 @@ templ (page Josuke) Content() {
     {{ removeDepSelector := ".deployments-list .deployment-element" }}
     <div id="josuke" class="pb-3">
         @card.Header(page.Titl, page.FilePath)
-        @form.JsonPostForm("/api/v1/josuke") {
+        @form.RestartableJsonPostForm("/api/v1/josuke", page.Restartable) {
             @hx.H2("Base settings")
             @form.DisplayFormGroup(form.StringFormGroup("logLevel", "DEBUG, INFO, WARN, ERROR", page.Data.LogLevel)) {
                 { "Log level " }

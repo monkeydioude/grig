@@ -18,11 +18,18 @@ templ navItem(item elements.Link, current bool) {
     </li>
 }
 
+templ navSeparator() {
+    <li class="w-px h-5 mx-2 self-center bg-slate-700" aria-hidden="true"></li>
+}
+
 templ navigation(nav elements.Nav) {
     <div class="container flex items-center gap-6">
         <a class="text-sky-300 font-semibold tracking-tight py-2" href={templ.SafeURL(urls.Path(ctx, "/"))}>grig</a>
         <ul class="flex gap-1">
         for _, item := range nav.Links {
+            if item.SeparatorBefore {
+                @navSeparator()
+            }
             @navItem(item, item.Href == templ.SafeURL(nav.Current))
         }
         </ul>

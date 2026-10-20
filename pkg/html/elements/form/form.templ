@@ -44,6 +44,14 @@ templ EmptyFormGroup() {
 }
 
 templ JsonPostForm(path string) {
+    @RestartableJsonPostForm(path, false) {
+        { children...}
+    }
+}
+
+// RestartableJsonPostForm adds, when restartable, a "Save & restart" button
+// posting the same form to path?restart=1.
+templ RestartableJsonPostForm(path string, restartable bool) {
     <form
         hx-post={urls.Path(ctx, path)}
         hx-swap="none"
@@ -53,7 +61,14 @@ templ JsonPostForm(path string) {
         hx-on::after-request="performAnimation(this, event)"
     >
     { children...}
-        <div class="sticky bottom-0 mt-6 -mx-1 px-1 py-3 bg-gray-950/90 backdrop-blur border-t border-slate-800 flex justify-end">
+        <div class="sticky bottom-0 mt-6 -mx-1 px-1 py-3 bg-gray-950/90 backdrop-blur border-t border-slate-800 flex justify-end gap-3">
+            if restartable {
+                <button type="submit" class={button.Base, button.Warning}
+                    hx-post={urls.Path(ctx, path + "?restart=1")}
+                    data-success-msg={consts.FORM_RESTARTED_MSG}
+                    data-error-msg={consts.FORM_ERR_MSG}
+                    hx-on::after-request="performAnimation(this, event)">Save &amp; restart</button>
+            }
             <button type="submit" class={button.Base, "bg-emerald-500 hover:bg-emerald-600"}>Save changes</button>
         </div>
     </form>

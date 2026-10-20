@@ -242,3 +242,14 @@ document.addEventListener("close", function (event) {
         sel.closest(".extra-field").remove();
     });
 }, true);
+
+// --- New service ----------------------------------------------------
+
+// generatePassword fills input with 32 random letters and digits, the
+// charset grig accepts for a database password.
+function generatePassword(input) {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const bytes = new Uint32Array(32);
+    crypto.getRandomValues(bytes);
+    input.value = Array.from(bytes, b => chars[b % chars.length]).join("");
+}

@@ -33,6 +33,11 @@ func (h Handler) JosukeSave(w http.ResponseWriter, r *http.Request, logger *slog
 	if err := jk.Save(); err != nil {
 		return errors.Wrap(err, "api.JosukeSave")
 	}
+	if wantsRestart(r) {
+		if err := h.Restarter.RestartJosuke(r.Context(), *jk, logger); err != nil {
+			return restartError(err, logger)
+		}
+	}
 	// replace layout's config
 	// h.Layout.CapybaraConfig = &cp
 	return nil

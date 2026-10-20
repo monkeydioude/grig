@@ -22,6 +22,8 @@ type Link struct {
 	Href   templ.SafeURL
 	Text   fmt.Stringer
 	Target Target
+	// SeparatorBefore draws a vertical separator before the link in the navigation.
+	SeparatorBefore bool
 }
 
 type Text string

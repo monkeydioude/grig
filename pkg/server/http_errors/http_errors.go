@@ -48,6 +48,13 @@ func InternalServerError(err error) HttpError {
 	}
 }
 
+func Conflict(err error) HttpError {
+	return HttpError{
+		Status: http.StatusConflict,
+		Err:    err,
+	}
+}
+
 func UnknownInternalServerError() HttpError {
 	return InternalServerError(ErrHttpUnknownInternalServerError)
 }

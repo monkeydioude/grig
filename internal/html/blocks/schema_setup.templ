@@ -1,0 +1,23 @@
+package blocks
+
+import "monkeydioude/grig/internal/service/db_schema"
+
+// SchemaSetupResult reports a schema creation, with the DB_URL the
+// service connects with: the only time its password is shown.
+templ SchemaSetupResult(res db_schema.Result, err error) {
+    <ul class="text-sm space-y-1">
+        if err != nil {
+            @stepFailed("Schema not created, nothing was changed", err)
+        } else {
+            <li class="text-emerald-400">
+                ✓ Schema <span class="font-mono">{ res.Schema }</span> ready in
+                <span class="font-mono">{ res.Database }</span>, for user <span class="font-mono">{ res.User }</span>
+            </li>
+            <li class="text-slate-400">
+                Service DB_URL, copy it now:
+                <input class="w-full mt-1 font-mono text-gray-200 bg-slate-950 rounded border border-slate-700 px-3 py-2"
+                    type="text" value={ res.ServiceURL } readonly onclick="this.select()">
+            </li>
+        }
+    </ul>
+}

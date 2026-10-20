@@ -26,6 +26,12 @@ type ServerConfig struct {
 	AppsServicesPaths   services.AppServicePaths `json:"services_paths" yaml:"services_paths"`
 	JosukeConfigPath    string                   `json:"josuke_config_path" yaml:"josuke_config_path"`
 	CapybaraConfigPaths []string                 `json:"capybara_config_paths" yaml:"capybara_config_paths"`
+	// WebhookBaseURL is where forges reach Josuke, e.g. "https://example.com":
+	// the webhook of a new repository is this URL plus Josuke's hook path.
+	WebhookBaseURL string `json:"webhook_base_url,omitempty" yaml:"webhook_base_url,omitempty"`
+	// RestartOnSave maps a config file to the systemd unit reading it,
+	// offering "Save & restart" on its page.
+	RestartOnSave map[string]string `json:"restart_on_save,omitempty" yaml:"restart_on_save,omitempty"`
 }
 
 func unmarshalConfig(configRaw []byte) ServerConfig {
@@ -61,7 +67,15 @@ func (sc ServerConfig) LogValue() slog.Value {
 		slog.String("josuke_config_path", sc.JosukeConfigPath),
 		slog.Any("capybara_config_paths", sc.CapybaraConfigPaths),
 		slog.Any("services_paths", []string(sc.AppsServicesPaths)),
+		slog.String("webhook_base_url", sc.WebhookBaseURL),
+		slog.Any("restart_on_save", sc.RestartOnSave),
 	)
+}
+
+// CanRestart tells whether the config at path has a unit to restart on save.
+func (sc ServerConfig) CanRestart(path string) bool {
+	_, ok := sc.RestartOnSave[path]
+	return ok
 }
 
 // Prefixer builds links for the sub-path this app is served under.

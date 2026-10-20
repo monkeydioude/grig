@@ -17,7 +17,7 @@ templ (page Capybara) Content() {
         if page.Err != nil {
             @alert.Error("Could not read this config file", page.Err)
         }
-        @form.JsonPostForm(page.Ref.APIURL()) {
+        @form.RestartableJsonPostForm(page.Ref.APIURL(), page.Restartable) {
             @hx.H2("Proxy")
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
                 @form.DisplayFormGroup(form.NumberFormGroup("proxy[port]", "80 or 443 for example", page.Data.Proxy.Port)) { Reverse-Proxy Port }

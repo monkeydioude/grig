@@ -1,0 +1,108 @@
+package pages
+
+import (
+    "monkeydioude/grig/pkg/html/elements/card"
+    "monkeydioude/grig/pkg/html/elements/hx"
+    "monkeydioude/grig/pkg/html/elements/form"
+    "monkeydioude/grig/pkg/html/elements/button"
+    "monkeydioude/grig/pkg/urls"
+)
+
+templ (page ServiceNew) Content() {
+    <div class="pb-3">
+        @card.Header("New service", "All the config a new service needs, in one place.")
+        @card.Panel() {
+            @hx.H3("Repository")
+            if len(page.Forges) == 0 {
+                <p class="text-amber-400 text-sm">
+                    No forge available: set GITHUB_TOKEN and/or CODEBERG_TOKEN in grig's environment.
+                </p>
+            } else {
+                @page.repoForm()
+            }
+        }
+        @card.Panel() {
+            @hx.H3("Database")
+            if page.DatabaseURL == "" {
+                <p class="text-amber-400 text-sm">
+                    No database available: set DB_URL in grig's environment, with a user allowed to create roles and schemas.
+                </p>
+            } else {
+                @page.schemaForm()
+            }
+        }
+    </div>
+}
+
+templ (page ServiceNew) schemaForm() {
+    <form
+        hx-post={urls.Path(ctx, "/service/new/schema")}
+        hx-ext="json-enc-custom"
+        hx-target="#schema-setup-result"
+        hx-swap="innerHTML"
+        data-success-msg=""
+        hx-on::after-request="performAnimation(this, event)">
+        <p class="text-slate-500 text-sm mb-3">On <span class="font-mono">{ page.DatabaseURL }</span></p>
+        <div class="flex flex-wrap items-end gap-3">
+            @textField("schema", "Schema", "my_service")
+            @textField("user", "User", "my_service")
+            <div class="mb-3 flex flex-col">
+                <label class={form.Label} for="password">Password</label>
+                <div class="flex gap-2">
+                    <input id="password" name="password" type="text" class={form.Input, "font-mono w-80"}
+                        value={page.Password} readonly>
+                    <button type="button" class={button.Base, button.Secondary}
+                        onclick="generatePassword(document.getElementById('password'))">Generate</button>
+                </div>
+            </div>
+            <button type="submit" class={button.Base, button.Success, "mb-3"}>Create</button>
+        </div>
+        <div id="schema-setup-result" class="mt-3"></div>
+    </form>
+}
+
+templ (page ServiceNew) repoForm() {
+    <form
+        hx-post={urls.Path(ctx, "/service/new/repo")}
+        hx-ext="json-enc-custom"
+        hx-target="#repo-setup-result"
+        hx-swap="innerHTML"
+        data-success-msg=""
+        hx-on::after-request="performAnimation(this, event)">
+        <div class="flex flex-wrap items-end gap-3">
+            @selectField("forge", "Forge", page.Forges)
+            @textField("owner", "Owner", "empty: your own account")
+            @textField("name", "Name", "my-service")
+            @selectField("visibility", "Visibility", []string{"private", "public"})
+            <button type="submit" class={button.Base, button.Success, "mb-3"}>Create</button>
+        </div>
+        @page.webhookInfo()
+        <div id="repo-setup-result" class="mt-3"></div>
+    </form>
+}
+
+templ (page ServiceNew) webhookInfo() {
+    if page.WebhookErr != nil {
+        <p class="text-amber-400 text-sm">No webhook will be added: { page.WebhookErr.Error() }</p>
+    } else {
+        <p class="text-slate-500 text-sm">Webhook (push): <span class="font-mono">{ page.WebhookURL }</span></p>
+    }
+}
+
+templ textField(name, label, placeholder string) {
+    <div class="mb-3 flex flex-col">
+        <label class={form.Label} for={name}>{ label }</label>
+        <input id={name} name={name} type="text" class={form.Input} placeholder={placeholder}>
+    </div>
+}
+
+templ selectField(name, label string, options []string) {
+    <div class="mb-3 flex flex-col">
+        <label class={form.Label} for={name}>{ label }</label>
+        <select id={name} name={name} class={form.Input}>
+            for _, option := range options {
+                <option value={option}>{ option }</option>
+            }
+        </select>
+    </div>
+}

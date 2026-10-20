@@ -23,7 +23,7 @@ func (h Handler) CapybaraList(w http.ResponseWriter, r *http.Request, _ *slog.Lo
 	if !ok {
 		return errors.Wrap(fmt.Errorf("ID out of bounds"), "invalid capybara ID")
 	}
-	layout := layouts.Main(nav, pages.CapybaraList(ref))
+	layout := layouts.Main(nav, pages.CapybaraList(ref, h.Layout.ServerConfig.CanRestart(ref.Path)))
 	layout.Render(r.Context(), w)
 	return nil
 }

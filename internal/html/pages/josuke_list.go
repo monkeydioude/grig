@@ -14,6 +14,8 @@ type Josuke struct {
 	Titl     string
 	Data     *model.Josuke
 	FilePath string
+	// Restartable offers "Save & restart" (restart_on_save has Josuke's unit).
+	Restartable bool
 }
 
 func JosukeList(config *config.ServerConfig) Josuke {
@@ -26,6 +28,7 @@ func JosukeList(config *config.ServerConfig) Josuke {
 		return p
 	}
 	p.FilePath = config.JosukeConfigPath
+	p.Restartable = config.CanRestart(config.JosukeConfigPath)
 	jk, err := file.UnmarshalFromPath[model.Josuke](config.JosukeConfigPath)
 	if err != nil {
 		slog.Error("pages.JosukeList", "error", err)

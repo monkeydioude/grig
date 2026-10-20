@@ -1,0 +1,27 @@
+package blocks
+
+import "monkeydioude/grig/internal/service/repo_setup"
+
+// RepoSetupResult reports each step of a repository creation.
+templ RepoSetupResult(res repo_setup.Result) {
+    <ul class="text-sm space-y-1">
+        if res.RepoErr != nil {
+            @stepFailed("Repository not created", res.RepoErr)
+        } else {
+            <li class="text-emerald-400">
+                ✓ Repository created:
+                <a class="underline" href={templ.SafeURL(res.Repo.HTMLURL)} target="_blank">{ res.Repo.FullName }</a>
+                <span class="text-slate-500 font-mono">{ res.Repo.SSHURL }</span>
+            </li>
+            if res.HookDone {
+                <li class="text-emerald-400">✓ Webhook added: <span class="font-mono">{ res.HookURL }</span></li>
+            } else {
+                @stepFailed("Webhook not added", res.HookErr)
+            }
+        }
+    </ul>
+}
+
+templ stepFailed(title string, err error) {
+    <li class="text-red-400">✗ { title }: { err.Error() }</li>
+}

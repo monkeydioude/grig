@@ -45,6 +45,11 @@ func (h Handler) CapybaraSave(w http.ResponseWriter, r *http.Request, logger *sl
 	if err := cp.Save(); err != nil {
 		return fmt.Errorf("api.CapybaraSave(): %w", err)
 	}
+	if wantsRestart(r) {
+		if err := h.Restarter.RestartFor(r.Context(), cp.Path, logger); err != nil {
+			return restartError(err, logger)
+		}
+	}
 	// replace layout's config
 	// h.Layout.CapybaraConfig = &cp
 	return nil

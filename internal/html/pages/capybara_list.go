@@ -12,14 +12,17 @@ type Capybara struct {
 	Data *model.Capybara
 	Ref  config.CapybaraRef
 	Err  error
+	// Restartable offers "Save & restart" (restart_on_save has its unit).
+	Restartable bool
 }
 
-func CapybaraList(ref config.CapybaraRef) Capybara {
+func CapybaraList(ref config.CapybaraRef, restartable bool) Capybara {
 	p := Capybara{
 		Data: &model.Capybara{
 			Services: make([]model.ServiceDefinition, 1),
 		},
-		Ref: ref,
+		Ref:         ref,
+		Restartable: restartable,
 	}
 
 	if ref.Path == "" {

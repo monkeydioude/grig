@@ -5,6 +5,9 @@ import (
 	cmdApi "monkeydioude/grig/internal/api/cmdapi/v1"
 	htmlApi "monkeydioude/grig/internal/api/htmlapi/v1"
 	jsonApi "monkeydioude/grig/internal/api/jsonapi/v1"
+	"monkeydioude/grig/internal/service/db_schema"
+	"monkeydioude/grig/internal/service/forge"
+	"monkeydioude/grig/internal/service/restart"
 	"monkeydioude/grig/internal/service/server/config"
 	with "monkeydioude/grig/internal/service/server/handler_wrapper"
 	element "monkeydioude/grig/pkg/html/elements"
@@ -17,14 +20,21 @@ import (
 	"github.com/a-h/templ"
 )
 
-func routing(layout *server.Layout[config.ServerConfig]) http.Handler {
+// dependencies are the services the handlers use, built in main.
+type dependencies struct {
+	Forges    forge.Registry
+	Schemas   db_schema.Admin
+	Restarter restart.Restarter
+}
+
+func routing(layout *server.Layout[config.ServerConfig], deps dependencies) http.Handler {
 	assert.NotNil(layout)
 	mux := http.NewServeMux()
 	serveStatic(mux)
 
 	mux.HandleFunc("/healthcheck", layout.Get(api.Healthcheck))
-	routing_json(layout, mux)
-	routing_html(layout, mux)
+	routing_json(layout, mux, deps)
+	routing_html(layout, mux, deps)
 	routing_command(layout, mux)
 
 	prefixer := layout.ServerConfig.Prefixer()
@@ -67,8 +77,9 @@ func mountUnderBasePath(
 func routing_json(
 	layout *server.Layout[config.ServerConfig],
 	mux *http.ServeMux,
+	deps dependencies,
 ) {
-	json := jsonApi.New(layout)
+	json := jsonApi.New(layout).WithRestarter(deps.Restarter)
 	mux.HandleFunc("/api/v1/capybara/{id}", layout.Post(with.JsonPayload(json.CapybaraSave)))
 	mux.HandleFunc("/api/v1/josuke", layout.Post(with.JsonPayload(json.JosukeSave)))
 	mux.HandleFunc("/api/v1/services", layout.Post(with.JsonPayload(json.ServicesSave)))
@@ -77,8 +88,9 @@ func routing_json(
 func routing_html(
 	layout *server.Layout[config.ServerConfig],
 	mux *http.ServeMux,
+	deps dependencies,
 ) {
-	html := htmlApi.New(layout)
+	html := htmlApi.New(layout).WithForges(deps.Forges).WithSchemas(deps.Schemas)
 	nw := with.NewNavWrapper()
 
 	mux.HandleFunc("/", layout.Get(nw.WithNav(html.Index, element.Link{Href: "/", Text: element.Text("Index")})))
@@ -89,7 +101,18 @@ func routing_html(
 		})))
 	}
 	mux.HandleFunc("/josuke", layout.Get(nw.WithNav(html.JosukeList, element.Link{Href: "/josuke"})))
-	mux.HandleFunc("/services", layout.Get(nw.WithNav(html.ServicesList, element.Link{Href: "/services"})))
+	mux.HandleFunc("/service/new", layout.Get(nw.WithNav(html.ServiceNew, element.Link{
+		Href: "/service/new",
+		Text: element.Text("+ Service"),
+	})))
+	mux.HandleFunc("/service/new/repo", layout.Post(with.JsonPayload(html.ServiceRepoCreate)))
+	mux.HandleFunc("/service/new/schema", layout.Post(with.JsonPayload(html.ServiceSchemaCreate)))
+	// the per-tool pages, kept until "+ Service" covers them
+	mux.HandleFunc("/services", layout.Get(nw.WithNav(html.ServicesList, element.Link{
+		Href:            "/services",
+		Text:            element.Text("Legacy"),
+		SeparatorBefore: true,
+	})))
 	mux.HandleFunc("/services/by_filepath", layout.Post(with.JsonPayload(html.AddServiceByFilepath)))
 	routing_html_blocks(layout, mux)
 }

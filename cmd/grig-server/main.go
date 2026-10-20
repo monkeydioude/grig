@@ -6,7 +6,11 @@ import (
 	"log"
 	"log/slog"
 	"monkeydioude/grig/internal/consts"
+	"monkeydioude/grig/internal/service/db_schema"
+	"monkeydioude/grig/internal/service/forge"
+	"monkeydioude/grig/internal/service/restart"
 	"monkeydioude/grig/internal/service/server/config"
+	grigOs "monkeydioude/grig/pkg/os"
 	"monkeydioude/grig/pkg/server"
 	"net/http"
 	"os"
@@ -16,17 +20,38 @@ import (
 	"github.com/oklog/run"
 )
 
-func setupServer(layout *server.Layout[config.ServerConfig]) *http.Server {
+func setupForges() forge.Registry {
+	forges := forge.FromEnv(os.Getenv, &http.Client{Timeout: 10 * time.Second})
+	slog.Info("forges available", "forges", forges.Names())
+	return forges
+}
+
+func setupSchemas() db_schema.Admin {
+	schemas := db_schema.Admin{URL: os.Getenv("DB_URL")}
+	slog.Info("database schemas", "enabled", schemas.Enabled())
+	return schemas
+}
+
+func setupRestarter(conf config.ServerConfig) restart.Restarter {
+	return restart.Restarter{
+		Units:   conf.RestartOnSave,
+		Restart: grigOs.ServiceRestart,
+		Client:  &http.Client{Timeout: 5 * time.Second},
+	}
+}
+
+func setupServer(layout *server.Layout[config.ServerConfig], deps dependencies) *http.Server {
 	// setup multiplexer
-	mux := routing(layout)
+	mux := routing(layout, deps)
 	port := consts.DEFAULT_GRIG_SERVER_PORT
 	if os.Getenv("PORT") != "" {
 		port = os.Getenv("PORT")
 	}
 	return &http.Server{
-		Addr:              fmt.Sprintf(":%s", port),
-		ReadTimeout:       3 * time.Second,
-		WriteTimeout:      3 * time.Second,
+		Addr:        fmt.Sprintf(":%s", port),
+		ReadTimeout: 3 * time.Second,
+		// creating a repository waits on two forge API calls
+		WriteTimeout:      30 * time.Second,
 		IdleTimeout:       30 * time.Second,
 		ReadHeaderTimeout: 2 * time.Second,
 		Handler:           mux,
@@ -35,7 +60,11 @@ func setupServer(layout *server.Layout[config.ServerConfig]) *http.Server {
 
 func main() {
 	serverLayout := boot()
-	server := setupServer(serverLayout)
+	server := setupServer(serverLayout, dependencies{
+		Forges:    setupForges(),
+		Schemas:   setupSchemas(),
+		Restarter: setupRestarter(serverLayout.ServerConfig),
+	})
 	// Create the run group, and add each actor.
 	var runGroup run.Group
 	// JSON API goroutine

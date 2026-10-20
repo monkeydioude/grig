@@ -13,6 +13,7 @@ const JOSUKE_DEFAULT_LOG_LEVEL = "DEBUG"
 
 const FORM_SUCCESS_MSG = "Saved"
 const FORM_ERR_MSG = "Could not save"
+const FORM_RESTARTED_MSG = "Saved and restarted"
 const SERVICE_RESTARTED_SUCCESS_MSG = "Service %s restarted"
 const SERVICE_RESTARTED_ERR_MSG = "Service %s could not be restarted"
 const ALL_SERVICES_RESTARTED_SUCCESS_MSG = "All services restarted"
