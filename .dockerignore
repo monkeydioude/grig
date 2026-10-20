@@ -1,0 +1,9 @@
+.git
+.DS_Store
+.vscode
+node_modules
+grig-server
+static/css/output.css
+**/*_templ.go
+**/*_templ.txt
+*.config.json

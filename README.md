@@ -63,6 +63,21 @@ You can also run Grig using Docker Compose:
 make dev-linux
 ```
 
+### 5. Production (Docker)
+
+`Dockerfile.prod` builds the CSS, the templ pages and the binary into one image:
+
+```bash
+docker build -f Dockerfile.prod -t grig .
+docker run -d --name grig --restart unless-stopped -p 6969:6969 \
+  -v /etc/grig:/etc/grig \
+  -v /etc/systemd/system:/etc/systemd/system \
+  -v /run/dbus/system_bus_socket:/run/dbus/system_bus_socket \
+  grig
+```
+
+It reads `/etc/grig/grig_server.config.yaml`. Mount each file Grig edits at its host path, since it writes symlinks to them. The container runs as root to restart host services over D-Bus, and Grig has no login: only expose it behind an authenticating proxy. See the header of `Dockerfile.prod`.
+
 ## Configuration
 
 Grig's main configuration file (`grig_server.config.yaml`) is YAML, and points to the Capybara and Josuke config files. If those files do not exist, Grig creates them on startup.
