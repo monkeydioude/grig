@@ -11,12 +11,20 @@ import (
 	"net/http"
 )
 
-func (h Handler) JosukeSave(w http.ResponseWriter, r *http.Request, _ *slog.Logger, jk *model.Josuke) error {
+func (h Handler) JosukeSave(w http.ResponseWriter, r *http.Request, logger *slog.Logger, jk *model.Josuke) error {
 	if r == nil || jk == nil {
 		return errors.Wrap(customErrors.ErrNilPointer, "api.JosukeSave")
 	}
 	jk.Path = h.Layout.ServerConfig.JosukeConfigPath
 	jk.FileWriter = file.CreateAndWriteFile
+	// the form posts only the fields grig displays, so carry over
+	// everything else the file already holds
+	if existing, err := file.UnmarshalFromPath[model.Josuke](jk.Path); err != nil {
+		logger.Warn("api.JosukeSave(): could not read existing config, keys it holds may be lost",
+			"error", err, "path", jk.Path)
+	} else {
+		jk.MergeExtrasFrom(existing)
+	}
 	if err := payload.VerifyAndSanitizeJosuke(jk); err != nil {
 		return http_errors.BadRequest(errors.Wrap(err, "api.JosukeSave"))
 	}

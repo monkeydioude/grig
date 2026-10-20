@@ -43,6 +43,7 @@ func boot() *server.Layout[config.ServerConfig] {
 		assert.NoError(file.CreateAndWriteFile(conf.JosukeConfigPath, []byte("{}"), nativeOs.ModePerm))
 	}
 	assert.NoError(conf.Save())
+	slog.Info("config loaded", "config", conf)
 	layout := server.Layout[config.ServerConfig]{
 		OS:           os.FindoutOS(),
 		ServerConfig: conf,

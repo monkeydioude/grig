@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/services"
 	"monkeydioude/grig/pkg/tiger/assert"
@@ -50,6 +51,17 @@ func readConfigFile(appConfigPath string) []byte {
 		assert.NoError(err)
 	}
 	return configRaw
+}
+
+// LogValue lets slog print the config as a group of its fields.
+func (sc ServerConfig) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.String("path", sc.ServerConfigPath),
+		slog.String("base_path", sc.BasePath),
+		slog.String("josuke_config_path", sc.JosukeConfigPath),
+		slog.Any("capybara_config_paths", sc.CapybaraConfigPaths),
+		slog.Any("services_paths", []string(sc.AppsServicesPaths)),
+	)
 }
 
 // Prefixer builds links for the sub-path this app is served under.

@@ -1,11 +1,11 @@
 package model
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"monkeydioude/grig/internal/consts"
 	customErrors "monkeydioude/grig/internal/errors"
+	"monkeydioude/grig/internal/service/file"
 	"monkeydioude/grig/internal/service/utils"
 	pkgErrors "monkeydioude/grig/pkg/errors"
 	"monkeydioude/grig/pkg/trans_types"
@@ -26,19 +26,43 @@ func (i *Indexer) SetIndex(index int) {
 }
 
 type Josuke struct {
-	LogLevel         string                                  `json:"logLevel"`
-	Host             string                                  `json:"host"`
-	Port             trans_types.StringInt                   `json:"port"`
-	Store            string                                  `json:"store"`
-	HealthcheckRoute string                                  `json:"healthcheck_route"`
-	Hook             []Hook                                  `json:"hook"`
-	Deployment       []Deployment                            `json:"deployment"`
-	Path             string                                  `json:"-"`
-	FileWriter       func(string, []byte, os.FileMode) error `json:"-"`
+	LogLevel         string                                  `json:"logLevel" yaml:"logLevel"`
+	Host             string                                  `json:"host" yaml:"host"`
+	Port             trans_types.StringInt                   `json:"port" yaml:"port"`
+	Store            string                                  `json:"store" yaml:"store"`
+	HealthcheckRoute string                                  `json:"healthcheck_route" yaml:"healthcheck_route"`
+	Hook             []Hook                                  `json:"hook" yaml:"hook"`
+	Deployment       []Deployment                            `json:"deployment" yaml:"deployment"`
+	Path             string                                  `json:"-" yaml:"-"`
+	FileWriter       func(string, []byte, os.FileMode) error `json:"-" yaml:"-"`
+	// Extra holds top-level keys grig does not model (jobs_api, queue_file...).
+	Extra map[string]any `json:"-" yaml:",inline"`
+}
+
+func (j *Josuke) UnmarshalJSON(data []byte) error {
+	type alias Josuke
+	extras, err := decodeWithExtras(data, (*alias)(j))
+	if err != nil {
+		return err
+	}
+	j.Extra = extras
+	return nil
+}
+
+func (j Josuke) MarshalJSON() ([]byte, error) {
+	type alias Josuke
+	return encodeWithExtras(alias(j), j.Extra)
+}
+
+// MergeExtrasFrom copies the unknown keys of the config currently on disk
+// onto this one, since the edit form only posts the fields grig displays.
+func (j *Josuke) MergeExtrasFrom(existing Josuke) {
+	j.Extra = mergeExtras(existing.Extra, j.Extra)
 }
 
 func (j Josuke) Save() error {
-	data, err := json.Marshal(j)
+	// the on-disk format follows the config file extension (yaml or json)
+	data, err := file.MarshalForPath(j.Path, j)
 	if err != nil {
 		return fmt.Errorf("Josuke.Save(): %w: %w", customErrors.ErrMarshaling, err)
 	}

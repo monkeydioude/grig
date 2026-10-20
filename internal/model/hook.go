@@ -6,10 +6,10 @@ import (
 )
 
 type Hook struct {
-	Name   string `json:"name"`
-	Type   string `json:"type"`
-	Path   string `json:"path"`
-	Secret string `json:"secret"`
+	Name   string `json:"name" yaml:"name"`
+	Type   string `json:"type" yaml:"type"`
+	Path   string `json:"path" yaml:"path"`
+	Secret string `json:"secret" yaml:"secret"`
 }
 
 func (Hook) GetName() string {

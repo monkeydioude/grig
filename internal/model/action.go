@@ -7,10 +7,10 @@ import (
 )
 
 type Action struct {
-	Action   string    `json:"action"`
-	Commands []Command `json:"commands"`
+	Action   string    `json:"action" yaml:"action"`
+	Commands []Command `json:"commands" yaml:"commands"`
 	parent   model.IndexBuilder
-	Indexer
+	Indexer  `yaml:"-"`
 }
 
 func (Action) GetName() string {

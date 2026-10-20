@@ -6,14 +6,16 @@ import (
 	"monkeydioude/grig/pkg/model"
 	"slices"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 // Command is the representation of a command from the json config file,
 // shaped into a struct, so it gets along well with our chain of Josuke structs.
 type Command struct {
-	Parts  []string `json:"command"`
-	parent model.IndexBuilder
-	Indexer
+	Parts   []string `json:"command"`
+	parent  model.IndexBuilder
+	Indexer `yaml:"-"`
 }
 
 func (Command) GetName() string {
@@ -56,6 +58,30 @@ func (c *Command) MarshalJSON() ([]byte, error) {
 		res = append(res, cmd)
 	}
 	return json.Marshal(res)
+}
+
+// UnmarshalYAML reads a command written as a sequence: ["cd", "/tmp"].
+func (c *Command) UnmarshalYAML(node *yaml.Node) error {
+	parts := []string{}
+	if err := node.Decode(&parts); err != nil {
+		return fmt.Errorf("UnmarshalYAML: %w", err)
+	}
+	c.Parts = parts
+	return nil
+}
+
+// MarshalYAML writes the command back on one line, ["cd", "/tmp"],
+// the way josuke configs are written by hand.
+func (c Command) MarshalYAML() (any, error) {
+	node := &yaml.Node{Kind: yaml.SequenceNode, Style: yaml.FlowStyle}
+	for _, part := range c.Parts {
+		node.Content = append(node.Content, &yaml.Node{
+			Kind:  yaml.ScalarNode,
+			Style: yaml.DoubleQuotedStyle,
+			Value: part,
+		})
+	}
+	return node, nil
 }
 
 func (c *Command) SetParent(p model.IndexBuilder) {

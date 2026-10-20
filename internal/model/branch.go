@@ -9,10 +9,10 @@ import (
 )
 
 type Branch struct {
-	Branch  string   `json:"branch"`
-	Actions []Action `json:"actions"`
+	Branch  string   `json:"branch" yaml:"branch"`
+	Actions []Action `json:"actions" yaml:"actions"`
 	parent  model.IndexBuilder
-	Indexer
+	Indexer `yaml:"-"`
 }
 
 func (Branch) GetName() string {

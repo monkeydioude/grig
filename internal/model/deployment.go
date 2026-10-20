@@ -9,12 +9,12 @@ import (
 )
 
 type Deployment struct {
-	Repo     string   `json:"repo"`
-	ProjDir  string   `json:"proj_dir"`
-	BaseDir  string   `json:"base_dir"`
-	Branches []Branch `json:"branches"`
+	Repo     string   `json:"repo" yaml:"repo"`
+	ProjDir  string   `json:"proj_dir" yaml:"proj_dir"`
+	BaseDir  string   `json:"base_dir" yaml:"base_dir"`
+	Branches []Branch `json:"branches" yaml:"branches"`
 	parent   any
-	Indexer
+	Indexer  `yaml:"-"`
 }
 
 func (Deployment) GetName() string {
