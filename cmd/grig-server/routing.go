@@ -5,7 +5,9 @@ import (
 	cmdApi "monkeydioude/grig/internal/api/cmdapi/v1"
 	htmlApi "monkeydioude/grig/internal/api/htmlapi/v1"
 	jsonApi "monkeydioude/grig/internal/api/jsonapi/v1"
+	"monkeydioude/grig/internal/service/compose"
 	"monkeydioude/grig/internal/service/db_schema"
+	"monkeydioude/grig/internal/service/env_file"
 	"monkeydioude/grig/internal/service/forge"
 	"monkeydioude/grig/internal/service/restart"
 	"monkeydioude/grig/internal/service/server/config"
@@ -25,6 +27,8 @@ type dependencies struct {
 	Forges    forge.Registry
 	Schemas   db_schema.Admin
 	Restarter restart.Restarter
+	Envs      env_file.Dir
+	Compose   compose.Dir
 }
 
 func routing(layout *server.Layout[config.ServerConfig], deps dependencies) http.Handler {
@@ -90,7 +94,7 @@ func routing_html(
 	mux *http.ServeMux,
 	deps dependencies,
 ) {
-	html := htmlApi.New(layout).WithForges(deps.Forges).WithSchemas(deps.Schemas)
+	html := htmlApi.New(layout).WithForges(deps.Forges).WithSchemas(deps.Schemas).WithEnvs(deps.Envs).WithCompose(deps.Compose)
 	nw := with.NewNavWrapper()
 
 	mux.HandleFunc("/", layout.Get(nw.WithNav(html.Index, element.Link{Href: "/", Text: element.Text("Index")})))
@@ -107,6 +111,7 @@ func routing_html(
 	})))
 	mux.HandleFunc("/service/new/repo", layout.Post(with.JsonPayload(html.ServiceRepoCreate)))
 	mux.HandleFunc("/service/new/schema", layout.Post(with.JsonPayload(html.ServiceSchemaCreate)))
+	mux.HandleFunc("/service/new/compose", layout.Post(with.JsonPayload(html.ServiceComposeCreate)))
 	// the per-tool pages, kept until "+ Service" covers them
 	mux.HandleFunc("/services", layout.Get(nw.WithNav(html.ServicesList, element.Link{
 		Href:            "/services",

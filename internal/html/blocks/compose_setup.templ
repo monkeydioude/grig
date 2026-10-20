@@ -1,0 +1,15 @@
+package blocks
+
+import "monkeydioude/grig/internal/service/compose"
+
+// ComposeSetupResult reports a service added to a compose file, and shows it.
+templ ComposeSetupResult(svc compose.Service, path string, err error) {
+    <ul class="text-sm space-y-1">
+        if err != nil {
+            @stepFailed("Service not added, nothing was changed", err)
+        } else {
+            <li class="text-emerald-400">✓ Service added to <span class="font-mono">{ path }</span></li>
+            <li><pre class="mt-1 font-mono text-xs text-slate-300 bg-slate-950 rounded border border-slate-700 p-3 overflow-x-auto">{ svc.YAML(2) }</pre></li>
+        }
+    </ul>
+}

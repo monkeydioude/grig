@@ -136,7 +136,21 @@ The "+ Service" page also creates a PostgreSQL schema and its user, when `DB_URL
 - grants `CONNECT`, `TEMPORARY` and `CREATE` on the database (`CREATE` lets the service run `CREATE SCHEMA IF NOT EXISTS` at start);
 - grants `USAGE` and `CREATE` on the schema, read/write on its tables and sequences, and the same on future ones.
 
-It then shows the service's `DB_URL` (new user, `search_path` set to the schema). The password is not stored: copy it then.
+It then shows the service's `DB_URL` (new user, `search_path` set to the schema). With `env_base_path` set in the config, it also adds it to `<env_base_path>/<project>/.env`, created if missing (owner-only permissions). A project whose `.env` already has a `DB_URL` is refused before anything is created.
+
+```yaml
+env_base_path: /home/mkd/envs
+```
+
+### Adding a service to docker compose
+
+With `docker_compose_base_path` set, the "+ Service" page adds the project's service to one of the `docker-compose.<type>.yml` files of that folder (the type is picked from the files found):
+
+```yaml
+docker_compose_base_path: /home/mkd/services/docker
+```
+
+The service is built from its build context, runs on the host network with `PORT` set, loads `<env_base_path>/<project>/.env` and, when a path is given, gets a healthcheck on it. It is inserted as text at the end of the `services` block, so the rest of the file, comments included, is kept as is. The files of one folder form one compose project: a name used in any of them is refused.
 
 ### Serving under a sub-path
 

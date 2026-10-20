@@ -32,6 +32,12 @@ type ServerConfig struct {
 	// RestartOnSave maps a config file to the systemd unit reading it,
 	// offering "Save & restart" on its page.
 	RestartOnSave map[string]string `json:"restart_on_save,omitempty" yaml:"restart_on_save,omitempty"`
+	// EnvBasePath holds one folder per service, with its .env:
+	// <env_base_path>/<project>/.env, written by "+ Service".
+	EnvBasePath string `json:"env_base_path,omitempty" yaml:"env_base_path,omitempty"`
+	// DockerComposeBasePath holds the docker-compose.<type>.yml files
+	// "+ Service" adds services to.
+	DockerComposeBasePath string `json:"docker_compose_base_path,omitempty" yaml:"docker_compose_base_path,omitempty"`
 }
 
 func unmarshalConfig(configRaw []byte) ServerConfig {
@@ -69,6 +75,8 @@ func (sc ServerConfig) LogValue() slog.Value {
 		slog.Any("services_paths", []string(sc.AppsServicesPaths)),
 		slog.String("webhook_base_url", sc.WebhookBaseURL),
 		slog.Any("restart_on_save", sc.RestartOnSave),
+		slog.String("env_base_path", sc.EnvBasePath),
+		slog.String("docker_compose_base_path", sc.DockerComposeBasePath),
 	)
 }
 

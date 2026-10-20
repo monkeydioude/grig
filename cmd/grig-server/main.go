@@ -6,7 +6,9 @@ import (
 	"log"
 	"log/slog"
 	"monkeydioude/grig/internal/consts"
+	"monkeydioude/grig/internal/service/compose"
 	"monkeydioude/grig/internal/service/db_schema"
+	"monkeydioude/grig/internal/service/env_file"
 	"monkeydioude/grig/internal/service/forge"
 	"monkeydioude/grig/internal/service/restart"
 	"monkeydioude/grig/internal/service/server/config"
@@ -64,6 +66,8 @@ func main() {
 		Forges:    setupForges(),
 		Schemas:   setupSchemas(),
 		Restarter: setupRestarter(serverLayout.ServerConfig),
+		Envs:      env_file.Dir{Base: serverLayout.ServerConfig.EnvBasePath},
+		Compose:   compose.Dir{Base: serverLayout.ServerConfig.DockerComposeBasePath},
 	})
 	// Create the run group, and add each actor.
 	var runGroup run.Group

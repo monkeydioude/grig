@@ -12,6 +12,11 @@ templ (page ServiceNew) Content() {
     <div class="pb-3">
         @card.Header("New service", "All the config a new service needs, in one place.")
         @card.Panel() {
+            @hx.H3("Project")
+            @inputField("project", "Name", "text", "my-service", "")
+            <p class="text-slate-500 text-sm">Names the service's .env folder and its docker compose service.</p>
+        }
+        @card.Panel() {
             @hx.H3("Repository")
             if len(page.Forges) == 0 {
                 <p class="text-amber-400 text-sm">
@@ -31,21 +36,54 @@ templ (page ServiceNew) Content() {
                 @page.schemaForm()
             }
         }
+        @card.Panel() {
+            @hx.H3("Docker compose")
+            if len(page.ComposeTypes) == 0 {
+                <p class="text-amber-400 text-sm">{ page.composeUnavailable() }</p>
+            } else {
+                @page.composeForm()
+            }
+        }
     </div>
+}
+
+templ (page ServiceNew) composeForm() {
+    <form
+        hx-post={urls.Path(ctx, "/service/new/compose")}
+        hx-ext="json-enc-custom"
+        hx-include="#project"
+        hx-target="#compose-setup-result"
+        hx-swap="innerHTML"
+        data-success-msg=""
+        hx-on::after-request="performAnimation(this, event)">
+        <div class="flex flex-wrap items-end gap-3">
+            @selectField("type", "File", page.ComposeTypes)
+            @inputField("port", "Port", "number", "8400", "")
+            @inputField("build_context", "Build context", "text", "/home/mkd/work/my-service", "")
+            @inputField("dockerfile", "Dockerfile", "text", "Dockerfile.prod", "Dockerfile.prod")
+            @inputField("health_path", "Healthcheck path", "text", "empty: none", "/healthcheck")
+            <button type="submit" class={button.Base, button.Success, "mb-3"}>Add</button>
+        </div>
+        <p class="text-slate-500 text-sm">
+            Adds the project's service to <span class="font-mono">docker-compose.&lt;file&gt;.yml</span>, with its .env when env_base_path is set.
+        </p>
+        <div id="compose-setup-result" class="mt-3"></div>
+    </form>
 }
 
 templ (page ServiceNew) schemaForm() {
     <form
         hx-post={urls.Path(ctx, "/service/new/schema")}
         hx-ext="json-enc-custom"
+        hx-include="#project"
         hx-target="#schema-setup-result"
         hx-swap="innerHTML"
         data-success-msg=""
         hx-on::after-request="performAnimation(this, event)">
         <p class="text-slate-500 text-sm mb-3">On <span class="font-mono">{ page.DatabaseURL }</span></p>
         <div class="flex flex-wrap items-end gap-3">
-            @textField("schema", "Schema", "my_service")
-            @textField("user", "User", "my_service")
+            @inputField("schema", "Schema", "text", "my_service", "")
+            @inputField("user", "User", "text", "my_service", "")
             <div class="mb-3 flex flex-col">
                 <label class={form.Label} for="password">Password</label>
                 <div class="flex gap-2">
@@ -57,6 +95,7 @@ templ (page ServiceNew) schemaForm() {
             </div>
             <button type="submit" class={button.Base, button.Success, "mb-3"}>Create</button>
         </div>
+        @page.envInfo()
         <div id="schema-setup-result" class="mt-3"></div>
     </form>
 }
@@ -71,8 +110,8 @@ templ (page ServiceNew) repoForm() {
         hx-on::after-request="performAnimation(this, event)">
         <div class="flex flex-wrap items-end gap-3">
             @selectField("forge", "Forge", page.Forges)
-            @textField("owner", "Owner", "empty: your own account")
-            @textField("name", "Name", "my-service")
+            @inputField("owner", "Owner", "text", "empty: your own account", "")
+            @inputField("name", "Name", "text", "my-service", "")
             @selectField("visibility", "Visibility", []string{"private", "public"})
             <button type="submit" class={button.Base, button.Success, "mb-3"}>Create</button>
         </div>
@@ -89,10 +128,20 @@ templ (page ServiceNew) webhookInfo() {
     }
 }
 
-templ textField(name, label, placeholder string) {
+templ (page ServiceNew) envInfo() {
+    if page.EnvBasePath == "" {
+        <p class="text-amber-400 text-sm">No .env will be written: set env_base_path in grig's config.</p>
+    } else {
+        <p class="text-slate-500 text-sm">
+            DB_URL is added to <span class="font-mono">{ page.EnvBasePath }/&lt;project name&gt;/.env</span>
+        </p>
+    }
+}
+
+templ inputField(name, label, inputType, placeholder, value string) {
     <div class="mb-3 flex flex-col">
         <label class={form.Label} for={name}>{ label }</label>
-        <input id={name} name={name} type="text" class={form.Input} placeholder={placeholder}>
+        <input id={name} name={name} type={inputType} class={form.Input} placeholder={placeholder} value={value}>
     </div>
 }
 
